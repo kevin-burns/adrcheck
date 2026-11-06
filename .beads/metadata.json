@@ -2,6 +2,6 @@
   "database": "dolt",
   "backend": "dolt",
   "dolt_mode": "embedded",
-  "dolt_database": "breith",
-  "project_id": "6b3aea19-fef9-49f4-a1d0-c05fd2cc132a"
+  "dolt_database": "adrcheck",
+  "project_id": "9ff33716-ae14-4706-b2d2-99e20f64553a"
 }
