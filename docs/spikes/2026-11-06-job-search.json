@@ -1,0 +1,1052 @@
+{
+ "changes": [
+  {
+   "commit": "285ff7e202fcf22a2a097c34c0a2f9998c50de64",
+   "subject": "APPLY-NOW: personal sweep notes (subject withheld)",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-external-host",
+     "detail": "[host withheld]"
+    },
+    {
+     "kind": "new-external-host",
+     "detail": "[host withheld]"
+    },
+    {
+     "kind": "new-external-host",
+     "detail": "[host withheld]"
+    },
+    {
+     "kind": "new-external-host",
+     "detail": "[host withheld]"
+    }
+   ]
+  },
+  {
+   "commit": "21be543df9e0392527e5f4e95b4d041abe259252",
+   "subject": "APPLY-NOW: personal sweep notes (subject withheld)",
+   "uncovered": 2,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-external-host",
+     "detail": "[host withheld]"
+    }
+   ]
+  },
+  {
+   "commit": "27f1aa5e62627dfbf4ad732a7da4effa57d18309",
+   "subject": "job-triage skill brief + spike results (granite vs Haiku 5.5 fact cards, tev1 cut)",
+   "uncovered": 4,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "a0ec713c38766ab7fc9f1ba7919be0e091968b6e",
+   "subject": "job-triage brief: middle-ground rubric, flexible 24h-7d window, tier order from spike",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "76444130733cf7cb1636d9913010565557a4a3a0",
+   "subject": "job-triage: fact-card triage engine (Haiku 5.5 + tev1, granite fallback) and skill",
+   "uncovered": 2,
+   "judge_calls": 2,
+   "tokens_in": 164006,
+   "tokens_out": 1710,
+   "cost_usd": 0.4088,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "74a45f645cd9586b880625a5de4209d0bb5107de",
+   "subject": "job-triage: accept list-valued fields; one bad reply no longer stops the run",
+   "uncovered": 0,
+   "judge_calls": 2,
+   "tokens_in": 116048,
+   "tokens_out": 346,
+   "cost_usd": 0.2033,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "2965846480f9c964c0254039d0f466ef800a4ae6",
+   "subject": "job-triage: report accepts list values from older cards",
+   "uncovered": 0,
+   "judge_calls": 2,
+   "tokens_in": 115236,
+   "tokens_out": 321,
+   "cost_usd": 0.1998,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "33678de528108210fb1b086a07d8b9d3a93427a1",
+   "subject": "job-triage: report spend counts only newly carded adverts",
+   "uncovered": 3,
+   "judge_calls": 2,
+   "tokens_in": 120732,
+   "tokens_out": 355,
+   "cost_usd": 0.2222,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "418f2e406207b1e13f3e765d1b8ffd05279b6ad0",
+   "subject": "job-triage: obstacle basis + strong-fit open maybes listed first; assumed obstacles can't hide a row; stop-and-ask over the cap",
+   "uncovered": 1,
+   "judge_calls": 2,
+   "tokens_in": 130370,
+   "tokens_out": 1144,
+   "cost_usd": 0.2686,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "d31ddba7df374c71ff4629eb630b6c88c2fcc5b6",
+   "subject": "job-triage brief: rubric .2, granite 4.1 vs Haiku, effort test, granite 4.2 dropped",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "bb86f9e73d90fea8796160df9783709f03679015",
+   "subject": "job-triage: keep eval iteration-1 workspace; ignore generated triage reports",
+   "uncovered": 30,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-external-host",
+     "detail": "[host withheld]"
+    }
+   ]
+  },
+  {
+   "commit": "1a8f3d738495c5dad3c904fbdf3ba13db3bc9e5b",
+   "subject": "APPLY-NOW: personal sweep notes (subject withheld)",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-external-host",
+     "detail": "[host withheld]"
+    }
+   ]
+  },
+  {
+   "commit": "5bbd7becbddb1197a5c8ae2f7e1ad2b0613c94e9",
+   "subject": "triage: a profile edit makes cached decisions stale",
+   "uncovered": 2,
+   "judge_calls": 2,
+   "tokens_in": 143932,
+   "tokens_out": 969,
+   "cost_usd": 0.3211,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "693a441a0287ba9c83f5451b6ebaa5033cd5d7ac",
+   "subject": "APPLY-NOW: personal sweep notes (subject withheld)",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "4264f0cfe672f38df960810c306ac9bb8c9863bf",
+   "subject": "APPLY-NOW: personal sweep notes (subject withheld)",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "d488966a0781f2c562b98f82498df447760c8e15",
+   "subject": "APPLY-NOW: personal sweep notes (subject withheld)",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "ce31958a7349c5d6debd99f4d9f042bb821664ab",
+   "subject": "triage: verify quotes against the labelled header; a listed city alone no longer hides a fitting role",
+   "uncovered": 1,
+   "judge_calls": 2,
+   "tokens_in": 157220,
+   "tokens_out": 2225,
+   "cost_usd": 0.3868,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "2f0d41ce49aea75d181a8a49e069da2246a1048f",
+   "subject": "triage: put the run time in the report name so a second run the same day cannot overwrite the first",
+   "uncovered": 3,
+   "judge_calls": 2,
+   "tokens_in": 139564,
+   "tokens_out": 244,
+   "cost_usd": 0.2964,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "subject": "Remediate the 2026-11-06 drift check: specs record what was built; drop the dead LinkedIn importer",
+   "uncovered": 6,
+   "judge_calls": 3,
+   "tokens_in": 231999,
+   "tokens_out": 1862,
+   "cost_usd": 0.5501,
+   "excluded": [
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "3c11d0b749c285f2f0d695487a17c739958dab7d",
+   "subject": "Badge aggregator rows with no employer board; fold a LinkedIn copy of a board role into it",
+   "uncovered": 2,
+   "judge_calls": 3,
+   "tokens_in": 213367,
+   "tokens_out": 2304,
+   "cost_usd": 0.48,
+   "excluded": [
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  }
+ ],
+ "findings": [
+  {
+   "commit": "76444130733cf7cb1636d9913010565557a4a3a0",
+   "adr": 1,
+   "obligation": "ADR-1/4",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/store.py",
+   "line_text": "  PRIMARY KEY (content_hash, rubric));",
+   "quote": "Every table in `enrich/` is keyed on it and nothing else.",
+   "reason": "The new triage table is keyed on (content_hash, rubric), so it is keyed on the row key plus the rubric version, not on the row key alone.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "76444130733cf7cb1636d9913010565557a4a3a0",
+   "adr": 1,
+   "obligation": "ADR-1/6",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "        r[\"hash\"] = store.content_hash(r[\"text\"])",
+   "quote": "Any new store, cache or report index in `enrich/` calls `store.row_key`.",
+   "reason": "The new triage cache gets its key from store.content_hash on pre-stripped text instead of calling store.row_key(description).",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "76444130733cf7cb1636d9913010565557a4a3a0",
+   "adr": 2,
+   "obligation": "ADR-2/8",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "lines += [f\"## no ({len(piles['no'])}) — both tiers said no\", \"\"]",
+   "quote": "A triage pile is listed, never hidden.",
+   "reason": "The report emits a '## no' section that lists every row in the no pile, so the pile is listed, not hidden.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "76444130733cf7cb1636d9913010565557a4a3a0",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "f\"{len(results)} adverts: \"",
+   "quote": "it is counted, and the count is visible in the report",
+   "reason": "The report header prints a per-pile count (read, maybe, no, not screened) and the no section heading repeats the no count, so the number of rows set aside is visible.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "74a45f645cd9586b880625a5de4209d0bb5107de",
+   "adr": 2,
+   "obligation": "ADR-2/5",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "except Exception as e:  # one malformed reply must not lose the other 600",
+   "quote": "The only rows that may leave the data are ones whose source row was removed.",
+   "reason": "The new except branch keeps a failed row in results as 'not screened' rather than dropping it, which looks compliant, but the diff does not show whether a failed row is later listed or counted in the report, so this is left unsettled.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "74a45f645cd9586b880625a5de4209d0bb5107de",
+   "adr": 2,
+   "obligation": "ADR-2/8",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "\"verdict\": \"not screened\",",
+   "quote": "A triage pile is listed, never hidden.",
+   "reason": "A row whose reply fails is turned into a 'not screened' result and appended to results instead of being discarded, so it stays in the data the report lists.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "2965846480f9c964c0254039d0f466ef800a4ae6",
+   "adr": 2,
+   "obligation": "ADR-2/8",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "v = _text(f.get(\"value\")) or \"unstated\"",
+   "quote": "A triage pile is listed, never hidden.",
+   "reason": "The changed line only coerces a fact value to text when rendering the read/maybe piles; it does not hide, filter or drop any row or pile.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "2965846480f9c964c0254039d0f466ef800a4ae6",
+   "adr": 2,
+   "obligation": "ADR-2/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "v = _text(f.get(\"value\")) or \"unstated\"",
+   "quote": "A row the pipeline decides not to show is folded, not dropped: it stays in the data the report is built from",
+   "reason": "The changed line only formats a field value inside the report and does not remove any row from the results.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "418f2e406207b1e13f3e765d1b8ffd05279b6ad0",
+   "adr": 2,
+   "obligation": "ADR-2/8",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "        return \"maybe\" if unverified_stated or obstacle_basis in ASSUMED else \"no\"",
+   "quote": "A triage pile is listed, never hidden.",
+   "reason": "The changed cut rule sends a both-no row to the listed maybe pile instead of the no pile when the obstacle is only inferred or unstated, so it makes more rows visible and hides none.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "418f2e406207b1e13f3e765d1b8ffd05279b6ad0",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "        lines += [f\"## {name} ({len(rows)})\", \"\"]",
+   "quote": "it is counted, and the count is visible in the report",
+   "reason": "Each of the three new groups (read, open maybe, stated maybe) prints its row count in its heading, and maybe_group puts every maybe row into exactly one of the two maybe groups.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "5bbd7becbddb1197a5c8ae2f7e1ad2b0613c94e9",
+   "adr": 1,
+   "obligation": "ADR-1/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "res[\"profile_sha\"] = profile_sha",
+   "quote": "Every table in `enrich/` is keyed on it and nothing else.",
+   "reason": "The profile hash is written into the card payload, not into the triage table key, and the added comment says it is stored 'in the payload rather than the key', so the table stays keyed on row_key only.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ce31958a7349c5d6debd99f4d9f042bb821664ab",
+   "adr": 1,
+   "obligation": "ADR-1/7",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "        by_hash[store.content_hash(r[\"text\"])].append(r)",
+   "quote": "A module that needs a key imports it rather than hashing locally.",
+   "reason": "The new recheck_cache builds its posting key with store.content_hash(r[\"text\"]) instead of store.row_key; the text is already stripped, so the value may match, but the diff does not show that it is the same key.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ce31958a7349c5d6debd99f4d9f042bb821664ab",
+   "adr": 1,
+   "obligation": "ADR-1/4",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/store.py",
+   "line_text": "    conn.execute(\"UPDATE triage SET payload = ? WHERE content_hash = ? AND rubric = ?\",",
+   "quote": "Every table in `enrich/` is keyed on it and nothing else.",
+   "reason": "The new rewrite_triage addresses the triage table by content_hash plus rubric rather than by row_key alone; the triage schema itself is not in the changed lines, so whether this breaks the obligation cannot be settled from the diff.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ce31958a7349c5d6debd99f4d9f042bb821664ab",
+   "adr": 2,
+   "obligation": "ADR-2/5",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/store.py",
+   "line_text": "    conn.execute(\"UPDATE triage SET payload = ? WHERE content_hash = ? AND rubric = ?\",",
+   "quote": "The only rows that may leave the data are ones whose source row was removed.",
+   "reason": "The new rewrite_triage path runs an UPDATE on the payload and deletes no triage rows, so no row leaves the data.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ce31958a7349c5d6debd99f4d9f042bb821664ab",
+   "adr": 2,
+   "obligation": "ADR-2/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "        return \"maybe\" if listing_only and skills_fit in (\"strong\", \"partial\") else \"no\"",
+   "quote": "A row the pipeline decides not to show is folded, not dropped: it stays in the data the report is built from",
+   "reason": "The new cut() branch only moves fitting rows from no to maybe, and recheck_cache rewrites verdicts in place, so no rows are removed from the data.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/1",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/linkedin.py",
+   "line_text": "\"\"\"Read LinkedIn postings from the li-assist cache, in the shape job-feeds uses.",
+   "quote": "`enrich/linkedin.py` owns LinkedIn ingestion end to end.",
+   "reason": "The module docstring now says linkedin.py only reads the cache and 'NO FETCHING HERE', and the import_rows() entry point is removed, so it no longer owns ingestion end to end.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/linkedin.py",
+   "line_text": "NO FETCHING HERE. Descriptions are fetched by bin/li-descriptions.py under",
+   "quote": "`import_rows()` fetches each posting's description per URN through `li-assist jobs get`",
+   "reason": "import_rows() and _fetch() (the `li-assist jobs get` call) are deleted, so nothing in enrich/linkedin.py fetches per URN any more.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/3",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/linkedin.py",
+   "line_text": "DELAY = 1.2  # a courtesy gap; li-assist is session-based and throttled",
+   "quote": "with a courtesy delay between calls",
+   "reason": "The DELAY constant and the time.sleep courtesy delay are removed along with the fetch loop in enrich/linkedin.py.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/4",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/linkedin.py",
+   "line_text": "Read LinkedIn postings from the li-assist cache, in the shape job-feeds uses.",
+   "quote": "lands the rows in the shape job-feeds uses",
+   "reason": "import_rows() is gone but cached_rows() still maps to the job-feeds row shape, so whether the 'import_rows() must land rows' obligation is met by the replacement is not settled by the diff.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/5",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/linkedin.py",
+   "line_text": "-     try:",
+   "quote": "A failed fetch skips its row rather than failing the run.",
+   "reason": "The try/except that skipped a row on failed fetch is deleted along with the fetch path, so the skip-on-failed-fetch behaviour no longer exists in the module.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "claim failed verification: line-not-in-change",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/7",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/linkedin.py",
+   "line_text": "URN = re.compile(r\"^urn:li:fsd_jobPosting:\\d+$\")",
+   "quote": "The URN is validated before it reaches the subprocess.",
+   "reason": "The URN validation and subprocess call were removed together, so no unvalidated URN reaches a subprocess here, but the diff does not show whether bin/li-descriptions.py validates it.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/6",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "docs/drift/2026-11-06_DRIFT_REPORT.md",
+   "line_text": "- Fetching is done by `bin/li-descriptions.py`, which the design does not mention.",
+   "quote": "No other module calls `li-assist`.",
+   "reason": "The drift report states that bin/li-descriptions.py does the fetching, which suggests another module invokes li-assist, but the diff does not show that file's code.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "614a20d66559c78826c1389b855d946b6b747544",
+   "adr": 4,
+   "obligation": "ADR-4/8",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/linkedin.py",
+   "line_text": "def cached_rows(path=None):",
+   "quote": "a report missing badges beats a report that does not generate.",
+   "reason": "cached_rows() reads only the local cache with no network and returns no rows on a missing cache, so report generation does not depend on the import completing.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "3c11d0b749c285f2f0d695487a17c739958dab7d",
+   "adr": 1,
+   "obligation": "ADR-1/5",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "    boards_by_role = {_role(r[\"company\"], r[\"title\"]): r for r in rows}",
+   "quote": "No module builds a key by hand from a URL, a URN, a title or a raw description.",
+   "reason": "The new `_role(company, title)` key is hand-built from a title and used as a lookup key, but it is a transient in-memory dedupe key rather than a stored posting key, so the diff does not settle whether the ADR covers it.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "3c11d0b749c285f2f0d695487a17c739958dab7d",
+   "adr": 2,
+   "obligation": "ADR-2/1",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "twin.setdefault(\"also\", []).append(url)",
+   "quote": "A row the pipeline decides not to show is folded, not dropped: it stays in the data the report is built from",
+   "reason": "The LinkedIn duplicate is never added to the row list: only its URL is appended to the twin's 'also' list and the loop continues, so the duplicate row leaves the data instead of staying in it as a folded row.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "claim failed verification: line-not-in-change",
+   "label": ""
+  },
+  {
+   "commit": "3c11d0b749c285f2f0d695487a17c739958dab7d",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "f\"  {r['url']}\" + (f\" (also on: {', '.join(r['also'])})\" if r.get(\"also\") else \"\")",
+   "quote": "it is counted, and the count is visible in the report",
+   "reason": "The report prints the folded copy's links as 'also on:', but the diff shows no count of folded duplicates anywhere in the report.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "3c11d0b749c285f2f0d695487a17c739958dab7d",
+   "adr": 2,
+   "obligation": "ADR-2/3",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "f\"  {r['url']}\" + (f\" (also on: {', '.join(r['also'])})\" if r.get(\"also\") else \"\")",
+   "quote": "with a control that restores the rows",
+   "reason": "The diff adds no control that restores the folded LinkedIn copy as a row; it only lists its URL as text.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "3c11d0b749c285f2f0d695487a17c739958dab7d",
+   "adr": 2,
+   "obligation": "ADR-2/7",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "enrich/triage.py",
+   "line_text": "twin.setdefault(\"also\", []).append(url)",
+   "quote": "A duplicate folded into another row keeps its link on the surviving row.",
+   "reason": "The folded LinkedIn copy's URL is appended to the surviving board row's 'also' list and printed in the report.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  }
+ ]
+}

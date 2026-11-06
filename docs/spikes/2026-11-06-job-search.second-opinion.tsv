@@ -1,0 +1,29 @@
+row	verdict	confidence	cited_line	reason	notes
+01	CONFLICT	high	+  PRIMARY KEY (content_hash, rubric));	New triage table is keyed on content_hash plus rubric, so it is keyed on more than the row key; the table did not exist at the parent.	letter-only
+02	CONFLICT	medium	+        r["hash"] = store.content_hash(r["text"])	New triage cache key is built with store.content_hash on stripped text, not by calling store.row_key; same value in practice.	letter-only
+03	COMPLIANT	high	+    lines += [f"## no ({len(piles['no'])}) -- both tiers said no", ""]	The no pile gets its own heading and every row in it is listed beneath.	
+04	COMPLIANT	high	+        f"{len(results)} adverts: "	The report header gives the total and a per-pile count, so counts are visible.	
+05	COMPLIANT	medium	+            except Exception as e:  # one malformed reply must not lose the other 600	A failed row becomes verdict not screened and stays in results and the report; nothing is removed.	
+06	COMPLIANT	medium	+                    "verdict": "not screened",	The fallback row lands in the not screened pile, which report() lists with its count.	
+07	UNCLEAR	high		The change only flattens a list value for display in fact(); it does not fold, hide or list any row.	
+08	UNCLEAR	high		Display-only formatting of a field value; no row is dropped or folded by this line.	
+09	COMPLIANT	medium	+        return "maybe" if unverified_stated or obstacle_basis in ASSUMED else "no"	Widens the set kept as maybe so assumed obstacles cannot push a row to no; the no pile stays listed.	
+10	COMPLIANT	high	+        lines += [f"## {name} ({len(rows)})", ""]	Each report group heading carries its row count and lists its rows.	
+11	COMPLIANT	medium	+                res["profile_sha"] = profile_sha	Profile hash goes in the payload deliberately, not in the key, so no extra key component is added; key stays (hash, rubric) as before.	ADR ambiguous
+12	COMPLIANT	medium	+        by_hash[store.content_hash(r["text"])].append(r)	Uses the imported store function rather than hashing locally with hashlib; it is content_hash not row_key though.	ADR ambiguous
+13	ADR-OVERTAKEN	medium	+    conn.execute("UPDATE triage SET payload = ? WHERE content_hash = ? AND rubric = ?",	The (content_hash, rubric) key already existed in the triage table at the parent; the new function just follows it.	letter-only
+14	UNCLEAR	medium		The UPDATE rewrites a payload in place and removes no row; recheck leaves cards without source text untouched.	
+15	COMPLIANT	medium	+        return "maybe" if listing_only and skills_fit in ("strong", "partial") else "no"	Rule keeps more rows visible as maybe; it adds no filter and the no pile is still listed.	
+16	CONFLICT	medium	+NO FETCHING HERE. Descriptions are fetched by bin/li-descriptions.py under	linkedin.py no longer fetches; fetching lives in another file, so it no longer owns ingestion end to end (that split predates the commit in practice).	letter-only; ADR ambiguous
+17	CONFLICT	high	-def import_rows(urns, fetch=None, cache_path=None, delay=None):	The commit removes import_rows(), the function that fetched each description per URN via li-assist.	cited line not in diff as quoted (docstring line is the nearest added line)
+18	CONFLICT	medium	-DELAY = 1.2  # a courtesy gap; li-assist is session-based and throttled	The delay constant and sleep between calls are deleted along with import_rows().	letter-only; cited line removed not added
+19	COMPLIANT	medium	+Read LinkedIn postings from the li-assist cache, in the shape job-feeds uses.	cached_rows() and _row() still emit job-feeds-shaped rows after the commit.	
+20	UNCLEAR	low		The try/except that skipped failed fetches went with the fetch path; no fetch remains in the module, so the rule is vacuous rather than broken.	ADR ambiguous; cited line removed not added
+21	UNCLEAR	medium		URN regex removed together with the only subprocess call in linkedin.py; with no subprocess the rule is vacuous.	ADR ambiguous; cited line removed not added
+22	ADR-OVERTAKEN	medium	+- Fetching is done by `bin/li-descriptions.py`, which the design does not mention.	bin/li-descriptions.py has called li-assist via subprocess since 2026-09-05; the commit only records that in a drift report.	ADR ambiguous
+23	COMPLIANT	low		cached_rows() still returns an empty list on a missing cache so the report generates without badges; the cited def line is context, not changed.	cited line not in diff
+24	CONFLICT	medium	+    boards_by_role = {_role(r["company"], r["title"]): r for r in rows}	Builds a lookup key by hand from company and title instead of using the row key.	letter-only
+25	COMPLIANT	medium	+                    twin.setdefault("also", []).append(url)	The duplicate is not discarded; its URL is kept on the surviving row and printed in the report.	ADR ambiguous
+26	CONFLICT	low	+        f"  {r['url']}" + (f" (also on: {', '.join(r['also'])})" if r.get("also") else "")	Folded duplicates are shown as links but no count of them is reported, which the folded-rows rule asks for.	letter-only; ADR ambiguous
+27	UNCLEAR	low		Duplicates are printed inline, never hidden, so a restore control has nothing to restore; markdown report has no controls at all.	ADR ambiguous
+28	COMPLIANT	high	+                    twin.setdefault("also", []).append(url)	The folded LinkedIn copy's URL is appended to the surviving board row and rendered as also on.	
