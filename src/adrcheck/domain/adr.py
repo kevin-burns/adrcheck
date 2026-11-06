@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Mapping
 
 
 class Status(Enum):
@@ -16,7 +16,7 @@ class Status(Enum):
     UNKNOWN = "unknown"
 
     @classmethod
-    def parse(cls, text: str) -> "Status":
+    def parse(cls, text: str) -> Status:
         head = text.strip().lower()
         for status in cls:
             if head.startswith(status.value):

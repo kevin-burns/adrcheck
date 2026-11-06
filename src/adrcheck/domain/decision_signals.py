@@ -3,14 +3,88 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 from adrcheck.domain.change import Change
 
 _IMPORT = re.compile(r"^\s*(?:import\s+([A-Za-z_][\w]*)|from\s+([A-Za-z_][\w]*)[\w.]*\s+import)")
 _HOST = re.compile(r"https?://([A-Za-z0-9.-]+\.[A-Za-z]{2,})")
-_STDLIB_HINT = {"os", "re", "sys", "json", "time", "math", "pathlib", "typing", "dataclasses", "subprocess", "collections", "itertools", "functools", "datetime", "hashlib", "shutil", "enum", "io", "csv", "logging", "argparse", "html", "urllib", "http", "unittest", "textwrap", "string", "random", "statistics", "tempfile", "glob", "fnmatch", "copy", "abc", "contextlib", "operator", "pprint", "uuid", "base64", "struct", "gzip", "zipfile", "tarfile", "sqlite3", "socket", "threading", "asyncio", "concurrent", "multiprocessing", "queue", "signal", "errno", "platform", "locale", "gettext", "decimal", "fractions", "numbers", "array", "bisect", "heapq", "weakref", "types", "inspect", "ast", "dis", "importlib", "pkgutil", "warnings", "traceback", "atexit", "builtins", "__future__"}
+_STDLIB_HINT = {
+    "os",
+    "re",
+    "sys",
+    "json",
+    "time",
+    "math",
+    "pathlib",
+    "typing",
+    "dataclasses",
+    "subprocess",
+    "collections",
+    "itertools",
+    "functools",
+    "datetime",
+    "hashlib",
+    "shutil",
+    "enum",
+    "io",
+    "csv",
+    "logging",
+    "argparse",
+    "html",
+    "urllib",
+    "http",
+    "unittest",
+    "textwrap",
+    "string",
+    "random",
+    "statistics",
+    "tempfile",
+    "glob",
+    "fnmatch",
+    "copy",
+    "abc",
+    "contextlib",
+    "operator",
+    "pprint",
+    "uuid",
+    "base64",
+    "struct",
+    "gzip",
+    "zipfile",
+    "tarfile",
+    "sqlite3",
+    "socket",
+    "threading",
+    "asyncio",
+    "concurrent",
+    "multiprocessing",
+    "queue",
+    "signal",
+    "errno",
+    "platform",
+    "locale",
+    "gettext",
+    "decimal",
+    "fractions",
+    "numbers",
+    "array",
+    "bisect",
+    "heapq",
+    "weakref",
+    "types",
+    "inspect",
+    "ast",
+    "dis",
+    "importlib",
+    "pkgutil",
+    "warnings",
+    "traceback",
+    "atexit",
+    "builtins",
+    "__future__",
+}
 
 
 _PROSE = (".md", ".markdown", ".txt", ".rst", ".html", ".htm")

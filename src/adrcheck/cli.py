@@ -19,11 +19,15 @@ EXIT_OK, EXIT_ISSUES, EXIT_CONFLICT = 0, 1, 2
 
 
 def _parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="adrcheck", description="Check code changes against architecture decision records, both directions.")
+    p = argparse.ArgumentParser(
+        prog="adrcheck", description="Check code changes against architecture decision records, both directions."
+    )
     sub = p.add_subparsers(dest="command", required=True)
 
     def common(sp):
-        sp.add_argument("--adr-dir", default="docs/adr", help="directory of numbered ADR markdown files (default docs/adr)")
+        sp.add_argument(
+            "--adr-dir", default="docs/adr", help="directory of numbered ADR markdown files (default docs/adr)"
+        )
         sp.add_argument("--repo", default=".", help="git repository root (default .)")
         sp.add_argument("--model", default="sonnet", help="model for the judge via claude -p (default sonnet)")
 
@@ -39,8 +43,10 @@ def _parser() -> argparse.ArgumentParser:
     k = sub.add_parser("compile", help="compile ADRs into obligations and print them")
     common(k)
 
-    l = sub.add_parser("lint", help="hygiene of the ADR set: dangling refs, cycles, status mismatch, missing status")
-    l.add_argument("--adr-dir", default="docs/adr")
+    lint_p = sub.add_parser(
+        "lint", help="hygiene of the ADR set: dangling refs, cycles, status mismatch, missing status"
+    )
+    lint_p.add_argument("--adr-dir", default="docs/adr")
     return p
 
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import io
-import subprocess
+import subprocess  # nosec B404 - argv-list calls only, see GitRepo._git
 import tokenize
 from pathlib import Path
 
@@ -50,14 +50,15 @@ def strip_python_prose(source: str) -> str:
 class GitRepo:
     def __init__(self, root: Path):
         self.root = Path(root)
+        self._code_cache: dict[str, str] = {}
 
     def _git(self, *args: str, check: bool = True) -> subprocess.CompletedProcess:
-        return subprocess.run(["git", "-C", str(self.root), *args], check=check, capture_output=True, text=True)
+        return subprocess.run(  # nosec B603 B607 - argv list, no shell, fixed executable
+            ["git", "-C", str(self.root), *args], check=check, capture_output=True, text=True
+        )
 
     def read(self, ref: str, path: str) -> str:
         return self._git("show", f"{ref}:{path}").stdout
-
-    _code_cache: dict[str, str] = {}
 
     def _code_text(self, ref: str) -> str | None:
         """All code at `ref` as one string, with prose files, comments and docstrings removed. Cached per ref."""

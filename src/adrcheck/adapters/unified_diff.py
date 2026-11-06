@@ -34,7 +34,13 @@ def parse_patch(text: str) -> tuple[FileChange, ...]:
             if raw == "--- /dev/null":
                 old_path = None
             continue
-        if raw.startswith("+++ ") or raw.startswith("index ") or raw.startswith(("new file", "deleted file", "similarity", "rename ", "old mode", "new mode", "Binary files")):
+        if (
+            raw.startswith("+++ ")
+            or raw.startswith("index ")
+            or raw.startswith(
+                ("new file", "deleted file", "similarity", "rename ", "old mode", "new mode", "Binary files")
+            )
+        ):
             continue
         if m := _HUNK.match(raw):
             old_no, new_no = int(m.group(1)), int(m.group(2))

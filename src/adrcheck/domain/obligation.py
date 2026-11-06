@@ -10,8 +10,8 @@ from typing import Literal
 class Checkability(Enum):
     MECHANICAL = "mechanical"  # an import, a dependency, a path pattern: visible in the diff
     STRUCTURAL = "structural"  # dependency direction, ownership, boundary: needs module context
-    INTENT = "intent"          # behavioural or semantic: defaults to UNCLEAR unless explicit
-    PROCESS = "process"        # team practice: listed as not checkable, never flagged
+    INTENT = "intent"  # behavioural or semantic: defaults to UNCLEAR unless explicit
+    PROCESS = "process"  # team practice: listed as not checkable, never flagged
 
 
 @dataclass(frozen=True)
@@ -23,4 +23,4 @@ class Obligation:
     quote: str
     checkability: Checkability
     mandates: tuple[str, ...] = ()  # identifiers or paths that should exist while the ADR holds
-    forbids: tuple[str, ...] = ()   # patterns whose presence contradicts the ADR
+    forbids: tuple[str, ...] = ()  # patterns whose presence contradicts the ADR

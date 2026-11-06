@@ -44,12 +44,18 @@ def to_json(reports: list[ChangeReport]) -> str:
                     "cost_usd": round(r.cost_usd, 4),
                     "excluded": [{"adr": e.adr_number, "reason": e.reason} for e in r.excluded],
                     "problems": list(r.problems),
-                    "decision_signals": [{"kind": s.kind, "detail": s.detail} for s in getattr(r, "decision_signals", ())],
+                    "decision_signals": [
+                        {"kind": s.kind, "detail": s.detail} for s in getattr(r, "decision_signals", ())
+                    ],
                 }
                 for r in reports
             ],
             "findings": _finding_rows(reports),
-            "stale": [{"adr": s.adr_number, "obligation": s.obligation_id, "missing": list(s.missing)} for r in reports for s in r.stale],
+            "stale": [
+                {"adr": s.adr_number, "obligation": s.obligation_id, "missing": list(s.missing)}
+                for r in reports
+                for s in r.stale
+            ],
         },
         indent=1,
     )

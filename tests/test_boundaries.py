@@ -17,10 +17,5 @@ def imports_of(path: Path):
 
 
 def test_domain_imports_no_adapters_usecases_cli_or_io_libraries():
-    offenders = [
-        (p.name, mod)
-        for p in DOMAIN.glob("*.py")
-        for mod in imports_of(p)
-        if mod.startswith(FORBIDDEN)
-    ]
+    offenders = [(p.name, mod) for p in DOMAIN.glob("*.py") for mod in imports_of(p) if mod.startswith(FORBIDDEN)]
     assert offenders == []

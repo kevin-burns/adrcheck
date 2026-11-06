@@ -9,12 +9,12 @@ Signed-off-by: K
 
 
 def test_a_trailer_with_a_reason_waives_the_adr():
-    waived, problems = parse_exceptions(MESSAGE)
+    waived, _problems = parse_exceptions(MESSAGE)
     assert [(w.adr_number, w.reason) for w in waived] == [(2, "one-off backfill, row_key is not importable here")]
 
 
 def test_a_trailer_without_a_reason_is_reported_not_honoured():
-    waived, problems = parse_exceptions(MESSAGE)
+    _waived, problems = parse_exceptions(MESSAGE)
     assert problems == ("Adr-Exception for ADR-7 has no reason and is ignored",)
 
 

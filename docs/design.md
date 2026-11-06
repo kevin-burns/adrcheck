@@ -24,7 +24,7 @@ One context: decision compliance. Terms, used the same way in code, tests and re
 
 ## Layout and the dependency rule
 
-```
+```text
 src/adrcheck/
   domain/      pure: ADR, Obligation, Change, Finding, verify rules, selection by glob and id,
                CONFLICT-vs-OVERTAKEN rule, hygiene lint, exception parsing. Imports nothing
@@ -94,7 +94,7 @@ Both came from reading the compiled obligations of the four job-search ADRs, not
   docstrings, skips prose files, and includes file paths, so "import_rows was removed" in a
   docstring does not keep ADR-4 alive and an ADR that names `enrich/linkedin.py` is probed
   against the tree.
-- **verify() compares lines after stripping indentation**, tolerating a copied `+ `/`- ` marker
+- **verify() compares lines after stripping indentation**, tolerating a copied `+` or `-` marker
   only when the bare line does not match. Models drop indentation when they copy.
 - **A removed line is never a precedent.** The "already violated at the parent" probe asks only
   about added lines.

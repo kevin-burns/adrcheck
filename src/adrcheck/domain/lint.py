@@ -41,9 +41,17 @@ def lint(adrs: list[Adr]) -> tuple[HygieneIssue, ...]:
             issues.append(HygieneIssue("missing-status", adr.number, "no recognisable Status"))
         for old in adr.supersedes:
             if old not in by_number:
-                issues.append(HygieneIssue("dangling-supersede-ref", adr.number, f"supersedes ADR-{old}, which does not exist"))
+                issues.append(
+                    HygieneIssue("dangling-supersede-ref", adr.number, f"supersedes ADR-{old}, which does not exist")
+                )
             elif by_number[old].status is not Status.SUPERSEDED:
-                issues.append(HygieneIssue("status-mismatch", old, f"superseded by ADR-{adr.number} but status is {by_number[old].status.value}"))
+                issues.append(
+                    HygieneIssue(
+                        "status-mismatch",
+                        old,
+                        f"superseded by ADR-{adr.number} but status is {by_number[old].status.value}",
+                    )
+                )
         if adr.number is not None and (cycle := _cycle_from(adr.number, supersedes)):
             key = frozenset(cycle)
             if key not in reported_cycles:

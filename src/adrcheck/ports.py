@@ -63,4 +63,6 @@ class ObligationCompiler(Protocol):
 
 
 class ChangeJudge(Protocol):
-    def judge(self, change: Change, adr: Adr, obligations: tuple[Obligation, ...], context: Context) -> JudgeResponse: ...
+    def judge(
+        self, change: Change, adr: Adr, obligations: tuple[Obligation, ...], context: Context
+    ) -> JudgeResponse: ...

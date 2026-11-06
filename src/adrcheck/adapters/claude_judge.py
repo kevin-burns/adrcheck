@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
+import subprocess  # nosec B404 - argv-list calls only, see run_claude
 import tempfile
-from typing import Callable
+from collections.abc import Callable
 
 from adrcheck.domain.adr import Adr
 from adrcheck.domain.change import Change
@@ -23,9 +23,12 @@ Runner = Callable[[str, str], dict]
 
 
 def run_claude(prompt: str, model: str) -> dict:
-    proc = subprocess.run(
+    proc = subprocess.run(  # nosec B603 B607 - argv list, no shell; claude resolved from PATH by design
         ["claude", "-p", "--output-format", "json", "--model", model, "--tools", ""],
-        input=prompt, capture_output=True, text=True, check=True,
+        input=prompt,
+        capture_output=True,
+        text=True,
+        check=True,
         cwd=tempfile.gettempdir(),  # a neutral cwd: no project CLAUDE.md or MCP servers join the prompt
     )
     return json.loads(proc.stdout)
@@ -82,9 +85,7 @@ def judge_prompt(change: Change, adr: Adr, obligations: tuple[Obligation, ...], 
             diff_lines.append(f"- {line.text}")
         for line in f.added:
             diff_lines.append(f"+ {line.text}")
-    obl = "\n".join(
-        f"- {o.id} [{o.kind}, {o.checkability.value}] {o.text}\n  quote: \"{o.quote}\"" for o in obligations
-    )
+    obl = "\n".join(f'- {o.id} [{o.kind}, {o.checkability.value}] {o.text}\n  quote: "{o.quote}"' for o in obligations)
     images = "\n\n".join(f"### {p} (after the change)\n```\n{text}\n```" for p, text in context.post_images.items())
     return f"""You judge whether one code change breaks the obligations of one architecture decision record.
 Be precise and conservative: a CONFLICT needs an exact changed line and an exact quote. When the diff does
@@ -176,12 +177,14 @@ def parse_judge_reply(reply: str) -> JudgeResponse:
 
 def _usage(raw: dict) -> dict:
     u = raw.get("usage", {}) or {}
-    return dict(
-        tokens_in=int(u.get("input_tokens", 0)) + int(u.get("cache_read_input_tokens", 0)) + int(u.get("cache_creation_input_tokens", 0)),
-        tokens_out=int(u.get("output_tokens", 0)),
-        cost_usd=float(raw.get("total_cost_usd", 0.0)),
-        latency_ms=int(raw.get("duration_api_ms", 0)),
-    )
+    return {
+        "tokens_in": int(u.get("input_tokens", 0))
+        + int(u.get("cache_read_input_tokens", 0))
+        + int(u.get("cache_creation_input_tokens", 0)),
+        "tokens_out": int(u.get("output_tokens", 0)),
+        "cost_usd": float(raw.get("total_cost_usd", 0.0)),
+        "latency_ms": int(raw.get("duration_api_ms", 0)),
+    }
 
 
 class ClaudeJudge:

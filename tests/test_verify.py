@@ -28,12 +28,12 @@ CHANGE = Change(
 
 
 def claim(**overrides):
-    base = dict(
-        adr_number=2,
-        path="enrich/store.py",
-        line_text='    key = row["url"]',
-        quote="keyed by store.row_key and nothing else",
-    )
+    base = {
+        "adr_number": 2,
+        "path": "enrich/store.py",
+        "line_text": '    key = row["url"]',
+        "quote": "keyed by store.row_key and nothing else",
+    }
     base.update(overrides)
     return Claim(**base)
 

@@ -35,9 +35,7 @@ def _glob_matches(pattern: str, path: str) -> bool:
     if fnmatch(path, pattern):
         return True
     # `dir/**` should also match files directly under dir, as gitignore users expect.
-    if pattern.endswith("/**") and path.startswith(pattern[:-2]):
-        return True
-    return False
+    return pattern.endswith("/**") and path.startswith(pattern[:-2])
 
 
 def _referenced_numbers(change: Change) -> set[int]:

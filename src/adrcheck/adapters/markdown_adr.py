@@ -38,7 +38,7 @@ def _front_matter(text: str) -> tuple[dict[str, str], str]:
             key, _, value = raw.partition(":")
             key = key.strip().lower().replace("_", " ")
             fields[key] = value.strip().strip("\"'")
-    return fields, text[m.end():]
+    return fields, text[m.end() :]
 
 
 def parse_adr(text: str, source: str) -> Adr:
@@ -77,7 +77,9 @@ def parse_adr(text: str, source: str) -> Adr:
     applies = headers.get("applies to", "")
     applies_to = tuple(p.strip() for p in applies.split(",") if p.strip())
     supersedes = tuple(int(n) for n in _ADR_REF.findall(headers.get("supersedes", "")))
-    superseded_by = tuple(int(n) for n in _ADR_REF.findall(status_text)) if Status.parse(status_text) is Status.SUPERSEDED else ()
+    superseded_by = (
+        tuple(int(n) for n in _ADR_REF.findall(status_text)) if Status.parse(status_text) is Status.SUPERSEDED else ()
+    )
     return Adr(
         title=title,
         supersedes=supersedes,

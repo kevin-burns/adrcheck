@@ -78,7 +78,14 @@ class FakeRepo:
 
 
 def raw(verdict=Verdict.CONFLICT, quote=OBLIGATION.quote, line='    key = row["url"]'):
-    return RawFinding(obligation_id="ADR-2/1", verdict=verdict, path="enrich/store.py", line_text=line, quote=quote, reason="keys the row by url")
+    return RawFinding(
+        obligation_id="ADR-2/1",
+        verdict=verdict,
+        path="enrich/store.py",
+        line_text=line,
+        quote=quote,
+        reason="keys the row by url",
+    )
 
 
 def run(judge_response, present=None, message=None, adrs=None):
@@ -97,7 +104,12 @@ def run(judge_response, present=None, message=None, adrs=None):
 def test_a_verified_conflict_the_commit_introduced_is_reported_as_conflict():
     report, _ = run(JudgeResponse(relevant=True, findings=(raw(),)))
     [f] = report.findings
-    assert (f.adr_number, f.verdict, f.line_text, f.signals) == (2, Verdict.CONFLICT, '    key = row["url"]', frozenset({"glob"}))
+    assert (f.adr_number, f.verdict, f.line_text, f.signals) == (
+        2,
+        Verdict.CONFLICT,
+        '    key = row["url"]',
+        frozenset({"glob"}),
+    )
     assert f.verify_failed == ()
 
 
@@ -109,25 +121,48 @@ def test_a_claim_that_fails_verification_becomes_unclear_and_says_why():
 
 
 def test_a_contradiction_already_present_at_the_parent_is_adr_overtaken():
-    report, _ = run(JudgeResponse(relevant=True, findings=(raw(),)), present={("c0", "row_key"): False, ("c0", 'key = row["url"]'): False})
+    report, _ = run(
+        JudgeResponse(relevant=True, findings=(raw(),)),
+        present={("c0", "row_key"): False, ("c0", 'key = row["url"]'): False},
+    )
     assert report.findings[0].verdict is Verdict.ADR_OVERTAKEN
 
 
 def test_the_same_line_already_elsewhere_at_the_parent_is_a_precedent_so_adr_overtaken():
-    report, _ = run(JudgeResponse(relevant=True, findings=(raw(),)), present={("c0", "row_key"): True, ("c0", 'key = row["url"]'): True})
+    report, _ = run(
+        JudgeResponse(relevant=True, findings=(raw(),)),
+        present={("c0", "row_key"): True, ("c0", 'key = row["url"]'): True},
+    )
     assert report.findings[0].verdict is Verdict.ADR_OVERTAKEN
     assert "already present at parent" in report.findings[0].note
 
 
 def test_all_named_anchors_must_be_present_for_the_adr_to_count_as_still_in_force():
-    two = Obligation(id="ADR-2/1", adr_number=2, kind="MUST", text="t", quote=OBLIGATION.quote, checkability=Checkability.MECHANICAL, mandates=("import_rows", "get"))
+    two = Obligation(
+        id="ADR-2/1",
+        adr_number=2,
+        kind="MUST",
+        text="t",
+        quote=OBLIGATION.quote,
+        checkability=Checkability.MECHANICAL,
+        mandates=("import_rows", "get"),
+    )
     repo = FakeRepo({("c0", "import_rows"): False, ("c0", "get"): True, ("c0", 'key = row["url"]'): False})
-    reports = check(changes=[change()], adrs=[ADR], compiler=FakeCompiler({2: (two,)}), judge=FakeJudge(JudgeResponse(relevant=True, findings=(raw(),))), repo=repo)
+    reports = check(
+        changes=[change()],
+        adrs=[ADR],
+        compiler=FakeCompiler({2: (two,)}),
+        judge=FakeJudge(JudgeResponse(relevant=True, findings=(raw(),))),
+        repo=repo,
+    )
     assert reports[0].findings[0].verdict is Verdict.ADR_OVERTAKEN
 
 
 def test_a_waived_adr_is_not_judged_and_is_reported_compliant_with_the_reason():
-    report, judge = run(JudgeResponse(relevant=True, findings=(raw(),)), message="x\n\nAdr-Exception: ADR-0002 backfill, no row_key here\n")
+    report, judge = run(
+        JudgeResponse(relevant=True, findings=(raw(),)),
+        message="x\n\nAdr-Exception: ADR-0002 backfill, no row_key here\n",
+    )
     assert judge.calls == []
     [f] = report.findings
     assert (f.verdict, f.note) == (Verdict.COMPLIANT, "waived: backfill, no row_key here")
@@ -148,7 +183,14 @@ def test_a_compliant_adr_with_no_findings_is_still_recorded():
 def test_uncovered_counts_changed_files_no_selected_adr_applies_to():
     repo = FakeRepo({})
     reports = check(
-        changes=[Change(ref="c1", parent="c0", message="m", files=(FileChange("bin/run.sh", "bin/run.sh"), FileChange("enrich/x.py", "enrich/x.py")))],
+        changes=[
+            Change(
+                ref="c1",
+                parent="c0",
+                message="m",
+                files=(FileChange("bin/run.sh", "bin/run.sh"), FileChange("enrich/x.py", "enrich/x.py")),
+            )
+        ],
         adrs=[ADR],
         compiler=FakeCompiler({2: (OBLIGATION,)}),
         judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
@@ -165,27 +207,71 @@ def test_a_judge_error_is_an_unclear_finding_that_names_the_error():
 
 def test_decision_signals_are_attached_to_the_change_report():
     repo = FakeRepo({("c0", "requests"): False, ("c0", "row_key"): True, ("c0", 'row["url"]'): False})
-    ch = Change(ref="c1", parent="c0", message="m", files=(FileChange("enrich/x.py", "enrich/x.py", added=(Line("enrich/x.py", "+", 1, "import requests"),)),))
-    reports = check(changes=[ch], adrs=[ADR], compiler=FakeCompiler({2: (OBLIGATION,)}), judge=FakeJudge(JudgeResponse(relevant=True, findings=())), repo=repo)
+    ch = Change(
+        ref="c1",
+        parent="c0",
+        message="m",
+        files=(FileChange("enrich/x.py", "enrich/x.py", added=(Line("enrich/x.py", "+", 1, "import requests"),)),),
+    )
+    reports = check(
+        changes=[ch],
+        adrs=[ADR],
+        compiler=FakeCompiler({2: (OBLIGATION,)}),
+        judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
+        repo=repo,
+    )
     assert [(s.kind, s.detail) for s in reports[0].decision_signals] == [("new-dependency", "requests")]
 
 
 def test_a_removed_line_is_never_a_precedent_so_the_conflict_stands():
     # the removed line exists at the parent by definition; that is not "already violated"
     repo = FakeRepo({("c0", "row_key"): True, ("c0", "key = row_key(row)"): True})
-    reports = check(changes=[change()], adrs=[ADR], compiler=FakeCompiler({2: (OBLIGATION,)}), judge=FakeJudge(JudgeResponse(relevant=True, findings=(raw(line="    key = row_key(row)"),))), repo=repo)
+    reports = check(
+        changes=[change()],
+        adrs=[ADR],
+        compiler=FakeCompiler({2: (OBLIGATION,)}),
+        judge=FakeJudge(JudgeResponse(relevant=True, findings=(raw(line="    key = row_key(row)"),))),
+        repo=repo,
+    )
     assert reports[0].findings[0].verdict is Verdict.CONFLICT
 
 
 def test_the_stale_sweep_reports_an_accepted_adr_whose_named_anchors_are_all_gone_at_the_range_end():
-    gone = Obligation(id="ADR-4/2", adr_number=4, kind="MUST", text="t", quote="q", checkability=Checkability.MECHANICAL, mandates=("import_rows", "li-assist"))
-    stale_adr = Adr(title="Importer", status=Status.ACCEPTED, source="0004.md", number=4, applies_to=("enrich/linkedin.py",), sections={"decision": "q"})
+    gone = Obligation(
+        id="ADR-4/2",
+        adr_number=4,
+        kind="MUST",
+        text="t",
+        quote="q",
+        checkability=Checkability.MECHANICAL,
+        mandates=("import_rows", "li-assist"),
+    )
+    stale_adr = Adr(
+        title="Importer",
+        status=Status.ACCEPTED,
+        source="0004.md",
+        number=4,
+        applies_to=("enrich/linkedin.py",),
+        sections={"decision": "q"},
+    )
     repo = FakeRepo({("c1", "import_rows"): False, ("c1", "li-assist"): True, ("c1", "row_key"): True})
-    reports = check(changes=[change()], adrs=[ADR, stale_adr], compiler=FakeCompiler({2: (OBLIGATION,), 4: (gone,)}), judge=FakeJudge(JudgeResponse(relevant=True, findings=())), repo=repo)
+    reports = check(
+        changes=[change()],
+        adrs=[ADR, stale_adr],
+        compiler=FakeCompiler({2: (OBLIGATION,), 4: (gone,)}),
+        judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
+        repo=repo,
+    )
     assert [(s.adr_number, s.obligation_id, s.missing) for s in reports[-1].stale] == [(4, "ADR-4/2", ("import_rows",))]
 
 
 def test_the_stale_sweep_is_quiet_when_anchors_are_present():
     repo = FakeRepo({("c1", "row_key"): True})
-    reports = check(changes=[change()], adrs=[ADR], compiler=FakeCompiler({2: (OBLIGATION,)}), judge=FakeJudge(JudgeResponse(relevant=True, findings=())), repo=repo)
+    reports = check(
+        changes=[change()],
+        adrs=[ADR],
+        compiler=FakeCompiler({2: (OBLIGATION,)}),
+        judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
+        repo=repo,
+    )
     assert reports[-1].stale == ()

@@ -3,7 +3,14 @@ from adrcheck.domain.lint import lint
 
 
 def adr(number, status=Status.ACCEPTED, supersedes=(), superseded_by=()):
-    return Adr(title=f"ADR {number}", status=status, source=f"{number:04}.md", number=number, supersedes=supersedes, superseded_by=superseded_by)
+    return Adr(
+        title=f"ADR {number}",
+        status=status,
+        source=f"{number:04}.md",
+        number=number,
+        supersedes=supersedes,
+        superseded_by=superseded_by,
+    )
 
 
 def issues(*adrs):
@@ -19,12 +26,17 @@ def test_dangling_supersede_reference():
 
 
 def test_supersede_cycle():
-    found = issues(adr(1, Status.SUPERSEDED, supersedes=(2,), superseded_by=(2,)), adr(2, Status.SUPERSEDED, supersedes=(1,), superseded_by=(1,)))
+    found = issues(
+        adr(1, Status.SUPERSEDED, supersedes=(2,), superseded_by=(2,)),
+        adr(2, Status.SUPERSEDED, supersedes=(1,), superseded_by=(1,)),
+    )
     assert ("supersede-cycle", 1, "ADR-1 -> ADR-2 -> ADR-1") in found
 
 
 def test_status_mismatch_when_the_superseded_adr_still_says_accepted():
-    assert issues(adr(2), adr(3, supersedes=(2,))) == [("status-mismatch", 2, "superseded by ADR-3 but status is accepted")]
+    assert issues(adr(2), adr(3, supersedes=(2,))) == [
+        ("status-mismatch", 2, "superseded by ADR-3 but status is accepted")
+    ]
 
 
 def test_missing_status():

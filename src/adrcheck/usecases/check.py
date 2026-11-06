@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 
 from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.change import Change
@@ -10,7 +10,7 @@ from adrcheck.domain.decision_signals import DecisionSignal, decision_signals
 from adrcheck.domain.exception import parse_exceptions
 from adrcheck.domain.obligation import Checkability, Obligation
 from adrcheck.domain.overtaken import classify
-from adrcheck.domain.select import Exclusion as _Exclusion, Selection, select
+from adrcheck.domain.select import Selection, select
 from adrcheck.domain.verdict import Verdict
 from adrcheck.domain.verify import Claim, verify
 from adrcheck.ports import ChangeJudge, Context, ObligationCompiler, RepoReader
@@ -92,11 +92,23 @@ def _precedent(repo: RepoReader, change: Change, path: str, line_text: str) -> b
     Only an ADDED line can be a precedent question; a removed line existed at the parent by definition.
     """
     text = line_text.strip()
-    if text[:1] in "+-" and not change.touched(path, text, kinds=("+",)) and change.touched(path, text[1:], kinds=("+",)):
+    if (
+        text[:1] in "+-"
+        and not change.touched(path, text, kinds=("+",))
+        and change.touched(path, text[1:], kinds=("+",))
+    ):
         text = text[1:].strip()
     if change.parent is None or len(text) < 8 or not change.touched(path, text, kinds=("+",)):
         return None
     return repo.contains(change.parent, text)
+
+
+def _post_image(repo: RepoReader, ref: str, path: str) -> str | None:
+    """The file after the change, or None when it no longer exists (a deleted file has no post-image)."""
+    try:
+        return repo.read(ref, path)
+    except Exception:
+        return None
 
 
 def _context(repo: RepoReader, change: Change) -> Context:
@@ -105,9 +117,8 @@ def _context(repo: RepoReader, change: Change) -> Context:
     for f in change.files:
         if spent >= POST_IMAGE_BUDGET_CHARS:
             break
-        try:
-            text = repo.read(change.ref, f.path)
-        except Exception:  # a deleted file has no post-image
+        text = _post_image(repo, change.ref, f.path)
+        if text is None:
             continue
         images[f.path] = text[: POST_IMAGE_BUDGET_CHARS - spent]
         spent += len(images[f.path])
@@ -134,7 +145,9 @@ def check(
         waived, problems = parse_exceptions(change.message)
         waived_by_number = {w.adr_number: w.reason for w in waived}
         known = {a.number for a in adrs}
-        problems += tuple(f"Adr-Exception names ADR-{w.adr_number}, which does not exist" for w in waived if w.adr_number not in known)
+        problems += tuple(
+            f"Adr-Exception names ADR-{w.adr_number}, which does not exist" for w in waived if w.adr_number not in known
+        )
 
         selection = select(adrs, change)
         findings: list[Finding] = []
@@ -147,7 +160,11 @@ def check(
         for sel in list(selection.selected) + list(selection.undetermined):
             adr = sel.adr
             if adr.number in waived_by_number:
-                findings.append(Finding(adr.number, None, Verdict.COMPLIANT, sel.signals, note=f"waived: {waived_by_number[adr.number]}"))
+                findings.append(
+                    Finding(
+                        adr.number, None, Verdict.COMPLIANT, sel.signals, note=f"waived: {waived_by_number[adr.number]}"
+                    )
+                )
                 judged.append(sel)
                 continue
             obligations = compiler.compile(adr)
@@ -162,7 +179,9 @@ def check(
             signals = sel.signals or frozenset({"model"})
             if response.error:
                 judged.append(Selection(adr, signals))
-                findings.append(Finding(adr.number, None, Verdict.UNCLEAR, signals, note=f"judge error: {response.error}"))
+                findings.append(
+                    Finding(adr.number, None, Verdict.UNCLEAR, signals, note=f"judge error: {response.error}")
+                )
                 continue
             if not response.relevant:
                 excluded.append(Excluded(adr.number, "model: not relevant to this change"))
@@ -187,7 +206,9 @@ def check(
                 tokens_in=tokens_in,
                 tokens_out=tokens_out,
                 cost_usd=cost,
-                decision_signals=decision_signals(change, lambda needle: repo.contains(change.parent, needle) if change.parent else None),
+                decision_signals=decision_signals(
+                    change, lambda needle, parent=change.parent: repo.contains(parent, needle) if parent else None
+                ),
             )
         )
     if reports:
@@ -196,14 +217,18 @@ def check(
     return reports
 
 
-def _settle(raw, obligation: Obligation | None, change: Change, adr: Adr, signals: frozenset[str], repo: RepoReader) -> Finding:
+def _settle(
+    raw, obligation: Obligation | None, change: Change, adr: Adr, signals: frozenset[str], repo: RepoReader
+) -> Finding:
     verdict = raw.verdict
     failed: tuple[str, ...] = ()
     note = ""
     if obligation is None:
         failed = ("unknown-obligation",)
     if verdict is Verdict.CONFLICT or (obligation and failed == ()):
-        result = verify(Claim(adr_number=adr.number or 0, path=raw.path, line_text=raw.line_text, quote=raw.quote), change, adr)
+        result = verify(
+            Claim(adr_number=adr.number or 0, path=raw.path, line_text=raw.line_text, quote=raw.quote), change, adr
+        )
         failed = failed + result.failed
     if failed and verdict is Verdict.CONFLICT:
         verdict = Verdict.UNCLEAR

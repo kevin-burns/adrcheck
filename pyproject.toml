@@ -25,3 +25,22 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "RUF", "SIM", "C4"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests assert, and embed ADR and diff fixtures whose lines are not wrapped.
+"tests/*" = ["S101", "E501", "S603", "S607"]
+# The compile and judge prompts carry one-line JSON shape examples; wrapping them changes the prompt.
+"src/adrcheck/adapters/claude_judge.py" = ["E501", "S603", "S607"]
+# argv lists, no shell, fixed executables (git, claude) resolved from PATH on purpose.
+"src/adrcheck/adapters/git_changes.py" = ["S603", "S607"]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]

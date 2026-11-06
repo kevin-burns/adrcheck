@@ -1,0 +1,15 @@
+# markdownlint configuration (prek markdownlint hook).
+default: true
+
+# ARNs, query names and command lines cannot be wrapped without breaking them.
+MD013: false
+
+# Docs repeat headings such as "Status" under different parents.
+MD024:
+  siblings_only: true
+
+MD033: false
+MD041: false
+
+# Compact `| --- |` tables are fine.
+MD060: false

@@ -17,7 +17,9 @@ class CachedCompiler:
         self.inner, self.directory, self.prompt_version = inner, Path(directory), prompt_version
 
     def _key(self, adr: Adr) -> Path:
-        material = json.dumps({"v": self.prompt_version, "title": adr.title, "sections": dict(adr.sections)}, sort_keys=True)
+        material = json.dumps(
+            {"v": self.prompt_version, "title": adr.title, "sections": dict(adr.sections)}, sort_keys=True
+        )
         return self.directory / "obligations" / (hashlib.sha256(material.encode()).hexdigest() + ".json")
 
     def compile(self, adr: Adr) -> tuple[Obligation, ...]:
@@ -25,10 +27,19 @@ class CachedCompiler:
         if path.exists():
             rows = json.loads(path.read_text())
             return tuple(
-                Obligation(**{**r, "checkability": Checkability(r["checkability"]), "mandates": tuple(r.get("mandates", ())), "forbids": tuple(r.get("forbids", ()))})
+                Obligation(
+                    **{
+                        **r,
+                        "checkability": Checkability(r["checkability"]),
+                        "mandates": tuple(r.get("mandates", ())),
+                        "forbids": tuple(r.get("forbids", ())),
+                    }
+                )
                 for r in rows
             )
         obligations = self.inner.compile(adr)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps([{**asdict(o), "checkability": o.checkability.value} for o in obligations], indent=1))
+        path.write_text(
+            json.dumps([{**asdict(o), "checkability": o.checkability.value} for o in obligations], indent=1)
+        )
         return obligations

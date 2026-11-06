@@ -42,8 +42,8 @@ def test_git_changes_yields_one_change_per_commit_with_parent_and_message(tmp_pa
     assert c.message.startswith("second")
     assert "Adr-Exception: ADR-2 because" in c.message
     assert c.parent == git(repo, "rev-parse", "HEAD~1").strip()
-    assert [l.text for l in c.files[0].added] == ['key = row["url"]']
-    assert [l.text for l in c.files[0].removed] == ["key = row_key(row)"]
+    assert [line.text for line in c.files[0].added] == ['key = row["url"]']
+    assert [line.text for line in c.files[0].removed] == ["key = row_key(row)"]
 
 
 def test_git_repo_probes_whether_a_needle_occurs_anywhere_at_a_ref(tmp_path: Path):
@@ -61,7 +61,9 @@ def test_contains_ignores_comments_docstrings_and_prose_files(tmp_path: Path):
     git(repo, "init", "-q", "-b", "main")
     git(repo, "config", "user.email", "t@example.com")
     git(repo, "config", "user.name", "t")
-    (repo / "a.py").write_text('"""An earlier import_rows() was removed."""\n# import_rows is gone\nx = cached_rows()\n')
+    (repo / "a.py").write_text(
+        '"""An earlier import_rows() was removed."""\n# import_rows is gone\nx = cached_rows()\n'
+    )
     (repo / "notes.md").write_text("import_rows was the importer\n")
     git(repo, "add", ".")
     git(repo, "commit", "-q", "-m", "first")

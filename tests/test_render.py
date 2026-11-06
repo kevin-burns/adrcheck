@@ -7,7 +7,18 @@ from adrcheck.usecases.check import ChangeReport, Excluded, Finding
 REPORT = ChangeReport(
     ref="abc1234",
     message="store: key by url",
-    findings=(Finding(2, "ADR-2/1", Verdict.CONFLICT, frozenset({"glob"}), path="enrich/store.py", line_text='key = row["url"]', quote="keyed by store.row_key", reason="keys by url"),),
+    findings=(
+        Finding(
+            2,
+            "ADR-2/1",
+            Verdict.CONFLICT,
+            frozenset({"glob"}),
+            path="enrich/store.py",
+            line_text='key = row["url"]',
+            quote="keyed by store.row_key",
+            reason="keys by url",
+        ),
+    ),
     excluded=(Excluded(7, "globs did not match any changed path"),),
     uncovered=1,
     judge_calls=1,

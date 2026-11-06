@@ -5,7 +5,9 @@ from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.obligation import Checkability, Obligation
 
 ADR = Adr(title="T", status=Status.ACCEPTED, source="0001.md", number=1, sections={"decision": "d"})
-OBL = Obligation(id="ADR-1/1", adr_number=1, kind="MUST", text="t", quote="d", checkability=Checkability.MECHANICAL, mandates=("x",))
+OBL = Obligation(
+    id="ADR-1/1", adr_number=1, kind="MUST", text="t", quote="d", checkability=Checkability.MECHANICAL, mandates=("x",)
+)
 
 
 class Counting:

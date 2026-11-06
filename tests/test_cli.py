@@ -43,15 +43,51 @@ class FakeJudge:
     def compile(self, adr):
         from adrcheck.domain.obligation import Checkability, Obligation
 
-        return (Obligation("ADR-1/1", 1, "MUST", "rows keyed by row_key", "keyed by row_key and nothing else", Checkability.STRUCTURAL, mandates=("row_key",)),)
+        return (
+            Obligation(
+                "ADR-1/1",
+                1,
+                "MUST",
+                "rows keyed by row_key",
+                "keyed by row_key and nothing else",
+                Checkability.STRUCTURAL,
+                mandates=("row_key",),
+            ),
+        )
 
     def judge(self, change, adr, obligations, context):
-        return JudgeResponse(relevant=True, findings=(RawFinding("ADR-1/1", Verdict.CONFLICT, "src/a.py", 'key = row["url"]', "keyed by row_key and nothing else", "keys by url"),), cost_usd=0.01)
+        return JudgeResponse(
+            relevant=True,
+            findings=(
+                RawFinding(
+                    "ADR-1/1",
+                    Verdict.CONFLICT,
+                    "src/a.py",
+                    'key = row["url"]',
+                    "keyed by row_key and nothing else",
+                    "keys by url",
+                ),
+            ),
+            cost_usd=0.01,
+        )
 
 
 def test_check_reports_the_conflict_as_json_and_exits_zero_by_default(tmp_path: Path, capsys):
     repo = make_repo(tmp_path)
-    code = main(["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--range", "HEAD~1..HEAD", "--format", "json"], judge=FakeJudge())
+    code = main(
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--range",
+            "HEAD~1..HEAD",
+            "--format",
+            "json",
+        ],
+        judge=FakeJudge(),
+    )
     out = json.loads(capsys.readouterr().out)
     assert code == 0
     assert out["findings"][0]["verdict"] == "CONFLICT" and out["findings"][0]["adr"] == 1
@@ -59,7 +95,20 @@ def test_check_reports_the_conflict_as_json_and_exits_zero_by_default(tmp_path: 
 
 def test_fail_on_conflict_exits_two(tmp_path: Path, capsys):
     repo = make_repo(tmp_path)
-    code = main(["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--range", "HEAD~1..HEAD", "--fail-on", "conflict"], judge=FakeJudge())
+    code = main(
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--range",
+            "HEAD~1..HEAD",
+            "--fail-on",
+            "conflict",
+        ],
+        judge=FakeJudge(),
+    )
     assert code == 2
 
 

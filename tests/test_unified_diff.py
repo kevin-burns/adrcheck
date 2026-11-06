@@ -24,8 +24,8 @@ def test_added_and_removed_lines_carry_path_number_and_text():
     files = parse_patch(PATCH)
     store = files[0]
     assert store.path == "enrich/store.py"
-    assert [(l.number, l.text) for l in store.removed] == [(11, '    key = row["url"]')]
-    assert [(l.number, l.text) for l in store.added] == [(11, "    key = row_key(row)")]
+    assert [(line.number, line.text) for line in store.removed] == [(11, '    key = row["url"]')]
+    assert [(line.number, line.text) for line in store.added] == [(11, "    key = row_key(row)")]
 
 
 def test_new_file_has_only_added_lines_and_a_dev_null_old_path():
@@ -33,5 +33,5 @@ def test_new_file_has_only_added_lines_and_a_dev_null_old_path():
     new = files[1]
     assert new.path == "enrich/new.py"
     assert new.old_path is None
-    assert [l.text for l in new.added] == ["import requests", "SESSION = requests.Session()"]
+    assert [line.text for line in new.added] == ["import requests", "SESSION = requests.Session()"]
     assert new.removed == ()
