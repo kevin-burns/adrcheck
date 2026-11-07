@@ -3,16 +3,15 @@
   "id": "ADR-8/1",
   "adr_number": 8,
   "kind": "MUST",
-  "text": "ChangeJudge.judge() in ports.py must accept a Change, all JudgeCases selected for that change, and one Context, and return a single JudgeResponse covering all of them.",
+  "text": "ChangeJudge.judge() in src/adrcheck/ports.py must accept a Change, every JudgeCase selected for the change, and one Context, and return a single JudgeResponse covering all of them.",
   "quote": "`ChangeJudge.judge()` in `src/adrcheck/ports.py` takes a `Change`, every `JudgeCase` selected for it and one `Context`, and returns one `JudgeResponse` for all of them.",
-  "checkability": "mechanical",
+  "checkability": "structural",
   "mandates": [
-   "src/adrcheck/ports.py",
    "ChangeJudge",
-   "judge",
    "JudgeCase",
    "JudgeResponse",
-   "Context"
+   "Context",
+   "src/adrcheck/ports.py"
   ],
   "forbids": []
  },
@@ -20,7 +19,7 @@
   "id": "ADR-8/2",
   "adr_number": 8,
   "kind": "MUST",
-  "text": "The check use case must call the judge at most once per change.",
+  "text": "The use case in src/adrcheck/usecases/check.py must call the judge at most once per change.",
   "quote": "The use case in `src/adrcheck/usecases/check.py` calls the judge at most once per change.",
   "checkability": "structural",
   "mandates": [
@@ -32,7 +31,7 @@
   "id": "ADR-8/3",
   "adr_number": 8,
   "kind": "MUST",
-  "text": "ClaudeJudge must make exactly one model call per judge() invocation.",
+  "text": "ClaudeJudge in src/adrcheck/adapters/claude_judge.py must make exactly one model call per judge() invocation.",
   "quote": "`ClaudeJudge` in `src/adrcheck/adapters/claude_judge.py` makes one.",
   "checkability": "structural",
   "mandates": [
@@ -45,7 +44,7 @@
   "id": "ADR-8/4",
   "adr_number": 8,
   "kind": "MUST",
-  "text": "The adapter, not the use case, must own how many model calls a judge() invocation becomes.",
+  "text": "The adapter, not the use case, must own how many model calls a judge() invocation becomes; the use case must not decide call granularity.",
   "quote": "The adapter owns how many model calls that becomes",
   "checkability": "structural",
   "mandates": [],
@@ -55,12 +54,11 @@
   "id": "ADR-8/5",
   "adr_number": 8,
   "kind": "MUST",
-  "text": "JudgeResponse must carry not_relevant (the ADR numbers the judge dismissed) and findings keyed by obligation id.",
-  "quote": "The response carries `not_relevant`, the ADR numbers the judge dismissed, and findings keyed by obligation id.",
+  "text": "JudgeResponse must carry not_relevant, the ADR numbers the judge dismissed.",
+  "quote": "The response carries `not_relevant`, the ADR numbers the judge dismissed",
   "checkability": "mechanical",
   "mandates": [
-   "not_relevant",
-   "JudgeResponse"
+   "not_relevant"
   ],
   "forbids": []
  },
@@ -68,29 +66,31 @@
   "id": "ADR-8/6",
   "adr_number": 8,
   "kind": "MUST",
-  "text": "A finding whose obligation id names an ADR that was not asked about must be recorded as a problem on the report.",
-  "quote": "A finding whose obligation id names an ADR that was not asked about is recorded as a problem on the report, never as a verdict.",
-  "checkability": "structural",
-  "mandates": [],
+  "text": "JudgeResponse must carry findings keyed by obligation id.",
+  "quote": "and findings keyed by obligation id.",
+  "checkability": "mechanical",
+  "mandates": [
+   "JudgeResponse"
+  ],
   "forbids": []
  },
  {
   "id": "ADR-8/7",
   "adr_number": 8,
-  "kind": "MUST_NOT",
-  "text": "A finding whose obligation id names an ADR that was not asked about must never be recorded as a verdict.",
-  "quote": "A finding whose obligation id names an ADR that was not asked about is recorded as a problem on the report, never as a verdict.",
-  "checkability": "intent",
+  "kind": "MUST",
+  "text": "A finding whose obligation id names an ADR that was not asked about must be recorded as a problem on the report.",
+  "quote": "A finding whose obligation id names an ADR that was not asked about is recorded as a problem on the report",
+  "checkability": "structural",
   "mandates": [],
   "forbids": []
  },
  {
   "id": "ADR-8/8",
   "adr_number": 8,
-  "kind": "MUST",
-  "text": "The diff and post-images must be sent to the judge once per change, not once per ADR.",
-  "quote": "The diff and the post-images are sent once per change.",
-  "checkability": "intent",
+  "kind": "MUST_NOT",
+  "text": "A finding whose obligation id names an ADR that was not asked about must never be recorded as a verdict.",
+  "quote": "never as a verdict.",
+  "checkability": "structural",
   "mandates": [],
   "forbids": []
  },
@@ -98,8 +98,18 @@
   "id": "ADR-8/9",
   "adr_number": 8,
   "kind": "MUST",
-  "text": "When the selected ADRs make one prompt too long, the adapter must split into several model calls without the use case being aware of the split.",
-  "quote": "When the selected ADRs make one prompt too long, the adapter must split into several calls without the use case noticing",
+  "text": "The diff and the post-images must be sent once per change, not once per ADR.",
+  "quote": "The diff and the post-images are sent once per change.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-8/10",
+  "adr_number": 8,
+  "kind": "MUST",
+  "text": "A prompt too long for one call must be split by the adapter, invisibly to the use case.",
+  "quote": "A prompt too long for one call is the adapter's problem to split, invisible to the use case",
   "checkability": "structural",
   "mandates": [],
   "forbids": []

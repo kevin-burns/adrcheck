@@ -28,6 +28,6 @@ problem on the report, never as a verdict.
 The diff and the post-images are sent once per change. The measured cost of the lint commit fell
 from $2.00 to $0.31 and the three UNCLEAR reflow rows did not recur. The judge may return one
 finding per ADR rather than one per touched obligation; whether that hides a conflict behind a
-compliant sibling is checked against the planted-conflict corpus in bead adrcheck-2nj. When the
-selected ADRs make one prompt too long, the adapter must split into several calls without the use
-case noticing; that split is not implemented yet.
+compliant sibling is checked against the planted-conflict corpus in bead adrcheck-2nj. A prompt too
+long for one call is the adapter's problem to split, invisible to the use case; bead adrcheck-c6l.1
+tracks that work.

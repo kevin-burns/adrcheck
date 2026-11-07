@@ -39,7 +39,6 @@ class CachedCompiler:
             )
         obligations = self.inner.compile(adr)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(
-            json.dumps([{**asdict(o), "checkability": o.checkability.value} for o in obligations], indent=1)
-        )
+        rows = [{**asdict(o), "checkability": o.checkability.value} for o in obligations]
+        path.write_text(json.dumps(rows, indent=1) + "\n")  # committed text; the end-of-file gate wants one newline
         return obligations
