@@ -55,9 +55,8 @@ class FakeJudge:
             ),
         )
 
-    def judge(self, change, adr, obligations, context):
+    def judge(self, change, cases, context):
         return JudgeResponse(
-            relevant=True,
             findings=(
                 RawFinding(
                     "ADR-1/1",

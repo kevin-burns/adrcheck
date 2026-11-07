@@ -24,9 +24,20 @@ class RawFinding:
 
 
 @dataclass(frozen=True)
+class JudgeCase:
+    """One ADR and its checkable obligations, to be judged against a change."""
+
+    adr: Adr
+    obligations: tuple[Obligation, ...]
+
+
+@dataclass(frozen=True)
 class JudgeResponse:
-    relevant: bool
+    """One answer for every case of a change. The diff is the cost, so it travels once; the adapter decides
+    how many model calls that takes."""
+
     findings: tuple[RawFinding, ...] = ()
+    not_relevant: frozenset[int] = frozenset()  # ADR numbers the judge says the change has nothing to do with
     tokens_in: int = 0
     tokens_out: int = 0
     cost_usd: float = 0.0
@@ -63,6 +74,4 @@ class ObligationCompiler(Protocol):
 
 
 class ChangeJudge(Protocol):
-    def judge(
-        self, change: Change, adr: Adr, obligations: tuple[Obligation, ...], context: Context
-    ) -> JudgeResponse: ...
+    def judge(self, change: Change, cases: tuple[JudgeCase, ...], context: Context) -> JudgeResponse: ...

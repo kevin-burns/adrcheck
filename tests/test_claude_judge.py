@@ -7,7 +7,7 @@ from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.change import Change, FileChange, Line
 from adrcheck.domain.obligation import Checkability, Obligation
 from adrcheck.domain.verdict import Verdict
-from adrcheck.ports import Context
+from adrcheck.ports import Context, JudgeCase
 
 ADR = Adr(
     title="One key",
@@ -49,9 +49,9 @@ class Recorder:
 
 
 def test_judge_prompt_carries_the_obligations_the_diff_lines_and_the_post_image():
-    run = Recorder(json.dumps({"relevant": True, "findings": []}))
+    run = Recorder(json.dumps({"not_relevant": [], "findings": []}))
     judge = ClaudeJudge(run=run, model="sonnet")
-    judge.judge(CHANGE, ADR, (OBL,), Context(post_images={"enrich/store.py": "def save(): ..."}))
+    judge.judge(CHANGE, (JudgeCase(ADR, (OBL,)),), Context(post_images={"enrich/store.py": "def save(): ..."}))
     [prompt] = run.prompts
     assert "ADR-2/1" in prompt and "keyed by store.row_key" in prompt
     assert '+ key = row["url"]' in prompt
@@ -59,10 +59,36 @@ def test_judge_prompt_carries_the_obligations_the_diff_lines_and_the_post_image(
     assert "Considered Options" not in prompt  # we never show the judge the roads not taken as if they bound
 
 
+def test_one_prompt_carries_every_adr_of_the_change_and_the_diff_once():
+    other = Adr(
+        title="No url keys",
+        status=Status.ACCEPTED,
+        source="0009.md",
+        number=9,
+        sections={"decision": "Never key by url."},
+    )
+    nine = Obligation(
+        id="ADR-9/1",
+        adr_number=9,
+        kind="MUST_NOT",
+        text="t",
+        quote="Never key by url.",
+        checkability=Checkability.INTENT,
+    )
+    run = Recorder(json.dumps({"not_relevant": [9], "findings": []}))
+    ClaudeJudge(run=run, model="sonnet").judge(
+        CHANGE, (JudgeCase(ADR, (OBL,)), JudgeCase(other, (nine,))), Context(post_images={})
+    )
+    [prompt] = run.prompts
+    assert "ADR-2: One key" in prompt and "ADR-9: No url keys" in prompt
+    assert "ADR-2/1" in prompt and "ADR-9/1" in prompt
+    assert prompt.count('+ key = row["url"]') == 1
+
+
 def test_judge_reply_is_parsed_into_findings_with_verdicts_and_token_counts():
     reply = json.dumps(
         {
-            "relevant": True,
+            "not_relevant": [],
             "findings": [
                 {
                     "obligation_id": "ADR-2/1",
@@ -76,19 +102,19 @@ def test_judge_reply_is_parsed_into_findings_with_verdicts_and_token_counts():
         }
     )
     judge = ClaudeJudge(run=Recorder(reply), model="sonnet")
-    resp = judge.judge(CHANGE, ADR, (OBL,), Context(post_images={}))
-    assert resp.relevant and resp.findings[0].verdict is Verdict.CONFLICT
+    resp = judge.judge(CHANGE, (JudgeCase(ADR, (OBL,)),), Context(post_images={}))
+    assert resp.not_relevant == frozenset() and resp.findings[0].verdict is Verdict.CONFLICT
     assert (resp.tokens_in, resp.tokens_out, resp.cost_usd, resp.latency_ms) == (15, 3, 0.01, 200)
 
 
 def test_a_fenced_or_chatty_reply_still_parses():
-    reply = 'Here you go:\n```json\n{"relevant": false, "findings": []}\n```\n'
-    assert parse_judge_reply(reply).relevant is False
+    reply = 'Here you go:\n```json\n{"not_relevant": [2], "findings": []}\n```\n'
+    assert parse_judge_reply(reply).not_relevant == frozenset({2})
 
 
 def test_an_unparseable_reply_is_an_error_not_a_verdict():
     resp = parse_judge_reply("I cannot help with that.")
-    assert resp.relevant is True and resp.findings == () and resp.error.startswith("unparseable")
+    assert resp.not_relevant == frozenset() and resp.findings == () and resp.error.startswith("unparseable")
 
 
 def test_compile_reply_becomes_obligations_with_ids_derived_from_the_adr():

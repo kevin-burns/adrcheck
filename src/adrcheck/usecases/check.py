@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, replace
 
 from adrcheck.domain.adr import Adr, Status
@@ -13,7 +14,7 @@ from adrcheck.domain.overtaken import classify
 from adrcheck.domain.select import Selection, select
 from adrcheck.domain.verdict import Verdict
 from adrcheck.domain.verify import Claim, verify
-from adrcheck.ports import ChangeJudge, Context, ObligationCompiler, RepoReader
+from adrcheck.ports import ChangeJudge, Context, JudgeCase, ObligationCompiler, RepoReader
 
 POST_IMAGE_BUDGET_CHARS = 60_000
 
@@ -157,6 +158,7 @@ def check(
         context: Context | None = None
         judged: list[Selection] = []
 
+        cases: list[tuple[Selection, JudgeCase]] = []
         for sel in list(selection.selected) + list(selection.undetermined):
             adr = sel.adr
             if adr.number in waived_by_number:
@@ -169,30 +171,39 @@ def check(
                 continue
             obligations = compiler.compile(adr)
             checkable = tuple(o for o in obligations if o.checkability is not Checkability.PROCESS)
-            if context is None:
-                context = _context(repo, change)
-            response = judge.judge(change, adr, checkable, context)
+            cases.append((Selection(adr, sel.signals or frozenset({"model"})), JudgeCase(adr, checkable)))
+
+        if cases:
+            context = _context(repo, change)
+            response = judge.judge(change, tuple(case for _, case in cases), context)
             calls += 1
             tokens_in += response.tokens_in
             tokens_out += response.tokens_out
             cost += response.cost_usd
-            signals = sel.signals or frozenset({"model"})
-            if response.error:
-                judged.append(Selection(adr, signals))
-                findings.append(
-                    Finding(adr.number, None, Verdict.UNCLEAR, signals, note=f"judge error: {response.error}")
-                )
-                continue
-            if not response.relevant:
-                excluded.append(Excluded(adr.number, "model: not relevant to this change"))
-                continue
-            judged.append(Selection(adr, signals))
-            by_id = {o.id: o for o in obligations}
-            if not response.findings:
-                findings.append(Finding(adr.number, None, Verdict.COMPLIANT, signals))
+            by_id = {o.id: (sel, case) for sel, case in cases for o in case.obligations}
+            by_number = {case.adr.number: (sel, case) for sel, case in cases}
+            findings_of: dict[int | None, list[Finding]] = {case.adr.number: [] for _, case in cases}
             for raw in response.findings:
-                obligation = by_id.get(raw.obligation_id)
-                findings.append(_settle(raw, obligation, change, adr, signals, repo))
+                owner = by_id.get(raw.obligation_id) or by_number.get(_adr_number_of(raw.obligation_id))
+                if owner is None:
+                    problems += (f"judge named {raw.obligation_id}, which was not asked about",)
+                    continue
+                sel, case = owner
+                obligation = next((o for o in case.obligations if o.id == raw.obligation_id), None)
+                findings_of[case.adr.number].append(_settle(raw, obligation, change, case.adr, sel.signals, repo))
+            for sel, case in cases:
+                adr = case.adr
+                if response.error:
+                    judged.append(sel)
+                    findings.append(
+                        Finding(adr.number, None, Verdict.UNCLEAR, sel.signals, note=f"judge error: {response.error}")
+                    )
+                elif adr.number in response.not_relevant:
+                    excluded.append(Excluded(adr.number, "model: not relevant to this change"))
+                else:
+                    judged.append(sel)
+                    compliant = Finding(adr.number, None, Verdict.COMPLIANT, sel.signals)
+                    findings.extend(findings_of[adr.number] or [compliant])
 
         reports.append(
             ChangeReport(
@@ -215,6 +226,14 @@ def check(
         last = reports[-1]
         reports[-1] = replace(last, stale=stale_sweep(adrs, compiler, repo, last.ref))
     return reports
+
+
+_OBLIGATION_ID = re.compile(r"ADR-(\d+)/")
+
+
+def _adr_number_of(obligation_id: str) -> int | None:
+    m = _OBLIGATION_ID.match(obligation_id)
+    return int(m.group(1)) if m else None
 
 
 def _settle(

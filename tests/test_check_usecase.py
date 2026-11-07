@@ -61,8 +61,8 @@ class FakeJudge:
     response: JudgeResponse
     calls: list = field(default_factory=list)
 
-    def judge(self, change, adr, obligations, context):
-        self.calls.append((change.ref, adr.number))
+    def judge(self, change, cases, context):
+        self.calls.append((change.ref, tuple(c.adr.number for c in cases)))
         return self.response
 
 
@@ -102,7 +102,7 @@ def run(judge_response, present=None, message=None, adrs=None):
 
 
 def test_a_verified_conflict_the_commit_introduced_is_reported_as_conflict():
-    report, _ = run(JudgeResponse(relevant=True, findings=(raw(),)))
+    report, _ = run(JudgeResponse(findings=(raw(),)))
     [f] = report.findings
     assert (f.adr_number, f.verdict, f.line_text, f.signals) == (
         2,
@@ -114,7 +114,7 @@ def test_a_verified_conflict_the_commit_introduced_is_reported_as_conflict():
 
 
 def test_a_claim_that_fails_verification_becomes_unclear_and_says_why():
-    report, _ = run(JudgeResponse(relevant=True, findings=(raw(quote="keyed by URL, which changed between sweeps"),)))
+    report, _ = run(JudgeResponse(findings=(raw(quote="keyed by URL, which changed between sweeps"),)))
     [f] = report.findings
     assert f.verdict is Verdict.UNCLEAR
     assert f.verify_failed == ("quote-outside-decision",)
@@ -122,7 +122,7 @@ def test_a_claim_that_fails_verification_becomes_unclear_and_says_why():
 
 def test_a_contradiction_already_present_at_the_parent_is_adr_overtaken():
     report, _ = run(
-        JudgeResponse(relevant=True, findings=(raw(),)),
+        JudgeResponse(findings=(raw(),)),
         present={("c0", "row_key"): False, ("c0", 'key = row["url"]'): False},
     )
     assert report.findings[0].verdict is Verdict.ADR_OVERTAKEN
@@ -130,7 +130,7 @@ def test_a_contradiction_already_present_at_the_parent_is_adr_overtaken():
 
 def test_the_same_line_already_elsewhere_at_the_parent_is_a_precedent_so_adr_overtaken():
     report, _ = run(
-        JudgeResponse(relevant=True, findings=(raw(),)),
+        JudgeResponse(findings=(raw(),)),
         present={("c0", "row_key"): True, ("c0", 'key = row["url"]'): True},
     )
     assert report.findings[0].verdict is Verdict.ADR_OVERTAKEN
@@ -152,7 +152,7 @@ def test_all_named_anchors_must_be_present_for_the_adr_to_count_as_still_in_forc
         changes=[change()],
         adrs=[ADR],
         compiler=FakeCompiler({2: (two,)}),
-        judge=FakeJudge(JudgeResponse(relevant=True, findings=(raw(),))),
+        judge=FakeJudge(JudgeResponse(findings=(raw(),))),
         repo=repo,
     )
     assert reports[0].findings[0].verdict is Verdict.ADR_OVERTAKEN
@@ -160,7 +160,7 @@ def test_all_named_anchors_must_be_present_for_the_adr_to_count_as_still_in_forc
 
 def test_a_waived_adr_is_not_judged_and_is_reported_compliant_with_the_reason():
     report, judge = run(
-        JudgeResponse(relevant=True, findings=(raw(),)),
+        JudgeResponse(findings=(raw(),)),
         message="x\n\nAdr-Exception: ADR-0002 backfill, no row_key here\n",
     )
     assert judge.calls == []
@@ -170,13 +170,13 @@ def test_a_waived_adr_is_not_judged_and_is_reported_compliant_with_the_reason():
 
 def test_an_unscoped_adr_the_model_calls_irrelevant_is_excluded_with_that_reason():
     unscoped = Adr(title="Unrelated", status=Status.ACCEPTED, source="0009.md", number=9, sections={"decision": "x"})
-    report, judge = run(JudgeResponse(relevant=False), adrs=[unscoped])
-    assert judge.calls == [("c1", 9)]
+    report, judge = run(JudgeResponse(not_relevant=frozenset({9})), adrs=[unscoped])
+    assert judge.calls == [("c1", (9,))]
     assert [(e.adr_number, e.reason) for e in report.excluded] == [(9, "model: not relevant to this change")]
 
 
 def test_a_compliant_adr_with_no_findings_is_still_recorded():
-    report, _ = run(JudgeResponse(relevant=True, findings=()))
+    report, _ = run(JudgeResponse(findings=()))
     assert [(f.adr_number, f.verdict) for f in report.findings] == [(2, Verdict.COMPLIANT)]
 
 
@@ -193,14 +193,14 @@ def test_uncovered_counts_changed_files_no_selected_adr_applies_to():
         ],
         adrs=[ADR],
         compiler=FakeCompiler({2: (OBLIGATION,)}),
-        judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
+        judge=FakeJudge(JudgeResponse(findings=())),
         repo=repo,
     )
     assert reports[0].uncovered == 1
 
 
 def test_a_judge_error_is_an_unclear_finding_that_names_the_error():
-    report, _ = run(JudgeResponse(relevant=True, findings=(), error="unparseable judge reply: 'nope'"))
+    report, _ = run(JudgeResponse(findings=(), error="unparseable judge reply: 'nope'"))
     [f] = report.findings
     assert (f.verdict, f.note) == (Verdict.UNCLEAR, "judge error: unparseable judge reply: 'nope'")
 
@@ -217,7 +217,7 @@ def test_decision_signals_are_attached_to_the_change_report():
         changes=[ch],
         adrs=[ADR],
         compiler=FakeCompiler({2: (OBLIGATION,)}),
-        judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
+        judge=FakeJudge(JudgeResponse(findings=())),
         repo=repo,
     )
     assert [(s.kind, s.detail) for s in reports[0].decision_signals] == [("new-dependency", "requests")]
@@ -230,7 +230,7 @@ def test_a_removed_line_is_never_a_precedent_so_the_conflict_stands():
         changes=[change()],
         adrs=[ADR],
         compiler=FakeCompiler({2: (OBLIGATION,)}),
-        judge=FakeJudge(JudgeResponse(relevant=True, findings=(raw(line="    key = row_key(row)"),))),
+        judge=FakeJudge(JudgeResponse(findings=(raw(line="    key = row_key(row)"),))),
         repo=repo,
     )
     assert reports[0].findings[0].verdict is Verdict.CONFLICT
@@ -259,7 +259,7 @@ def test_the_stale_sweep_reports_an_accepted_adr_whose_named_anchors_are_all_gon
         changes=[change()],
         adrs=[ADR, stale_adr],
         compiler=FakeCompiler({2: (OBLIGATION,), 4: (gone,)}),
-        judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
+        judge=FakeJudge(JudgeResponse(findings=())),
         repo=repo,
     )
     assert [(s.adr_number, s.obligation_id, s.missing) for s in reports[-1].stale] == [(4, "ADR-4/2", ("import_rows",))]
@@ -271,7 +271,46 @@ def test_the_stale_sweep_is_quiet_when_anchors_are_present():
         changes=[change()],
         adrs=[ADR],
         compiler=FakeCompiler({2: (OBLIGATION,)}),
-        judge=FakeJudge(JudgeResponse(relevant=True, findings=())),
+        judge=FakeJudge(JudgeResponse(findings=())),
         repo=repo,
     )
     assert reports[-1].stale == ()
+
+
+def test_every_selected_adr_goes_to_the_judge_in_one_call_and_findings_come_back_by_obligation_id():
+    """One diff, one call: the diff is the cost, so it is sent once however many ADRs apply."""
+    other = Adr(
+        title="No url keys",
+        status=Status.ACCEPTED,
+        source="0009.md",
+        number=9,
+        applies_to=("enrich/**",),
+        sections={"decision": "Never key by url."},
+    )
+    nine = Obligation(
+        id="ADR-9/1",
+        adr_number=9,
+        kind="MUST_NOT",
+        text="t",
+        quote="Never key by url.",
+        checkability=Checkability.INTENT,
+    )
+    repo = FakeRepo({("c0", "row_key"): True, ("c0", 'key = row["url"]'): False})
+    judge = FakeJudge(JudgeResponse(findings=(raw(),), not_relevant=frozenset({9})))
+    reports = check(
+        changes=[change()],
+        adrs=[ADR, other],
+        compiler=FakeCompiler({2: (OBLIGATION,), 9: (nine,)}),
+        judge=judge,
+        repo=repo,
+    )
+    assert judge.calls == [("c1", (2, 9))]
+    assert [(f.adr_number, f.verdict) for f in reports[0].findings] == [(2, Verdict.CONFLICT)]
+    assert [(e.adr_number, e.reason) for e in reports[0].excluded] == [(9, "model: not relevant to this change")]
+
+
+def test_a_finding_for_an_obligation_nobody_asked_about_is_a_problem_not_a_verdict():
+    stray = RawFinding("ADR-7/3", Verdict.CONFLICT, "enrich/store.py", 'key = row["url"]', "q", "r")
+    report, _ = run(JudgeResponse(findings=(stray,)))
+    assert [(f.adr_number, f.verdict) for f in report.findings] == [(2, Verdict.COMPLIANT)]
+    assert report.problems == ("judge named ADR-7/3, which was not asked about",)

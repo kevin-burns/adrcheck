@@ -16,7 +16,7 @@ from adrcheck.domain.change import Change
 from adrcheck.domain.obligation import Checkability, Obligation
 from adrcheck.domain.verdict import Verdict
 from adrcheck.domain.verify import BINDING_SECTIONS
-from adrcheck.ports import Context, JudgeResponse, RawFinding
+from adrcheck.ports import Context, JudgeCase, JudgeResponse, RawFinding
 
 PROMPT_VERSION = "2026-11-07.1"
 Runner = Callable[[str, str], dict]
@@ -79,7 +79,7 @@ dotted `Class.method` or a call with parentheses: prose spells `RepoReader.conta
 `repo.contains`. Zero obligations is a valid answer for an ADR that binds nothing."""
 
 
-def judge_prompt(change: Change, adr: Adr, obligations: tuple[Obligation, ...], context: Context) -> str:
+def judge_prompt(change: Change, cases: tuple[JudgeCase, ...], context: Context) -> str:
     diff_lines = []
     for f in change.files:
         diff_lines.append(f"### {f.path}" + ("  (new file)" if f.old_path is None else ""))
@@ -87,22 +87,28 @@ def judge_prompt(change: Change, adr: Adr, obligations: tuple[Obligation, ...], 
             diff_lines.append(f"- {line.text}")
         for line in f.added:
             diff_lines.append(f"+ {line.text}")
-    obl = "\n".join(f'- {o.id} [{o.kind}, {o.checkability.value}] {o.text}\n  quote: "{o.quote}"' for o in obligations)
+    blocks = []
+    for case in cases:
+        obl = "\n".join(
+            f'- {o.id} [{o.kind}, {o.checkability.value}] {o.text}\n  quote: "{o.quote}"' for o in case.obligations
+        )
+        blocks.append(
+            f"## ADR-{case.adr.number}: {case.adr.title}\n\n{_binding_text(case.adr)}\n\n### Obligations of ADR-{case.adr.number}\n\n{obl}"
+        )
+    adr_blocks = "\n\n".join(blocks)
+    numbers = ", ".join(str(c.adr.number) for c in cases)
     images = "\n\n".join(f"### {p} (after the change)\n```\n{text}\n```" for p, text in context.post_images.items())
-    return f"""You judge whether one code change breaks the obligations of one architecture decision record.
-Be precise and conservative: a CONFLICT needs an exact changed line and an exact quote. When the diff does
-not settle it, answer UNCLEAR. Do not flag test code unless an obligation is about tests, do not flag
-code unrelated to the obligations, and do not infer intent that is not visible.
+    return f"""You judge whether one code change breaks the obligations of the architecture decision records (ADRs)
+listed below. Judge each ADR on its own. Be precise and conservative: a CONFLICT needs an exact changed line
+and an exact quote from that ADR. When the diff does not settle it, answer UNCLEAR. Do not flag test code
+unless an obligation is about tests, do not flag code unrelated to the obligations, and do not infer intent
+that is not visible.
 
-ADR-{adr.number}: {adr.title}
+# ADRs under judgement: {numbers}
 
-{_binding_text(adr)}
+{adr_blocks}
 
-## Obligations to check
-
-{obl}
-
-## The change ({change.ref})
+# The change ({change.ref})
 
 Commit message:
 {change.message}
@@ -110,15 +116,16 @@ Commit message:
 Changed lines (- removed, + added):
 {chr(10).join(diff_lines)}
 
-## Files after the change (for context; only the changed lines above may be cited)
+# Files after the change (for context; only the changed lines above may be cited)
 
 {images or "(none available)"}
 
 Return JSON only:
-{{"relevant": true | false, "findings": [{{"obligation_id": "<id from the list>", "verdict": "CONFLICT" | "COMPLIANT" | "UNCLEAR", "path": "<changed file>", "line_text": "<one changed line, copied exactly without the leading + or ->", "quote": "<verbatim words from the ADR Decision or Consequences>", "reason": "<one sentence naming the line and the obligation>"}}]}}
+{{"not_relevant": [<ADR numbers this change has nothing to do with>], "findings": [{{"obligation_id": "<id from the lists>", "verdict": "CONFLICT" | "COMPLIANT" | "UNCLEAR", "path": "<changed file>", "line_text": "<one changed line, copied exactly without the leading + or ->", "quote": "<verbatim words from that ADR's Decision or Consequences>", "reason": "<one sentence naming the line and the obligation>"}}]}}
 
-relevant=false means this ADR has nothing to do with this change; then findings is empty. Return one
-finding per obligation the change touches; omit obligations it does not touch."""
+An ADR in not_relevant gets no findings. For every other ADR, return one finding per obligation the change
+touches and omit obligations it does not touch; an ADR with no touched obligation is simply absent from
+findings and from not_relevant."""
 
 
 def parse_compile_reply(reply: str, adr: Adr) -> tuple[Obligation, ...]:
@@ -192,8 +199,8 @@ def _anchor_names(raw: list, adr_text: str) -> tuple[str, ...]:
 
 def parse_judge_reply(reply: str) -> JudgeResponse:
     data = _extract_json(reply)
-    if data is None or "relevant" not in data:
-        return JudgeResponse(relevant=True, findings=(), error=f"unparseable judge reply: {reply[:120]!r}")
+    if data is None or "findings" not in data:
+        return JudgeResponse(error=f"unparseable judge reply: {reply[:120]!r}")
     findings = []
     for item in data.get("findings", []) or []:
         try:
@@ -210,7 +217,8 @@ def parse_judge_reply(reply: str) -> JudgeResponse:
                 reason=str(item.get("reason", "")),
             )
         )
-    return JudgeResponse(relevant=bool(data.get("relevant", True)), findings=tuple(findings))
+    not_relevant = frozenset(int(n) for n in data.get("not_relevant", []) or [] if str(n).strip().isdigit())
+    return JudgeResponse(findings=tuple(findings), not_relevant=not_relevant)
 
 
 def _usage(raw: dict) -> dict:
@@ -237,8 +245,9 @@ class ClaudeJudge:
         self.last_usage = _usage(raw)
         return parse_compile_reply(str(raw.get("result", "")), adr)
 
-    def judge(self, change: Change, adr: Adr, obligations: tuple[Obligation, ...], context: Context) -> JudgeResponse:
-        raw = self.run(judge_prompt(change, adr, obligations, context), self.model)
+    def judge(self, change: Change, cases: tuple[JudgeCase, ...], context: Context) -> JudgeResponse:
+        raw = self.run(judge_prompt(change, cases, context), self.model)
         parsed = parse_judge_reply(str(raw.get("result", "")))
-        usage = _usage(raw)
-        return JudgeResponse(relevant=parsed.relevant, findings=parsed.findings, error=parsed.error, **usage)
+        return JudgeResponse(
+            findings=parsed.findings, not_relevant=parsed.not_relevant, error=parsed.error, **_usage(raw)
+        )
