@@ -41,3 +41,16 @@ def test_a_cache_entry_is_a_committable_text_file_ending_in_one_newline(tmp_path
     cached.compile(ADR)
     [entry] = (tmp_path / ".adrcheck" / "obligations").glob("*.json")
     assert entry.read_text().endswith("]\n")
+
+
+def test_prune_removes_entries_no_current_adr_or_prompt_version_produces(tmp_path: Path):
+    """ADR text changes and prompt versions bump; the committed cache must not keep every past compile."""
+    old = CachedCompiler(Counting(), tmp_path / ".adrcheck", prompt_version="v1")
+    old.compile(ADR)
+    old.compile(Adr(title="Gone", status=Status.ACCEPTED, source="0002.md", number=2, sections={"decision": "x"}))
+    new = CachedCompiler(Counting(), tmp_path / ".adrcheck", prompt_version="v2")
+    new.compile(ADR)
+    removed = new.prune([ADR])
+    assert len(removed) == 2
+    [kept] = (tmp_path / ".adrcheck" / "obligations").glob("*.json")
+    assert kept == new._key(ADR)

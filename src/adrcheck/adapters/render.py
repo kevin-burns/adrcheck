@@ -62,12 +62,16 @@ def to_json(reports: list[ChangeReport]) -> str:
 
 
 def to_markdown(reports: list[ChangeReport]) -> str:
-    out = []
+    """Lint-clean markdown: a blank line after every heading and around every list, so it pastes into a PR."""
+    out: list[str] = []
     for r in reports:
         subject = r.message.splitlines()[0] if r.message else ""
         out.append(f"## {r.ref[:10]} {subject}")
-        if not r.findings:
+        out.append("")
+        dismissed = [e.adr_number for e in r.excluded if e.reason.startswith("model:")]
+        if not r.findings and not dismissed:
             out.append("_No ADR applied to this change._")
+            out.append("")
         for f in r.findings:
             head = f"- **{f.verdict.value}** ADR-{f.adr_number}" + (f" ({f.obligation_id})" if f.obligation_id else "")
             if f.note:
@@ -79,6 +83,8 @@ def to_markdown(reports: list[ChangeReport]) -> str:
                 out.append(f"  - > {f.quote}")
             if f.reason:
                 out.append(f"  - {f.reason}")
+        if dismissed:
+            out.append("- judged, not relevant: " + ", ".join(f"ADR-{n}" for n in dismissed))
         if r.uncovered:
             out.append(f"- uncovered files: {r.uncovered}")
         for p in r.problems:
@@ -87,6 +93,7 @@ def to_markdown(reports: list[ChangeReport]) -> str:
     stale = [s for r in reports for s in r.stale]
     if stale:
         out.append("## Possibly overtaken ADRs (named anchors missing at the end of the range)")
+        out.append("")
         for s in stale:
             out.append(f"- ADR-{s.adr_number} {s.obligation_id}: missing {', '.join(repr(m) for m in s.missing)}")
         out.append("")

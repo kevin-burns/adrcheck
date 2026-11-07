@@ -22,6 +22,14 @@ class CachedCompiler:
         )
         return self.directory / "obligations" / (hashlib.sha256(material.encode()).hexdigest() + ".json")
 
+    def prune(self, adrs: list[Adr]) -> list[Path]:
+        """Delete every entry no current ADR text under this prompt version produces. Returns what went."""
+        keep = {self._key(a) for a in adrs}
+        gone = sorted(p for p in (self.directory / "obligations").glob("*.json") if p not in keep)
+        for p in gone:
+            p.unlink()
+        return gone
+
     def compile(self, adr: Adr) -> tuple[Obligation, ...]:
         path = self._key(adr)
         if path.exists():

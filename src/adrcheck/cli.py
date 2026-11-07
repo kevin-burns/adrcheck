@@ -42,6 +42,7 @@ def _parser() -> argparse.ArgumentParser:
 
     k = sub.add_parser("compile", help="compile ADRs into obligations and print them")
     common(k)
+    k.add_argument("--prune", action="store_true", help="delete cache entries no current ADR produces")
 
     lint_p = sub.add_parser(
         "lint", help="hygiene of the ADR set: dangling refs, cycles, status mismatch, missing status"
@@ -80,6 +81,9 @@ def main(argv: list[str] | None = None, judge=None) -> int:
             if hasattr(judge, "last_usage"):
                 judge.last_usage = {}
         print(f"model cost this run: ${spent:.4f} (cached ADRs cost nothing)", file=sys.stderr)
+        if args.prune:
+            gone = compiler.prune(adrs)
+            print(f"pruned {len(gone)} stale cache entries", file=sys.stderr)
         return EXIT_OK
 
     if args.staged:
