@@ -1,0 +1,85 @@
+{
+ "corpus": "adrcheck",
+ "about": "This repo's own ADRs under docs/adr, checked against its own history. Labels by the session reading each diff (docs/spikes/2026-11-07-dogfood.md, runs 1 and 3). No CONFLICT rows yet: a lint-and-reformat commit whose author knew the ADRs. Tests the false-alarm side only.",
+ "repo": ".",
+ "adr_dir": "docs/adr",
+ "commits": [
+  "659695c"
+ ],
+ "stale_expected": [],
+ "cases": [
+  {
+   "commit": "659695c",
+   "adr": 1,
+   "quote": "Modules under `src/adrcheck/domain/` import only the standard library and each other.",
+   "expected": "COMPLIANT",
+   "note": "typing swapped for collections.abc"
+  },
+  {
+   "commit": "659695c",
+   "adr": 1,
+   "quote": "The boundary is enforced by `tests/test_boundaries.py`, which fails on the first offending import.",
+   "expected": "COMPLIANT",
+   "note": "comprehension reflowed"
+  },
+  {
+   "commit": "659695c",
+   "adr": 2,
+   "quote": "No code path reports a CONFLICT that skipped `verify()`.",
+   "expected": "COMPLIANT",
+   "note": "verify() call reflowed"
+  },
+  {
+   "commit": "659695c",
+   "adr": 3,
+   "quote": "Only CONFLICT can make `adrcheck check` exit non-zero under `--fail-on conflict`.",
+   "expected": "COMPLIANT",
+   "note": "argparse reflow; judge said UNCLEAR in run 1"
+  },
+  {
+   "commit": "659695c",
+   "adr": 3,
+   "quote": "A judge that errors, times out or returns unparseable output yields an UNCLEAR finding whose reason begins `judge error`",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "659695c",
+   "adr": 3,
+   "quote": "it never yields COMPLIANT",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "659695c",
+   "adr": 4,
+   "quote": "`CachedCompiler` stores the result under a key derived from the ADR's content hash and `PROMPT_VERSION`",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "659695c",
+   "adr": 5,
+   "quote": "`stale_sweep()` in `src/adrcheck/usecases/check.py`",
+   "expected": "COMPLIANT",
+   "note": "import line only; judge said UNCLEAR in run 1"
+  },
+  {
+   "commit": "659695c",
+   "adr": 5,
+   "quote": "`strip_python_prose()` blanks comments and docstrings before the search",
+   "expected": "COMPLIANT",
+   "note": "_code_cache moved to __init__; judge said UNCLEAR in run 1"
+  },
+  {
+   "commit": "659695c",
+   "adr": 6,
+   "quote": "A waived ADR is reported as COMPLIANT with the reason shown",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "659695c",
+   "adr": 7,
+   "quote": "The `RepoReader.contains()` probe answers those questions against the parent ref.",
+   "expected": "COMPLIANT",
+   "note": "lambda default-arg binding"
+  }
+ ]
+}

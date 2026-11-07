@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 from adrcheck.adapters.claude_judge import PROMPT_VERSION, ClaudeJudge
+from adrcheck.adapters.eval_cases import load_cases
 from adrcheck.adapters.git_changes import GitChanges
 from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource
 from adrcheck.adapters.obligation_cache import CachedCompiler
@@ -14,6 +16,7 @@ from adrcheck.adapters.render import to_json, to_markdown
 from adrcheck.domain.lint import lint
 from adrcheck.domain.verdict import Verdict
 from adrcheck.usecases.check import check
+from adrcheck.usecases.evaluate import score
 
 EXIT_OK, EXIT_ISSUES, EXIT_CONFLICT = 0, 1, 2
 
@@ -44,6 +47,10 @@ def _parser() -> argparse.ArgumentParser:
     common(k)
     k.add_argument("--prune", action="store_true", help="delete cache entries no current ADR produces")
 
+    e = sub.add_parser("eval", help="score a saved check report (--format json) against frozen cases; no model")
+    e.add_argument("--cases", required=True, help="evals/cases/<corpus>.json")
+    e.add_argument("--report", required=True, help="output of adrcheck check --format json")
+
     lint_p = sub.add_parser(
         "lint", help="hygiene of the ADR set: dangling refs, cycles, status mismatch, missing status"
     )
@@ -53,6 +60,18 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None, judge=None) -> int:
     args = _parser().parse_args(argv)
+    if args.command == "eval":
+        cases = load_cases(Path(args.cases))
+        report = json.loads(Path(args.report).read_text())
+        result = score(cases, report.get("findings", []))
+        for r in result.rows:
+            head = f"{r.outcome:6} ADR-{r.case.adr} {r.case.commit} expected {r.case.expected} got {r.got or '-'}"
+            print(f"{head}  {r.case.note}".rstrip())
+        print(f"{result.hits}/{result.total} hits", file=sys.stderr)
+        for (exp, got), n in sorted(result.matrix.items(), key=lambda kv: str(kv[0])):
+            print(f"  expected {exp} got {got or 'absent'}: {n}", file=sys.stderr)
+        return EXIT_OK if result.hits == result.total else EXIT_ISSUES
+
     adr_dir = Path(args.adr_dir)
 
     if args.command == "lint":

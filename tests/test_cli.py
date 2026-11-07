@@ -118,3 +118,28 @@ def test_lint_reports_hygiene_issues_without_a_model(tmp_path: Path, capsys):
     code = main(["lint", "--adr-dir", str(d)])
     out = capsys.readouterr().out
     assert code == 1 and "dangling-supersede-ref" in out and "ADR-9" in out
+
+
+def test_eval_scores_a_saved_report_against_frozen_cases_without_a_model(tmp_path: Path, capsys):
+    cases = tmp_path / "cases.json"
+    cases.write_text(
+        json.dumps(
+            {
+                "cases": [
+                    {"commit": "abc", "adr": 2, "quote": "keyed by store.row_key", "expected": "CONFLICT"},
+                    {"commit": "abc", "adr": 2, "quote": "never hidden", "expected": "COMPLIANT"},
+                ]
+            }
+        )
+    )
+    report = tmp_path / "report.json"
+    report.write_text(
+        json.dumps(
+            {"findings": [{"commit": "abc1234", "adr": 2, "quote": "keyed by store.row_key", "verdict": "CONFLICT"}]}
+        )
+    )
+    code = main(["eval", "--cases", str(cases), "--report", str(report)])
+    out, err = capsys.readouterr()
+    assert code == 0 and "2/2 hits" in err  # COMPLIANT asks for silence, so nothing raised is a hit
+    assert out.splitlines()[0].startswith("hit    ADR-2 abc expected CONFLICT got CONFLICT")
+    assert out.splitlines()[1].startswith("quiet  ADR-2 abc expected COMPLIANT got -")

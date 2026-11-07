@@ -1,0 +1,150 @@
+{
+ "corpus": "job-search",
+ "about": "The 12 rows where the 2026-11-06 judge and the blind Sonnet reading disagreed. Kevin sets 'expected' per row (CONFLICT, COMPLIANT, UNCLEAR or ADR-OVERTAKEN); labelled rows then move into job-search.json. Both readers' reasons are shown side by side so one row is a small decision, not a blank sheet.",
+ "cases": [
+  {
+   "row": 5,
+   "commit": "74a45f6",
+   "adr": 2,
+   "quote": "The only rows that may leave the data are ones whose source row was removed.",
+   "judge": "UNCLEAR",
+   "judge_reason": "The new except branch keeps a failed row in results as 'not screened' rather than dropping it, which looks compliant, but the diff does not show whether a failed row is later listed or counted in the report, so this is left unsettled.",
+   "blind_reader": "COMPLIANT",
+   "blind_reason": "A failed row becomes verdict not screened and stays in results and the report; nothing is removed.",
+   "blind_notes": "",
+   "expected": null
+  },
+  {
+   "row": 7,
+   "commit": "2965846",
+   "adr": 2,
+   "quote": "A triage pile is listed, never hidden.",
+   "judge": "COMPLIANT",
+   "judge_reason": "The changed line only coerces a fact value to text when rendering the read/maybe piles; it does not hide, filter or drop any row or pile.",
+   "blind_reader": "UNCLEAR",
+   "blind_reason": "The change only flattens a list value for display in fact(); it does not fold, hide or list any row.",
+   "blind_notes": "",
+   "expected": null
+  },
+  {
+   "row": 8,
+   "commit": "2965846",
+   "adr": 2,
+   "quote": "A row the pipeline decides not to show is folded, not dropped: it stays in the data the report is built from",
+   "judge": "COMPLIANT",
+   "judge_reason": "The changed line only formats a field value inside the report and does not remove any row from the results.",
+   "blind_reader": "UNCLEAR",
+   "blind_reason": "Display-only formatting of a field value; no row is dropped or folded by this line.",
+   "blind_notes": "",
+   "expected": null
+  },
+  {
+   "row": 12,
+   "commit": "ce31958",
+   "adr": 1,
+   "quote": "A module that needs a key imports it rather than hashing locally.",
+   "judge": "UNCLEAR",
+   "judge_reason": "The new recheck_cache builds its posting key with store.content_hash(r[\"text\"]) instead of store.row_key; the text is already stripped, so the value may match, but the diff does not show that it is the same key.",
+   "blind_reader": "COMPLIANT",
+   "blind_reason": "Uses the imported store function rather than hashing locally with hashlib; it is content_hash not row_key though.",
+   "blind_notes": "ADR ambiguous",
+   "expected": null
+  },
+  {
+   "row": 13,
+   "commit": "ce31958",
+   "adr": 1,
+   "quote": "Every table in `enrich/` is keyed on it and nothing else.",
+   "judge": "UNCLEAR",
+   "judge_reason": "The new rewrite_triage addresses the triage table by content_hash plus rubric rather than by row_key alone; the triage schema itself is not in the changed lines, so whether this breaks the obligation cannot be settled from the diff.",
+   "blind_reader": "ADR-OVERTAKEN",
+   "blind_reason": "The (content_hash, rubric) key already existed in the triage table at the parent; the new function just follows it.",
+   "blind_notes": "letter-only",
+   "expected": null
+  },
+  {
+   "row": 14,
+   "commit": "ce31958",
+   "adr": 2,
+   "quote": "The only rows that may leave the data are ones whose source row was removed.",
+   "judge": "COMPLIANT",
+   "judge_reason": "The new rewrite_triage path runs an UPDATE on the payload and deletes no triage rows, so no row leaves the data.",
+   "blind_reader": "UNCLEAR",
+   "blind_reason": "The UPDATE rewrites a payload in place and removes no row; recheck leaves cards without source text untouched.",
+   "blind_notes": "",
+   "expected": null
+  },
+  {
+   "row": 19,
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "lands the rows in the shape job-feeds uses",
+   "judge": "UNCLEAR",
+   "judge_reason": "import_rows() is gone but cached_rows() still maps to the job-feeds row shape, so whether the 'import_rows() must land rows' obligation is met by the replacement is not settled by the diff.",
+   "blind_reader": "COMPLIANT",
+   "blind_reason": "cached_rows() and _row() still emit job-feeds-shaped rows after the commit.",
+   "blind_notes": "",
+   "expected": null
+  },
+  {
+   "row": 20,
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "A failed fetch skips its row rather than failing the run.",
+   "judge": "CONFLICT",
+   "judge_reason": "The try/except that skipped a row on failed fetch is deleted along with the fetch path, so the skip-on-failed-fetch behaviour no longer exists in the module.",
+   "blind_reader": "UNCLEAR",
+   "blind_reason": "The try/except that skipped failed fetches went with the fetch path; no fetch remains in the module, so the rule is vacuous rather than broken.",
+   "blind_notes": "ADR ambiguous; cited line removed not added",
+   "expected": null
+  },
+  {
+   "row": 22,
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "No other module calls `li-assist`.",
+   "judge": "UNCLEAR",
+   "judge_reason": "The drift report states that bin/li-descriptions.py does the fetching, which suggests another module invokes li-assist, but the diff does not show that file's code.",
+   "blind_reader": "ADR-OVERTAKEN",
+   "blind_reason": "bin/li-descriptions.py has called li-assist via subprocess since 2026-09-05; the commit only records that in a drift report.",
+   "blind_notes": "ADR ambiguous",
+   "expected": null
+  },
+  {
+   "row": 24,
+   "commit": "3c11d0b",
+   "adr": 1,
+   "quote": "No module builds a key by hand from a URL, a URN, a title or a raw description.",
+   "judge": "UNCLEAR",
+   "judge_reason": "The new `_role(company, title)` key is hand-built from a title and used as a lookup key, but it is a transient in-memory dedupe key rather than a stored posting key, so the diff does not settle whether the ADR covers it.",
+   "blind_reader": "CONFLICT",
+   "blind_reason": "Builds a lookup key by hand from company and title instead of using the row key.",
+   "blind_notes": "letter-only",
+   "expected": null
+  },
+  {
+   "row": 25,
+   "commit": "3c11d0b",
+   "adr": 2,
+   "quote": "A row the pipeline decides not to show is folded, not dropped: it stays in the data the report is built from",
+   "judge": "CONFLICT",
+   "judge_reason": "The LinkedIn duplicate is never added to the row list: only its URL is appended to the twin's 'also' list and the loop continues, so the duplicate row leaves the data instead of staying in it as a folded row.",
+   "blind_reader": "COMPLIANT",
+   "blind_reason": "The duplicate is not discarded; its URL is kept on the surviving row and printed in the report.",
+   "blind_notes": "ADR ambiguous",
+   "expected": null
+  },
+  {
+   "row": 26,
+   "commit": "3c11d0b",
+   "adr": 2,
+   "quote": "it is counted, and the count is visible in the report",
+   "judge": "UNCLEAR",
+   "judge_reason": "The report prints the folded copy's links as 'also on:', but the diff shows no count of folded duplicates anywhere in the report.",
+   "blind_reader": "CONFLICT",
+   "blind_reason": "Folded duplicates are shown as links but no count of them is reported, which the folded-rows rule asks for.",
+   "blind_notes": "letter-only; ADR ambiguous",
+   "expected": null
+  }
+ ]
+}

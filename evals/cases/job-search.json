@@ -1,0 +1,120 @@
+{
+ "corpus": "job-search",
+ "about": "Private repo (personal data); the repo itself is never bundled. Cases hold commit prefix, ADR number, the verbatim binding quote and the agreed verdict only. Labels: rows where the Sonnet judge (2026-11-06 run, re-settled) and a blind Sonnet reading with repo access agreed. 12 disagreements await Kevin's label and are not here. Rerun needs the repo at ADRCHECK_EVAL_JOBSEARCH_REPO with ADRs as of 21db90e (ADR-4 was Deprecated on 2026-11-07, after this freeze).",
+ "repo_env": "ADRCHECK_EVAL_JOBSEARCH_REPO",
+ "adrs_at": "21db90e",
+ "range": "285ff7e~1..3c11d0b",
+ "stale_expected": [
+  {
+   "adr": 4,
+   "missing": "import_rows"
+  }
+ ],
+ "cases": [
+  {
+   "commit": "7644413",
+   "adr": 1,
+   "quote": "Every table in `enrich/` is keyed on it and nothing else.",
+   "expected": "CONFLICT",
+   "note": "letter-only: composite key (content_hash, rubric) on a new table"
+  },
+  {
+   "commit": "7644413",
+   "adr": 1,
+   "quote": "Any new store, cache or report index in `enrich/` calls `store.row_key`.",
+   "expected": "CONFLICT",
+   "note": "letter-only: key built via content_hash, same value in practice"
+  },
+  {
+   "commit": "7644413",
+   "adr": 2,
+   "quote": "A triage pile is listed, never hidden.",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "7644413",
+   "adr": 2,
+   "quote": "it is counted, and the count is visible in the report",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "74a45f6",
+   "adr": 2,
+   "quote": "A triage pile is listed, never hidden.",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "418f2e4",
+   "adr": 2,
+   "quote": "A triage pile is listed, never hidden.",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "418f2e4",
+   "adr": 2,
+   "quote": "it is counted, and the count is visible in the report",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "5bbd7be",
+   "adr": 1,
+   "quote": "Every table in `enrich/` is keyed on it and nothing else.",
+   "expected": "COMPLIANT",
+   "note": "ADR ambiguous"
+  },
+  {
+   "commit": "ce31958",
+   "adr": 2,
+   "quote": "A row the pipeline decides not to show is folded, not dropped: it stays in the data the report is built from",
+   "expected": "COMPLIANT"
+  },
+  {
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "`enrich/linkedin.py` owns LinkedIn ingestion end to end.",
+   "expected": "CONFLICT",
+   "note": "planted stale ADR; letter-only; ADR ambiguous"
+  },
+  {
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "`import_rows()` fetches each posting's description per URN through `li-assist jobs get`",
+   "expected": "CONFLICT",
+   "note": "planted: the importer is removed in this commit"
+  },
+  {
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "with a courtesy delay between calls",
+   "expected": "CONFLICT",
+   "note": "planted; cited line removed not added"
+  },
+  {
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "The URN is validated before it reaches the subprocess.",
+   "expected": "UNCLEAR",
+   "note": "ADR ambiguous; cited line removed not added"
+  },
+  {
+   "commit": "614a20d",
+   "adr": 4,
+   "quote": "a report missing badges beats a report that does not generate.",
+   "expected": "COMPLIANT",
+   "note": "cited line not in diff"
+  },
+  {
+   "commit": "3c11d0b",
+   "adr": 2,
+   "quote": "with a control that restores the rows",
+   "expected": "UNCLEAR",
+   "note": "ADR ambiguous"
+  },
+  {
+   "commit": "3c11d0b",
+   "adr": 2,
+   "quote": "A duplicate folded into another row keeps its link on the surviving row.",
+   "expected": "COMPLIANT"
+  }
+ ]
+}
