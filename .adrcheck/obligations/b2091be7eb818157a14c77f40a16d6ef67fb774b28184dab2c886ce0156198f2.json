@@ -1,0 +1,117 @@
+[
+ {
+  "id": "ADR-1/1",
+  "adr_number": 1,
+  "kind": "MUST_NOT",
+  "text": "Modules under src/adrcheck/domain/ must not import adrcheck.adapters.",
+  "quote": "They never import `adrcheck.adapters`, `adrcheck.usecases`, `adrcheck.cli`, `subprocess`, `requests` or `httpx`.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": [
+   "import adrcheck.adapters",
+   "from adrcheck.adapters",
+   "from adrcheck import adapters"
+  ]
+ },
+ {
+  "id": "ADR-1/2",
+  "adr_number": 1,
+  "kind": "MUST_NOT",
+  "text": "Modules under src/adrcheck/domain/ must not import adrcheck.usecases.",
+  "quote": "They never import `adrcheck.adapters`, `adrcheck.usecases`, `adrcheck.cli`, `subprocess`, `requests` or `httpx`.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": [
+   "import adrcheck.usecases",
+   "from adrcheck.usecases",
+   "from adrcheck import usecases"
+  ]
+ },
+ {
+  "id": "ADR-1/3",
+  "adr_number": 1,
+  "kind": "MUST_NOT",
+  "text": "Modules under src/adrcheck/domain/ must not import adrcheck.cli.",
+  "quote": "They never import `adrcheck.adapters`, `adrcheck.usecases`, `adrcheck.cli`, `subprocess`, `requests` or `httpx`.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": [
+   "import adrcheck.cli",
+   "from adrcheck.cli",
+   "from adrcheck import cli"
+  ]
+ },
+ {
+  "id": "ADR-1/4",
+  "adr_number": 1,
+  "kind": "MUST_NOT",
+  "text": "Modules under src/adrcheck/domain/ must not import subprocess, requests or httpx.",
+  "quote": "They never import `adrcheck.adapters`, `adrcheck.usecases`, `adrcheck.cli`, `subprocess`, `requests` or `httpx`.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": [
+   "import subprocess",
+   "from subprocess",
+   "import requests",
+   "from requests",
+   "import httpx",
+   "from httpx"
+  ]
+ },
+ {
+  "id": "ADR-1/5",
+  "adr_number": 1,
+  "kind": "MUST",
+  "text": "Modules under src/adrcheck/domain/ must import only the standard library and other domain modules.",
+  "quote": "Modules under `src/adrcheck/domain/` import only the standard library and each other.",
+  "checkability": "structural",
+  "mandates": [
+   "src/adrcheck/domain/"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-1/6",
+  "adr_number": 1,
+  "kind": "MUST",
+  "text": "Every dependency the domain or use cases need from the outside world must be declared as a Protocol in src/adrcheck/ports.py, namely AdrSource, ChangeSource, RepoReader, ObligationCompiler and ChangeJudge.",
+  "quote": "Every dependency the domain or use cases need from the outside world is a `Protocol` in `src/adrcheck/ports.py`: `AdrSource`, `ChangeSource`, `RepoReader`, `ObligationCompiler`, `ChangeJudge`.",
+  "checkability": "structural",
+  "mandates": [
+   "src/adrcheck/ports.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-1/7",
+  "adr_number": 1,
+  "kind": "MUST",
+  "text": "The module boundary must be enforced by tests/test_boundaries.py, which fails on the first offending import.",
+  "quote": "The boundary is enforced by `tests/test_boundaries.py`, which fails on the first offending import.",
+  "checkability": "mechanical",
+  "mandates": [
+   "tests/test_boundaries.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-1/8",
+  "adr_number": 1,
+  "kind": "MUST",
+  "text": "Supporting a new provider must be done by adding a new adapter, never by changing the domain.",
+  "quote": "A new provider is a new adapter and never a domain change.",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-1/9",
+  "adr_number": 1,
+  "kind": "MUST",
+  "text": "The domain must build and test without network, git or a model.",
+  "quote": "The domain builds and tests with no network, no git and no model.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]

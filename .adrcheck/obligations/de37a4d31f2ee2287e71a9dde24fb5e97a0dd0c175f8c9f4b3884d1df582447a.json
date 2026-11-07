@@ -1,0 +1,80 @@
+[
+ {
+  "id": "ADR-6/1",
+  "adr_number": 6,
+  "kind": "MUST",
+  "text": "A commit message trailer of the form `Adr-Exception: ADR-NNNN <reason>` must waive the named ADR for that change.",
+  "quote": "A commit message trailer of the form `Adr-Exception: ADR-NNNN <reason>` waives that ADR for that change.",
+  "checkability": "intent",
+  "mandates": [
+   "Adr-Exception",
+   "parse_exceptions"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-6/2",
+  "adr_number": 6,
+  "kind": "MUST",
+  "text": "`parse_exceptions()` in `src/adrcheck/domain/exception.py` must accept the trailer only when a reason follows the ADR number.",
+  "quote": "`parse_exceptions()` in `src/adrcheck/domain/exception.py` accepts the trailer only when a reason follows the ADR number",
+  "checkability": "intent",
+  "mandates": [
+   "parse_exceptions",
+   "src/adrcheck/domain/exception.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-6/3",
+  "adr_number": 6,
+  "kind": "MUST",
+  "text": "A trailer without a reason must be reported as a problem.",
+  "quote": "a trailer without a reason is reported as a problem and waives nothing",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-6/4",
+  "adr_number": 6,
+  "kind": "MUST_NOT",
+  "text": "A trailer without a reason must not waive the ADR.",
+  "quote": "a trailer without a reason is reported as a problem and waives nothing",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-6/5",
+  "adr_number": 6,
+  "kind": "MUST",
+  "text": "A waived ADR must be reported as COMPLIANT with the waiver reason shown in the report.",
+  "quote": "A waived ADR is reported as COMPLIANT with the reason shown",
+  "checkability": "intent",
+  "mandates": [
+   "COMPLIANT"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-6/6",
+  "adr_number": 6,
+  "kind": "MUST_NOT",
+  "text": "A waiver must never be silent: it must not be omitted or hidden from the report.",
+  "quote": "so the waiver is visible in the report, never silent",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-6/7",
+  "adr_number": 6,
+  "kind": "MUST_NOT",
+  "text": "A waiver in one commit must not carry over to later changes; the trailer applies per commit only.",
+  "quote": "The trailer is per commit, so a waiver does not leak into later changes.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]
