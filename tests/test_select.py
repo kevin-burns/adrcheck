@@ -53,3 +53,14 @@ def test_only_accepted_adrs_are_considered():
         "status is rejected",
         "status is superseded",
     ]
+
+
+def test_a_reference_in_prose_or_data_does_not_select():
+    """A spike note or a cache entry naming ADR-4 is not code that could break ADR-4; judging it costs money for nothing."""
+    adrs = [adr(4, applies_to=("src/**",)), adr(5, applies_to=("src/**",))]
+    prose = change("docs/spikes/run.md", added_text=("| 659695c | ADR-4/2 | COMPLIANT |",))
+    data = change(".adrcheck/obligations/abc.json", added_text=('"id": "ADR-5/1",',))
+    assert select(adrs, prose).selected == ()
+    assert select(adrs, data).selected == ()
+    code = change("lib/x.py", added_text=("# per ADR-4",))
+    assert [s.adr.number for s in select(adrs, code).selected] == [4]

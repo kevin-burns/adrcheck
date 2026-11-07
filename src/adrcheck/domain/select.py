@@ -10,6 +10,23 @@ from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.change import Change
 
 _ADR_REF = re.compile(r"\bADR[- ]?0*(\d+)\b", re.IGNORECASE)
+# A reference in prose or data (a spike note, a cache entry, a table) is not code that could break the
+# ADR; judging it costs a model call for nothing. Only the commit message and code lines count.
+_NOT_CODE = (
+    ".md",
+    ".markdown",
+    ".txt",
+    ".rst",
+    ".html",
+    ".htm",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".csv",
+    ".tsv",
+    ".lock",
+)
 
 
 @dataclass(frozen=True)
@@ -39,7 +56,9 @@ def _glob_matches(pattern: str, path: str) -> bool:
 
 
 def _referenced_numbers(change: Change) -> set[int]:
-    texts = [change.message] + [line.text for f in change.files for line in f.lines()]
+    texts = [change.message] + [
+        line.text for f in change.files if not f.path.lower().endswith(_NOT_CODE) for line in f.lines()
+    ]
     return {int(n) for t in texts for n in _ADR_REF.findall(t)}
 
 
