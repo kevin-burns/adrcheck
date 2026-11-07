@@ -1,0 +1,146 @@
+{
+ "changes": [
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "subject": "build: add pre-commit gate (ruff, bandit, markdownlint, yamllint, gitleaks)",
+   "uncovered": 31,
+   "judge_calls": 1,
+   "tokens_in": 106172,
+   "tokens_out": 3737,
+   "cost_usd": 0.3105,
+   "excluded": [
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-top-level-module",
+     "detail": "scripts/"
+    }
+   ]
+  }
+ ],
+ "findings": [
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 1,
+   "obligation": "ADR-1/7",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/domain/decision_signals.py",
+   "line_text": "from collections.abc import Callable",
+   "quote": "Modules under `src/adrcheck/domain/` import only the standard library and each other.",
+   "reason": "The domain import changes from typing.Callable to collections.abc.Callable, both standard library, so the domain still imports nothing outside the stdlib.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 1,
+   "obligation": "ADR-1/14",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "tests/test_boundaries.py",
+   "line_text": "offenders = [(p.name, mod) for p in DOMAIN.glob(\"*.py\") for mod in imports_of(p) if mod.startswith(FORBIDDEN)]",
+   "quote": "The boundary is enforced by `tests/test_boundaries.py`, which fails on the first offending import.",
+   "reason": "The offenders comprehension is only collapsed onto one line, with the same filter, so the boundary test still flags forbidden imports.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 2,
+   "obligation": "ADR-2/7",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "result = verify(",
+   "quote": "No code path reports a CONFLICT that skipped `verify()`.",
+   "reason": "The verify() call in _settle is only reformatted across lines with the same Claim arguments, so verification still runs before a verdict stands.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 3,
+   "obligation": "ADR-3/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "Finding(adr.number, None, Verdict.UNCLEAR, signals, note=f\"judge error: {response.error}\")",
+   "quote": "A judge that errors, times out or returns unparseable output yields an UNCLEAR finding whose reason begins `judge error`",
+   "reason": "The judge-error branch is reformatted only and still yields an UNCLEAR finding with a note beginning `judge error`.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 4,
+   "obligation": "ADR-4/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/adapters/obligation_cache.py",
+   "line_text": "{\"v\": self.prompt_version, \"title\": adr.title, \"sections\": dict(adr.sections)}, sort_keys=True",
+   "quote": "`CachedCompiler` stores the result under a key derived from the ADR's content hash and `PROMPT_VERSION`, and returns the cached obligations on every later run until either changes.",
+   "reason": "The cache key material is only rewrapped and still combines prompt_version with the ADR content, so the key derivation is unchanged.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 6,
+   "obligation": "ADR-6/5",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "adr.number, None, Verdict.COMPLIANT, sel.signals, note=f\"waived: {waived_by_number[adr.number]}\"",
+   "quote": "A waived ADR is reported as COMPLIANT with the reason shown, so the waiver is visible in the report, never silent.",
+   "reason": "The waived finding is only reformatted and still reports COMPLIANT with the waiver reason in its note.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 7,
+   "obligation": "ADR-7/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "change, lambda needle, parent=change.parent: repo.contains(parent, needle) if parent else None",
+   "quote": "The `RepoReader.contains()` probe answers those questions against the parent ref.",
+   "reason": "The lambda still probes repo.contains at the parent ref; binding parent as a default argument only fixes the lambda's late-binding capture of the variable.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  }
+ ],
+ "stale": []
+}
