@@ -1,0 +1,79 @@
+[
+ {
+  "id": "ADR-4/1",
+  "adr_number": 4,
+  "kind": "MUST",
+  "text": "Compile each ADR into obligations through an `ObligationCompiler`.",
+  "quote": "An ADR is compiled into obligations by an `ObligationCompiler` once.",
+  "checkability": "structural",
+  "mandates": [
+   "ObligationCompiler"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-4/2",
+  "adr_number": 4,
+  "kind": "MUST",
+  "text": "Store compiled obligations in a `CachedCompiler` under a key derived from the ADR's content hash and `PROMPT_VERSION`, and return the cached result on later runs until either changes.",
+  "quote": "`CachedCompiler` stores the result under a key derived from the ADR's content hash and `PROMPT_VERSION`, and returns the cached obligations on every later run until either changes.",
+  "checkability": "structural",
+  "mandates": [
+   "CachedCompiler",
+   "PROMPT_VERSION"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-4/3",
+  "adr_number": 4,
+  "kind": "MUST",
+  "text": "Give the judge the compiled obligations rather than the ADR prose.",
+  "quote": "The judge sees compiled obligations, not the ADR prose.",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-4/4",
+  "adr_number": 4,
+  "kind": "MUST_NOT",
+  "text": "Do not pass raw ADR text to the judge in place of compiled obligations.",
+  "quote": "The judge sees compiled obligations, not the ADR prose.",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-4/5",
+  "adr_number": 4,
+  "kind": "MUST",
+  "text": "Bump `PROMPT_VERSION` whenever the compile prompt changes, so that every cached compile is invalidated.",
+  "quote": "Changing the compile prompt requires bumping `PROMPT_VERSION`, which invalidates every cached compile.",
+  "checkability": "process",
+  "mandates": [
+   "PROMPT_VERSION"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-4/6",
+  "adr_number": 4,
+  "kind": "MUST",
+  "text": "Produce identical obligations for two runs on the same ADR text and prompt version.",
+  "quote": "Two runs on the same ADR text and prompt version produce identical obligations.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-4/7",
+  "adr_number": 4,
+  "kind": "MUST",
+  "text": "Keep the cache directory safe to commit or share between CI and developers.",
+  "quote": "The cache directory is safe to commit or share between CI and developers.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]

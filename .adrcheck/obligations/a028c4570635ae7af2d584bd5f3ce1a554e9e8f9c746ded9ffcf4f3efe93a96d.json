@@ -1,0 +1,72 @@
+[
+ {
+  "id": "ADR-7/1",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must live in src/adrcheck/domain/overtaken.py and turn a judge's CONFLICT into ADR-OVERTAKEN when the contradiction can be shown at the parent commit.",
+  "quote": "`classify()` in `src/adrcheck/domain/overtaken.py` turns a judge's CONFLICT into ADR-OVERTAKEN",
+  "checkability": "structural",
+  "mandates": [
+   "classify",
+   "src/adrcheck/domain/overtaken.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/2",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must reclassify a CONFLICT as ADR-OVERTAKEN when a named anchor the ADR mandates was already absent at the parent commit.",
+  "quote": "a named anchor the ADR mandates was already absent",
+  "checkability": "intent",
+  "mandates": [
+   "classify"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/3",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must reclassify a CONFLICT as ADR-OVERTAKEN when the cited line already existed elsewhere in the code at the parent commit.",
+  "quote": "the cited line already existed elsewhere in the code at the parent",
+  "checkability": "intent",
+  "mandates": [
+   "classify"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/4",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "The parent-commit questions must be answered by the RepoReader contains probe, run against the parent ref.",
+  "quote": "The `RepoReader.contains()` probe answers those questions against the parent ref.",
+  "checkability": "structural",
+  "mandates": [
+   "RepoReader",
+   "contains"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/5",
+  "adr_number": 7,
+  "kind": "MUST_NOT",
+  "text": "An ADR-OVERTAKEN finding must never cause the build to fail.",
+  "quote": "ADR-OVERTAKEN never fails the build.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/6",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "The probes used for the overtaken classification must be cheap and deterministic.",
+  "quote": "The probes are cheap and deterministic.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]

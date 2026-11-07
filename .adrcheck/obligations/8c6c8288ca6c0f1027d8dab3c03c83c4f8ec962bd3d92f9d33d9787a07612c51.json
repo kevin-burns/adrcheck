@@ -3,15 +3,14 @@
   "id": "ADR-3/1",
   "adr_number": 3,
   "kind": "MUST",
-  "text": "The Verdict type must define exactly four values: CONFLICT, COMPLIANT, UNCLEAR and ADR-OVERTAKEN.",
+  "text": "The Verdict type must have exactly four values: CONFLICT, COMPLIANT, UNCLEAR and ADR-OVERTAKEN.",
   "quote": "`Verdict` has four values: CONFLICT, COMPLIANT, UNCLEAR and ADR-OVERTAKEN.",
   "checkability": "mechanical",
   "mandates": [
    "Verdict",
    "CONFLICT",
    "COMPLIANT",
-   "UNCLEAR",
-   "ADR-OVERTAKEN"
+   "UNCLEAR"
   ],
   "forbids": []
  },
@@ -23,8 +22,7 @@
   "quote": "UNCLEAR is a first-class result, reported with its reason.",
   "checkability": "structural",
   "mandates": [
-   "UNCLEAR",
-   "reason"
+   "UNCLEAR"
   ],
   "forbids": []
  },
@@ -32,12 +30,12 @@
   "id": "ADR-3/3",
   "adr_number": 3,
   "kind": "MUST",
-  "text": "When a judge errors, times out or returns unparseable output, the result must be an UNCLEAR finding whose reason begins with `judge error`.",
+  "text": "When the judge errors, times out or returns unparseable output, the finding must be UNCLEAR with a reason beginning `judge error`.",
   "quote": "A judge that errors, times out or returns unparseable output yields an UNCLEAR finding whose reason begins `judge error`",
-  "checkability": "structural",
+  "checkability": "mechanical",
   "mandates": [
-   "judge error",
-   "UNCLEAR"
+   "UNCLEAR",
+   "judge error"
   ],
   "forbids": []
  },
@@ -45,7 +43,7 @@
   "id": "ADR-3/4",
   "adr_number": 3,
   "kind": "MUST_NOT",
-  "text": "A judge error, timeout or unparseable output must never produce a COMPLIANT verdict.",
+  "text": "A judge error, timeout or unparseable output must never yield a COMPLIANT verdict.",
   "quote": "it never yields COMPLIANT",
   "checkability": "structural",
   "mandates": [],
@@ -55,12 +53,11 @@
   "id": "ADR-3/5",
   "adr_number": 3,
   "kind": "MUST",
-  "text": "Under `--fail-on conflict`, `adrcheck check` must exit non-zero only when at least one finding is CONFLICT.",
+  "text": "Only a CONFLICT verdict may make `adrcheck check` exit non-zero under `--fail-on conflict`.",
   "quote": "Only CONFLICT can make `adrcheck check` exit non-zero under `--fail-on conflict`.",
   "checkability": "structural",
   "mandates": [
-   "--fail-on",
-   "conflict"
+   "--fail-on"
   ],
   "forbids": []
  },
@@ -68,7 +65,7 @@
   "id": "ADR-3/6",
   "adr_number": 3,
   "kind": "MUST_NOT",
-  "text": "UNCLEAR, COMPLIANT and ADR-OVERTAKEN findings, including judge errors from an unreachable model, must not cause a non-zero exit under `--fail-on conflict`.",
+  "text": "UNCLEAR, COMPLIANT and ADR-OVERTAKEN verdicts must not cause a non-zero exit under `--fail-on conflict`, including when the model is unreachable.",
   "quote": "An unreachable model cannot turn a build green by accident, and cannot turn it red either.",
   "checkability": "structural",
   "mandates": [],
@@ -78,7 +75,7 @@
   "id": "ADR-3/7",
   "adr_number": 3,
   "kind": "MUST",
-  "text": "The report must show UNCLEAR counts so that a run that abstained on everything is visible as such.",
+  "text": "The report must show UNCLEAR counts so a run that abstained on everything is visible as such.",
   "quote": "The report must show UNCLEAR counts so a run that abstained on everything is visible as such.",
   "checkability": "structural",
   "mandates": [

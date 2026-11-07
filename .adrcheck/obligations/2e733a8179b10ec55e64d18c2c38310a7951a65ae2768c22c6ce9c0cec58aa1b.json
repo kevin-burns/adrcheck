@@ -3,12 +3,12 @@
   "id": "ADR-6/1",
   "adr_number": 6,
   "kind": "MUST",
-  "text": "A commit message trailer of the form `Adr-Exception: ADR-NNNN <reason>` must waive the named ADR for that change.",
+  "text": "A commit message trailer of the form `Adr-Exception: ADR-NNNN <reason>` must be recognized by parse_exceptions() as waiving that ADR for that change.",
   "quote": "A commit message trailer of the form `Adr-Exception: ADR-NNNN <reason>` waives that ADR for that change.",
   "checkability": "intent",
   "mandates": [
-   "Adr-Exception",
-   "parse_exceptions"
+   "parse_exceptions",
+   "src/adrcheck/domain/exception.py"
   ],
   "forbids": []
  },
@@ -16,7 +16,7 @@
   "id": "ADR-6/2",
   "adr_number": 6,
   "kind": "MUST",
-  "text": "`parse_exceptions()` in `src/adrcheck/domain/exception.py` must accept the trailer only when a reason follows the ADR number.",
+  "text": "parse_exceptions() must accept the trailer only when a reason follows the ADR number.",
   "quote": "`parse_exceptions()` in `src/adrcheck/domain/exception.py` accepts the trailer only when a reason follows the ADR number",
   "checkability": "intent",
   "mandates": [
@@ -50,7 +50,7 @@
   "adr_number": 6,
   "kind": "MUST",
   "text": "A waived ADR must be reported as COMPLIANT with the waiver reason shown in the report.",
-  "quote": "A waived ADR is reported as COMPLIANT with the reason shown",
+  "quote": "A waived ADR is reported as COMPLIANT with the reason shown, so the waiver is visible in the report, never silent.",
   "checkability": "intent",
   "mandates": [
    "COMPLIANT"
@@ -61,7 +61,7 @@
   "id": "ADR-6/6",
   "adr_number": 6,
   "kind": "MUST_NOT",
-  "text": "A waiver must never be silent: it must not be omitted or hidden from the report.",
+  "text": "A waiver must not be applied silently; it must always be visible in the report.",
   "quote": "so the waiver is visible in the report, never silent",
   "checkability": "intent",
   "mandates": [],
@@ -71,9 +71,9 @@
   "id": "ADR-6/7",
   "adr_number": 6,
   "kind": "MUST_NOT",
-  "text": "A waiver in one commit must not carry over to later changes; the trailer applies per commit only.",
+  "text": "A waiver in one commit's trailer must not carry over to apply to later changes; it is scoped per commit.",
   "quote": "The trailer is per commit, so a waiver does not leak into later changes.",
-  "checkability": "intent",
+  "checkability": "structural",
   "mandates": [],
   "forbids": []
  }

@@ -1,0 +1,91 @@
+[
+ {
+  "id": "ADR-5/1",
+  "adr_number": 5,
+  "kind": "MUST",
+  "text": "stale_sweep() in src/adrcheck/usecases/check.py must run once per check invocation, at the end of the range.",
+  "quote": "`stale_sweep()` in `src/adrcheck/usecases/check.py` runs once per `check` invocation, at the end of the range",
+  "checkability": "structural",
+  "mandates": [
+   "stale_sweep",
+   "src/adrcheck/usecases/check.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-5/2",
+  "adr_number": 5,
+  "kind": "MUST",
+  "text": "The sweep must cover every accepted ADR.",
+  "quote": "over every accepted ADR",
+  "checkability": "intent",
+  "mandates": [
+   "stale_sweep"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-5/3",
+  "adr_number": 5,
+  "kind": "MUST",
+  "text": "An obligation whose named anchors are all missing from the code at that ref must be reported as stale.",
+  "quote": "an obligation whose named anchors are all missing from the code at that ref is reported as stale",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-5/4",
+  "adr_number": 5,
+  "kind": "MUST_NOT",
+  "text": "The stale sweep must not make a model call.",
+  "quote": "with no model call",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-5/5",
+  "adr_number": 5,
+  "kind": "MUST",
+  "text": "Anchor presence must be tested only against code, with strip_python_prose() blanking comments and docstrings before the search.",
+  "quote": "`strip_python_prose()` blanks comments and docstrings before the search",
+  "checkability": "mechanical",
+  "mandates": [
+   "strip_python_prose"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-5/6",
+  "adr_number": 5,
+  "kind": "MUST",
+  "text": "Files with extensions in _PROSE must be skipped during the sweep's presence search.",
+  "quote": "files with extensions in `_PROSE` are skipped",
+  "checkability": "mechanical",
+  "mandates": [
+   "_PROSE"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-5/7",
+  "adr_number": 5,
+  "kind": "MUST_NOT",
+  "text": "A mention of an anchor in a docstring or a markdown file must not count as the code still existing.",
+  "quote": "so a mention in a docstring or a markdown file never counts as the code still existing",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-5/8",
+  "adr_number": 5,
+  "kind": "MUST",
+  "text": "An ADR that names no anchors must be reported as unsweepable rather than silently passed.",
+  "quote": "An ADR that names no anchors cannot be swept and is reported as such.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]
