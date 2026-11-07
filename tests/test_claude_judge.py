@@ -131,5 +131,34 @@ def test_compile_keeps_only_mandates_the_adr_itself_names():
         }
     )
     [o] = parse_compile_reply(reply, ADR)
-    assert o.mandates == ("store.row_key",)
+    assert o.mandates == ("store", "row_key")
     assert o.forbids == ("hashlib.",)  # kept for the report; classification no longer uses them
+
+
+def test_compile_splits_a_dotted_anchor_into_the_names_code_spells():
+    """Prose says `RepoReader.contains()`; code says `repo.contains` on a RepoReader. Probe the names, not the prose."""
+    adr = Adr(
+        title="Probe",
+        status=Status.ACCEPTED,
+        source="0007.md",
+        number=7,
+        sections={
+            "context": "",
+            "decision": "The `RepoReader.contains()` probe answers it; see src/adrcheck/ports.py.",
+        },
+    )
+    reply = json.dumps(
+        {
+            "obligations": [
+                {
+                    "kind": "MUST",
+                    "text": "x",
+                    "quote": "The `RepoReader.contains()` probe answers it",
+                    "checkability": "structural",
+                    "mandates": ["RepoReader.contains", "RepoReader.contains()", "src/adrcheck/ports.py"],
+                }
+            ]
+        }
+    )
+    [o] = parse_compile_reply(reply, adr)
+    assert o.mandates == ("RepoReader", "contains", "src/adrcheck/ports.py")

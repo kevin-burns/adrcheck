@@ -18,7 +18,7 @@ from adrcheck.domain.verdict import Verdict
 from adrcheck.domain.verify import BINDING_SECTIONS
 from adrcheck.ports import Context, JudgeResponse, RawFinding
 
-PROMPT_VERSION = "2026-11-06.1"
+PROMPT_VERSION = "2026-11-07.1"
 Runner = Callable[[str, str], dict]
 
 
@@ -68,13 +68,15 @@ ADR-{adr.number}: {adr.title}
 {_binding_text(adr)}
 
 Return JSON only, of this shape:
-{{"obligations": [{{"kind": "MUST" | "MUST_NOT", "text": "<one sentence, concrete>", "quote": "<verbatim words from Decision or Consequences that this derives from>", "checkability": "mechanical" | "structural" | "intent" | "process", "mandates": ["<identifier, path or symbol that should exist in the code while this holds>"], "forbids": ["<literal code pattern whose presence contradicts this>"]}}]}}
+{{"obligations": [{{"kind": "MUST" | "MUST_NOT", "text": "<one sentence, concrete>", "quote": "<verbatim words from Decision or Consequences that this derives from>", "checkability": "mechanical" | "structural" | "intent" | "process", "mandates": ["<a name as the code spells it: one bare identifier, or one file path>"], "forbids": ["<literal code pattern whose presence contradicts this>"]}}]}}
 
 Rules: the quote must be copied verbatim from Decision or Consequences. checkability: mechanical = visible
 in a diff alone (an import, a dependency, a path); structural = needs to know module boundaries or
 ownership; intent = behavioural or semantic, not visible in code shape; process = a team practice, not
 checkable from code. mandates and forbids are literal strings a grep could find; leave them empty when
-nothing literal applies. Zero obligations is a valid answer for an ADR that binds nothing."""
+nothing literal applies. A mandate is a bare identifier (`contains`, `RepoReader`) or a file path, never a
+dotted `Class.method` or a call with parentheses: prose spells `RepoReader.contains()`, code spells
+`repo.contains`. Zero obligations is a valid answer for an ADR that binds nothing."""
 
 
 def judge_prompt(change: Change, adr: Adr, obligations: tuple[Obligation, ...], context: Context) -> str:
@@ -143,12 +145,48 @@ def parse_compile_reply(reply: str, adr: Adr) -> tuple[Obligation, ...]:
                 text=str(item.get("text", "")).strip(),
                 quote=quote,
                 checkability=checkability,
-                # An anchor the ADR does not name is the compiler's invention; absence of an
-                # invented anchor must never make an ADR look overtaken.
-                mandates=tuple(str(x) for x in item.get("mandates", []) or [] if str(x) and str(x) in adr_text),
+                mandates=_anchor_names(item.get("mandates", []) or [], adr_text),
                 forbids=tuple(str(x) for x in item.get("forbids", []) or []),
             )
         )
+    return tuple(out)
+
+
+_FILE_EXTENSIONS = (
+    ".py",
+    ".pyi",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".go",
+    ".rs",
+    ".java",
+    ".cs",
+    ".sh",
+    ".md",
+    ".toml",
+    ".yaml",
+    ".yml",
+    ".json",
+)
+
+
+def _anchor_names(raw: list, adr_text: str) -> tuple[str, ...]:
+    """Mandates as the code spells them.
+
+    Prose says `RepoReader.contains()`; code says `repo.contains` on a RepoReader-typed parameter, so the
+    dotted form is probed as its bare names. A path keeps its dots. An anchor the ADR does not name is the
+    compiler's invention; absence of an invented anchor must never make an ADR look overtaken.
+    """
+    out: list[str] = []
+    for x in raw:
+        text = str(x).strip().removesuffix("()")
+        if not text:
+            continue
+        is_path = "/" in text or text.lower().endswith(_FILE_EXTENSIONS)
+        for name in [text] if is_path else text.split("."):
+            if name and name in adr_text and name not in out:
+                out.append(name)
     return tuple(out)
 
 
