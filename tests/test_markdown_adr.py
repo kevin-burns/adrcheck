@@ -71,7 +71,7 @@ def test_madr_front_matter_and_heading_aliases_normalise_to_the_same_adr():
     assert adr.applies_to == ("services/api/**", "db/*.sql")
     assert "Chosen option: PostgreSQL" in adr.section("decision")
     assert "relational store" in adr.section("context")
-    assert "MySQL" in adr.section("considered options")
+    assert "MySQL" in adr.section("options")  # the rejected role, whatever the heading said
 
 
 def test_superseded_status_records_the_successor():

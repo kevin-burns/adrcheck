@@ -39,6 +39,12 @@ def lint(adrs: list[Adr]) -> tuple[HygieneIssue, ...]:
     for adr in adrs:
         if adr.status is Status.UNKNOWN:
             issues.append(HygieneIssue("missing-status", adr.number, "no recognisable Status"))
+        if adr.status is Status.ACCEPTED and not (adr.section("decision") or adr.section("consequences")).strip():
+            issues.append(
+                HygieneIssue(
+                    "no-binding-section", adr.number, "no decision or consequences section found; nothing binds"
+                )
+            )
         for old in adr.supersedes:
             if old not in by_number:
                 issues.append(

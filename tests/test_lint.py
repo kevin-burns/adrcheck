@@ -2,7 +2,7 @@ from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.lint import lint
 
 
-def adr(number, status=Status.ACCEPTED, supersedes=(), superseded_by=()):
+def adr(number, status=Status.ACCEPTED, supersedes=(), superseded_by=(), sections=None):
     return Adr(
         title=f"ADR {number}",
         status=status,
@@ -10,6 +10,7 @@ def adr(number, status=Status.ACCEPTED, supersedes=(), superseded_by=()):
         number=number,
         supersedes=supersedes,
         superseded_by=superseded_by,
+        sections={"decision": "d"} if sections is None else sections,
     )
 
 
@@ -41,3 +42,11 @@ def test_status_mismatch_when_the_superseded_adr_still_says_accepted():
 
 def test_missing_status():
     assert issues(adr(4, Status.UNKNOWN)) == [("missing-status", 4, "no recognisable Status")]
+
+
+def test_an_accepted_adr_with_no_binding_role_is_reported_not_guessed():
+    """A shape the parser could not bind on compiles to nothing; say so instead of letting it pass silently."""
+    assert issues(adr(4, sections={"context": "why", "options": "a or b"})) == [
+        ("no-binding-section", 4, "no decision or consequences section found; nothing binds")
+    ]
+    assert issues(adr(5, Status.PROPOSED, sections={})) == []
