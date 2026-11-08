@@ -240,3 +240,16 @@ def test_a_compile_that_cannot_reach_the_model_exits_three_from_the_compile_comm
     code = main(["compile", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr")], judge=ExplodingCompiler())
     err = capsys.readouterr().err
     assert code == 3 and "could not compile ADR-1: RuntimeError: provider down" in err
+
+
+def test_the_compile_seat_can_run_on_a_different_provider_than_the_judge_seat(monkeypatch):
+    from adrcheck.adapters.claude_cli import ClaudeCliRunner
+    from adrcheck.adapters.openai_compat import OpenAICompatRunner
+    from adrcheck.cli import _seats
+
+    monkeypatch.delenv("OLLAMA_HOST", raising=False)
+    compiler, judge = _seats(model="claude-cli:sonnet", compile_model="ollama:qwen3.5:9b-q8_0")
+    assert isinstance(compiler.runner, OpenAICompatRunner) and compiler.runner.model == "qwen3.5:9b-q8_0"
+    assert isinstance(judge.runner, ClaudeCliRunner) and judge.runner.model == "sonnet"
+    compiler, judge = _seats(model="claude-cli:sonnet", compile_model=None)
+    assert compiler is judge

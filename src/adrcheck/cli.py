@@ -42,6 +42,12 @@ def _parser() -> argparse.ArgumentParser:
         sp.add_argument("--repo", default=".", help="git repository root (default .)")
         sp.add_argument("--map", default=".adrcheck/map.toml", help="repo-side scope map, relative to --repo")
         sp.add_argument(
+            "--compile-model",
+            default=None,
+            help="provider:model for the compile seat only (default: --model); obligations are cached, so a local "
+            "model here costs nothing at judge time",
+        )
+        sp.add_argument(
             "--model",
             default=None,
             help="provider:model for compiler and judge, e.g. anthropic:claude-sonnet-5-5 or claude-cli:sonnet "
@@ -88,6 +94,14 @@ def _default_model() -> str:
     return "anthropic:claude-sonnet-5-5" if os.environ.get("ANTHROPIC_API_KEY") else "claude-cli:sonnet"
 
 
+def _seats(model: str, compile_model: str | None) -> tuple[ChatModelSeats, ChatModelSeats]:
+    """(compiler, judge). One object when the seats share a model, so usage is counted once."""
+    judge = ChatModelSeats(runner_for(model))
+    if not compile_model or compile_model == model:
+        return judge, judge
+    return ChatModelSeats(runner_for(compile_model)), judge
+
+
 def main(argv: list[str] | None = None, judge=None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "eval":
@@ -117,8 +131,11 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         return EXIT_ISSUES if issues else EXIT_OK
 
     repo = Path(args.repo)
-    judge = judge or ChatModelSeats(runner_for(args.model or _default_model()))
-    compiler = CachedCompiler(judge, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
+    if judge is None:
+        compile_seat, judge = _seats(args.model or _default_model(), args.compile_model)
+    else:
+        compile_seat = judge  # a test's fake fills both seats
+    compiler = CachedCompiler(compile_seat, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
     for i in scope_issues:
         print(f"{i.kind}: ADR-{i.adr_number}: {i.detail}", file=sys.stderr)
 
@@ -136,9 +153,9 @@ def main(argv: list[str] | None = None, judge=None) -> int:
                 print(f"      quote: {o.quote!r}")
                 if o.mandates or o.forbids:
                     print(f"      mandates={list(o.mandates)} forbids={list(o.forbids)}")
-            spent += float(getattr(judge, "last_usage", {}).get("cost_usd", 0.0))
-            if hasattr(judge, "last_usage"):
-                judge.last_usage = {}
+            spent += float(getattr(compile_seat, "last_usage", {}).get("cost_usd", 0.0))
+            if hasattr(compile_seat, "last_usage"):
+                compile_seat.last_usage = {}
         print(f"model cost this run: ${spent:.4f} (cached ADRs cost nothing)", file=sys.stderr)
         if args.prune:
             gone = compiler.prune(adrs)

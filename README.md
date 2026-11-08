@@ -43,7 +43,10 @@ install and needs no key. `openai:<model>` posts to any OpenAI-compatible endpoi
 and `OPENAI_API_KEY` from the environment; `ollama:<model>` is the same against `OLLAMA_HOST`, default
 `http://localhost:11434`. Those two report a cost of zero because no price table fits every endpoint.
 A commit that touches nothing an ADR governs costs no model call. A commit that does costs one call,
-about 100k input tokens; measured runs are in `docs/spikes/`.
+about 100k input tokens; measured runs are in `docs/spikes/`. `--compile-model` puts the compile seat on
+a different provider, for example a local model for the once-per-ADR compile and Sonnet for the judge.
+The obligation cache is keyed by ADR text and prompt version, not by model: delete `.adrcheck/obligations`
+to recompile after changing the compile model.
 
 Waive an ADR for one commit with a trailer that carries a reason:
 
