@@ -15,12 +15,14 @@ the ADR's author, not the commit's.
 
 `classify()` in `src/adrcheck/domain/overtaken.py` turns a judge's CONFLICT into ADR-OVERTAKEN
 when the contradiction can be shown at the parent commit: a named anchor the ADR mandates was
-already absent, or the cited line already existed elsewhere in the code at the parent. The
-`RepoReader.contains()` probe answers those questions against the parent ref. ADR-OVERTAKEN never
-fails the build.
+already absent, the cited line already existed elsewhere in the code at the parent, or the cited
+line removes a named anchor that nothing but its own definition referenced at the parent. The
+`RepoReader.contains()` and `RepoReader.occurrences()` probes answer those questions against the
+parent ref. ADR-OVERTAKEN never fails the build.
 
 ## Consequences
 
-The author of a change is not blamed for history. The probes are cheap and deterministic. The
-case of a removal of code that had no callers at the parent is not yet covered and is tracked in
-bead adrcheck-ihg.
+The author of a change is not blamed for history, and deleting dead code is not breaking a decision:
+the decision had already been left behind. The probes are cheap and deterministic; the occurrence
+count is a whole-identifier match over the parent's code text, so a definition alone counts as one.
+Amended 2026-11-08 for the third probe (bead adrcheck-ihg).
