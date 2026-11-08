@@ -1,0 +1,97 @@
+[
+ {
+  "id": "ADR-10/1",
+  "adr_number": 10,
+  "kind": "MUST",
+  "text": "`adrcheck check --write-baseline` must record the run's stale list to `.adrcheck/baseline.json`, including every stale row.",
+  "quote": "`adrcheck check --write-baseline` records the run's stale list to `.adrcheck/baseline.json`, every row,",
+  "checkability": "structural",
+  "mandates": [
+   "--write-baseline",
+   ".adrcheck/baseline.json"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/2",
+  "adr_number": 10,
+  "kind": "MUST",
+  "text": "Each baseline row must be keyed by ADR number and obligation id and must carry the missing anchors beside it for the reviewer.",
+  "quote": "keyed by ADR number and obligation id with the missing anchors beside them for the reviewer",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/3",
+  "adr_number": 10,
+  "kind": "MUST",
+  "text": "Later runs must read the baseline file when it exists, keep the rows it names in the report flagged as known, and list only the other stale rows.",
+  "quote": "Later runs read the file when it exists, keep the rows it names in the report flagged as known, list only the others,",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/4",
+  "adr_number": 10,
+  "kind": "MUST",
+  "text": "Runs that use the baseline must print a count of the known stale rows.",
+  "quote": "and print a count of the known.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/5",
+  "adr_number": 10,
+  "kind": "MUST_NOT",
+  "text": "Nothing other than a deliberate `--write-baseline` invocation may update the baseline file; ordinary check runs must not write or modify it.",
+  "quote": "Nothing updates the file except a deliberate `--write-baseline`;",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/6",
+  "adr_number": 10,
+  "kind": "MUST_NOT",
+  "text": "The baseline must not hold CONFLICT findings; it holds stale rows only.",
+  "quote": "The baseline holds stale rows only. CONFLICT findings are per diff,",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/7",
+  "adr_number": 10,
+  "kind": "MUST",
+  "text": "The baseline file format must carry a version so a later key can be added without breaking an old file.",
+  "quote": "The format is versioned so a later key can be added without breaking an old file.",
+  "checkability": "mechanical",
+  "mandates": [
+   "version"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/8",
+  "adr_number": 10,
+  "kind": "MUST",
+  "text": "The baseline file must be committed and reviewed like source.",
+  "quote": "it is committed and reviewed like source.",
+  "checkability": "process",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-10/9",
+  "adr_number": 10,
+  "kind": "MUST",
+  "text": "A baseline row must leave the baseline only when the team removes it or rewrites the ADR; rows must not be silently dropped or matched across an ADR edit, since edited ADRs compile to new obligation ids and surface again.",
+  "quote": "A row leaves the baseline when the team removes it or rewrites the ADR, since an edited ADR compiles to new obligation ids and its rows surface again for review.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]

@@ -1,0 +1,124 @@
+[
+ {
+  "id": "ADR-11/1",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "A file `.adrcheck/map.toml` must hold `[[adr]]` rows, each with an `id` and `paths` field.",
+  "quote": "`.adrcheck/map.toml` holds `[[adr]]` rows of `id` and `paths`",
+  "checkability": "mechanical",
+  "mandates": [
+   ".adrcheck/map.toml",
+   "paths"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/2",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "The map's `paths` field must use the same glob subset that the `Applies to` header accepts, with no separate glob dialect.",
+  "quote": "the same glob subset `Applies to` accepts",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/3",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "The domain function `scope()` must fill `applies_to` from the map for an ADR that has no `Applies to` header.",
+  "quote": "The domain function `scope()` fills `applies_to` for an ADR that has none from the map.",
+  "checkability": "structural",
+  "mandates": [
+   "scope",
+   "applies_to"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/4",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "When both header and map exist and differ, the header's scope must win over the map's.",
+  "quote": "When both exist and differ, the header stands",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/5",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "Lint must report a `scope-disagreement` issue when an ADR's header scope and its map scope differ.",
+  "quote": "lint reports `scope-disagreement`",
+  "checkability": "mechanical",
+  "mandates": [
+   "scope-disagreement"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/6",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "Lint must report a `map-unknown-adr` issue for a map row whose ADR does not exist.",
+  "quote": "a map row for an ADR that does not exist is `map-unknown-adr`",
+  "checkability": "mechanical",
+  "mandates": [
+   "map-unknown-adr"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/7",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "`check` must print the same lint issues as warnings and continue running rather than aborting.",
+  "quote": "`check` prints the same issues as warnings and continues.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/8",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "The map must be keyed by ADR number, so two records sharing a number share a scope.",
+  "quote": "The map is keyed by ADR number, so two records sharing a number share a scope",
+  "checkability": "structural",
+  "mandates": [
+   "id"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/9",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "A changed file that no ADR covers, by header or map, must still be counted as uncovered.",
+  "quote": "A changed file no ADR covers stays counted as uncovered.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/10",
+  "adr_number": 11,
+  "kind": "MUST_NOT",
+  "text": "The header and map scopes must not be merged or unioned silently; a disagreement must be reported rather than resolved quietly.",
+  "quote": "Two sources of one fact is a defect in the ADR set, reported rather than merged quietly.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-11/11",
+  "adr_number": 11,
+  "kind": "MUST",
+  "text": "Changes to the map must be reviewed like source code.",
+  "quote": "the map is reviewed like source.",
+  "checkability": "process",
+  "mandates": [],
+  "forbids": []
+ }
+]
