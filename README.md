@@ -39,8 +39,11 @@ adrcheck check --adr-dir docs/adr --range origin/main..HEAD --format md --fail-o
 
 The model is chosen with `--model provider:model`. `anthropic:claude-sonnet-5-5` uses the Anthropic
 API and needs `ANTHROPIC_API_KEY` in the environment; `claude-cli:sonnet` uses a logged-in Claude Code
-install and needs no key. A commit that touches nothing an ADR governs costs no model call. A
-commit that does costs one call, about 100k input tokens; measured runs are in `docs/spikes/`.
+install and needs no key. `openai:<model>` posts to any OpenAI-compatible endpoint, `OPENAI_BASE_URL`
+and `OPENAI_API_KEY` from the environment; `ollama:<model>` is the same against `OLLAMA_HOST`, default
+`http://localhost:11434`. Those two report a cost of zero because no price table fits every endpoint.
+A commit that touches nothing an ADR governs costs no model call. A commit that does costs one call,
+about 100k input tokens; measured runs are in `docs/spikes/`.
 
 Waive an ADR for one commit with a trailer that carries a reason:
 
