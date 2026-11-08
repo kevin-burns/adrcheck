@@ -46,7 +46,7 @@ def _parser() -> argparse.ArgumentParser:
     g = c.add_mutually_exclusive_group(required=True)
     g.add_argument("--range", help="git revision range, e.g. HEAD~20..HEAD")
     g.add_argument("--commit", help="one commit")
-    g.add_argument("--staged", action="store_true", help="(not yet) the staged diff")
+    g.add_argument("--staged", action="store_true", help="the index, as a pre-commit hook sees it")
     c.add_argument("--format", choices=("json", "md"), default="md")
     c.add_argument("--fail-on", choices=("conflict",), help="exit 2 when any CONFLICT is reported")
 
@@ -116,11 +116,14 @@ def main(argv: list[str] | None = None, judge=None) -> int:
             print(f"pruned {len(gone)} stale cache entries", file=sys.stderr)
         return EXIT_OK
 
-    if args.staged:
-        print("--staged is not implemented yet; use --commit or --range", file=sys.stderr)
-        return EXIT_ISSUES
     git = GitChanges(repo)
-    changes = git.changes(args.range or f"{args.commit}~1..{args.commit}")
+    if args.staged:
+        changes = [git.staged()]
+        if not changes[0].files:
+            print("nothing staged", file=sys.stderr)
+            return EXIT_OK
+    else:
+        changes = git.changes(args.range or f"{args.commit}~1..{args.commit}")
     try:
         reports = check(changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git)
     except Exception as exc:

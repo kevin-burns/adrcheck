@@ -11,6 +11,7 @@ from adrcheck.adapters.unified_diff import parse_patch
 from adrcheck.domain.change import Change
 
 _SEP = "\x1e"
+STAGED = "STAGED"  # the ref name a pre-commit run uses for the index; its parent is HEAD
 _PROSE = (".md", ".markdown", ".txt", ".rst", ".html", ".htm", ".pdf", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".lock")
 
 
@@ -58,21 +59,26 @@ class GitRepo:
         )
 
     def read(self, ref: str, path: str) -> str:
-        return self._git("show", f"{ref}:{path}").stdout
+        # STAGED is the index: `git show :path`. Everything else is a commit-ish.
+        return self._git("show", f"{'' if ref == STAGED else ref}:{path}").stdout
 
     def _code_text(self, ref: str) -> str | None:
         """All code at `ref` as one string, with prose files, comments and docstrings removed. Cached per ref."""
         key = f"{self.root}@{ref}"
         if key in self._code_cache:
             return self._code_cache[key]
-        listing = self._git("ls-tree", "-r", "--name-only", ref, check=False)
+        listing = (
+            self._git("ls-files", "--cached", check=False)
+            if ref == STAGED
+            else self._git("ls-tree", "-r", "--name-only", ref, check=False)
+        )
         if listing.returncode != 0:
             return None
         parts: list[str] = [listing.stdout]  # file paths count as presence too: an ADR may name a module
         for path in listing.stdout.split("\n"):
             if not path or path.lower().endswith(_PROSE):
                 continue
-            blob = self._git("show", f"{ref}:{path}", check=False)
+            blob = self._git("show", f"{'' if ref == STAGED else ref}:{path}", check=False)
             if blob.returncode != 0:
                 continue
             text = blob.stdout
@@ -89,6 +95,14 @@ class GitChanges(GitRepo):
     def changes(self, spec: str) -> list[Change]:
         revs = self._git("rev-list", "--reverse", "--no-merges", spec).stdout.split()
         return [self._change(rev) for rev in revs]
+
+    def staged(self) -> Change:
+        """The index as one Change: what a pre-commit hook is about to commit, with HEAD as the parent."""
+        head = self._git("rev-parse", "--verify", "-q", "HEAD", check=False).stdout.strip() or None
+        patch = self._git("diff", "--cached", "--no-color", "--find-renames", "--patch").stdout
+        msg_file = self.root / ".git" / "COMMIT_EDITMSG"
+        message = msg_file.read_text() if msg_file.exists() else ""
+        return Change(ref=STAGED, parent=head, message=message.strip("\n"), files=parse_patch(patch))
 
     def _change(self, rev: str) -> Change:
         meta = self._git("show", "-s", f"--format=%P{_SEP}%B", rev).stdout

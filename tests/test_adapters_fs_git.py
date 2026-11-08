@@ -108,3 +108,20 @@ def test_contains_probes_file_paths_as_well_as_contents(tmp_path: Path):
     assert r.contains("HEAD", "decide.py") is True
     assert r.contains("HEAD", "enrich/decide.py") is True
     assert r.contains("HEAD", "enrich/linkedin.py") is False
+
+
+def test_staged_is_one_change_from_the_index_with_head_as_parent(tmp_path: Path):
+    """Pre-commit sees the index, not a commit: the staged diff, HEAD as parent, the prepared message if any."""
+    repo = make_repo(tmp_path)
+    (repo / "a.py").write_text('key = row["url"]\nextra = 1\n')
+    (repo / "b.py").write_text("print('new')\n")
+    git(repo, "add", "a.py", "b.py")
+    (repo / ".git" / "COMMIT_EDITMSG").write_text("wip: add extra\n\nAdr-Exception: ADR-2 reason\n")
+    change = GitChanges(repo).staged()
+    assert change.ref == "STAGED" and change.parent == git(repo, "rev-parse", "HEAD").strip()
+    assert sorted(change.paths()) == ["a.py", "b.py"]
+    assert change.touched("a.py", "extra = 1", kinds=("+",)) and "Adr-Exception: ADR-2 reason" in change.message
+    # the post-image of a staged file is the index content, and the probe reads the index too
+    assert GitRepo(repo).read("STAGED", "b.py") == "print('new')\n"
+    assert GitRepo(repo).contains("STAGED", "extra = 1") is True
+    assert GitRepo(repo).contains("HEAD", "extra = 1") is False

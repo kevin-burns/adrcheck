@@ -175,3 +175,17 @@ def test_a_compile_that_cannot_reach_the_model_exits_three_with_the_reason(tmp_p
     )
     _, err = capsys.readouterr()
     assert code == 3 and "could not evaluate" in err and "provider down" in err
+
+
+def test_check_staged_judges_the_index_against_the_adrs(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    (repo / "src" / "a.py").write_text('key = row["url"]\nmore = 2\n')
+    subprocess.run(["git", "-C", str(repo), "add", "src/a.py"], check=True)
+    code = main(
+        ["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--staged", "--format", "json"],
+        judge=FakeJudge(),
+    )
+    out = json.loads(capsys.readouterr().out)
+    assert code == 0 and out["changes"][0]["commit"] == "STAGED"
+    # HEAD already holds the cited line, so the index did not introduce it: the parent of a staged change is HEAD
+    assert out["findings"][0]["verdict"] == "ADR-OVERTAKEN"

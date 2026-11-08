@@ -1,0 +1,18 @@
+# Hooks other repositories can use:
+#   - repo: https://github.com/kevin-burns/adrcheck
+#     rev: main
+#     hooks:
+#       - id: adrcheck-lint          # free: hygiene of the ADR set, no model
+#       - id: adrcheck-staged        # opt-in: judges the staged diff; needs a provider (see --model)
+- id: adrcheck-lint
+  name: adrcheck lint (ADR set hygiene, no model)
+  entry: adrcheck lint
+  language: python
+  pass_filenames: false
+  files: ^docs/(adr|decisions|architecture/decisions)/.*\.md$
+- id: adrcheck-staged
+  name: adrcheck check --staged (judges the staged diff against the ADRs)
+  entry: adrcheck check --staged --format md --fail-on conflict
+  language: python
+  pass_filenames: false
+  verbose: true
