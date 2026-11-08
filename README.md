@@ -60,6 +60,17 @@ adrcheck check --adr-dir docs/adr --commit HEAD --write-baseline   # writes .adr
 Commit the file. Later runs count the rows it names and list only new ones. Nothing rewrites it except
 another `--write-baseline`; edit it like source when an ADR is retired or an anchor is renamed.
 
+ADRs that cannot carry an `Applies to` line can be scoped from the repository instead:
+
+```toml
+# .adrcheck/map.toml
+[[adr]]
+id = 4
+paths = ["enrich/**", "cli.py"]
+```
+
+The header wins where both exist, and `adrcheck lint` reports the disagreement.
+
 ### In a pull request
 
 ```yaml

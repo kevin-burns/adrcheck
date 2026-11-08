@@ -1,0 +1,178 @@
+{
+ "changes": [
+  {
+   "commit": "340a76d795185ce1f6a6c5fcd2de4dc0e57c56cf",
+   "subject": "PRO-897: Fix the faults the model comparison carried over from benchmark.py (#1817)",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 88202,
+   "tokens_out": 674,
+   "cost_usd": 0.3595,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 6,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 15,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  }
+ ],
+ "findings": [
+  {
+   "commit": "340a76d795185ce1f6a6c5fcd2de4dc0e57c56cf",
+   "adr": 13,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  }
+ ],
+ "stale": [
+  {
+   "adr": 3,
+   "obligation": "ADR-3/9",
+   "missing": [
+    "/backend/consultations/import_schema/"
+   ],
+   "known": true
+  },
+  {
+   "adr": 6,
+   "obligation": "ADR-6/6",
+   "missing": [
+    "closed_question_id"
+   ],
+   "known": true
+  },
+  {
+   "adr": 7,
+   "obligation": "ADR-7/1",
+   "missing": [
+    "SQS"
+   ],
+   "known": true
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/7",
+   "missing": [
+    "output_json",
+    "metrics_json"
+   ],
+   "known": true
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/18",
+   "missing": [
+    "SQS"
+   ],
+   "known": true
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/2",
+   "missing": [
+    "source_type"
+   ],
+   "known": true
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/3",
+   "missing": [
+    "labelling_method"
+   ],
+   "known": true
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/4",
+   "missing": [
+    "transformations"
+   ],
+   "known": true
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/6",
+   "missing": [
+    "split_role"
+   ],
+   "known": true
+  }
+ ]
+}

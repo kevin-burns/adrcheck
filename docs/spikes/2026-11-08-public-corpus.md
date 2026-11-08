@@ -80,3 +80,26 @@ changed.
 
 Day's model spend so far: about $3 on this corpus, about $3.60 including the recompiles and probes
 earlier in the day.
+
+## Second pass, same evening: scope map and baseline
+
+Both items above now exist (`.adrcheck/map.toml`, 1744705; `--write-baseline`, 87e32ac, ADR-10). A map
+was drafted from the ADR titles alone, so it is a guess at the maintainers' intent and would hide a
+conflict wherever the guess is wrong; it is good enough to measure selection. The two shared numbers
+(7, 14) get one scope each, since the map keys by number.
+
+| Commit | Before: calls / input tokens / cost | After: calls / input tokens / cost |
+|---|---|---|
+| dfdaad72 CODEOWNERS | 1 / 80,802 / $0.17 | 0 / 0 / $0.00 |
+| 340a76d7 comparison.py | 1 / 103,346 / $0.27 | 1 / 88,202 / $0.36 |
+
+The CODEOWNERS edit now matches no ADR and costs nothing, which was the point. On the evals commit the
+map cut the prompt by 15 percent (five ADRs selected instead of sixteen; four of the five dismissed by
+the judge, ADR-13 COMPLIANT at ADR level in both runs) yet the reported cost rose. `claude -p` prices
+its own cache writes and reads, so the dollar figure of one run depends on what the harness had cached
+a minute earlier; input tokens are the number to compare across runs, dollars only across many.
+
+The first run wrote nine stale rows to `.adrcheck/baseline.json`; the second run reported all nine as
+known and listed none. Run files: `2026-11-08-public-corpus.map-codeowners.run.json` and
+`2026-11-08-public-corpus.map-comparison.run.json`. The drafted map is not committed anywhere; it
+describes someone else's repository.

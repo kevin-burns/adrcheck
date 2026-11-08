@@ -1,0 +1,165 @@
+{
+ "changes": [
+  {
+   "commit": "dfdaad727e842eb6c063b427127cd7e9a88697c1",
+   "subject": "Change CODEOWNERS so the team doesn't get auto-assigned on each PR (#1831)",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 6,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 11,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 15,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 16,
+     "reason": "globs did not match any changed path"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  }
+ ],
+ "findings": [],
+ "stale": [
+  {
+   "adr": 3,
+   "obligation": "ADR-3/9",
+   "missing": [
+    "/backend/consultations/import_schema/"
+   ],
+   "known": false
+  },
+  {
+   "adr": 6,
+   "obligation": "ADR-6/6",
+   "missing": [
+    "closed_question_id"
+   ],
+   "known": false
+  },
+  {
+   "adr": 7,
+   "obligation": "ADR-7/1",
+   "missing": [
+    "SQS"
+   ],
+   "known": false
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/7",
+   "missing": [
+    "output_json",
+    "metrics_json"
+   ],
+   "known": false
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/18",
+   "missing": [
+    "SQS"
+   ],
+   "known": false
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/2",
+   "missing": [
+    "source_type"
+   ],
+   "known": false
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/3",
+   "missing": [
+    "labelling_method"
+   ],
+   "known": false
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/4",
+   "missing": [
+    "transformations"
+   ],
+   "known": false
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/6",
+   "missing": [
+    "split_role"
+   ],
+   "known": false
+  }
+ ]
+}
