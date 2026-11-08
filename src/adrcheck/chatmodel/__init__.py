@@ -33,7 +33,7 @@ class ChatModelSeats:
         try:
             reply = self.runner.run(judge_request(change, cases, context))
         except Exception as exc:
-            return JudgeResponse(error=f"judge error: {type(exc).__name__}: {exc}"[:300])
+            return JudgeResponse(error=f"{type(exc).__name__}: {exc}"[:300])
         parsed = parse_judge_reply(reply.text)
         return JudgeResponse(
             findings=parsed.findings,

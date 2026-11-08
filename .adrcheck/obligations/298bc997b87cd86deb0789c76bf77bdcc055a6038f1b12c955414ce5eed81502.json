@@ -1,0 +1,171 @@
+[
+ {
+  "id": "ADR-9/1",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "Prompt text, including PROMPT_VERSION, must live in src/adrcheck/chatmodel/prompts.py.",
+  "quote": "The package `src/adrcheck/chatmodel/` holds the prompt text (`prompts.py`, including `PROMPT_VERSION`)",
+  "checkability": "mechanical",
+  "mandates": [
+   "PROMPT_VERSION"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/2",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "Reply parsers must live in src/adrcheck/chatmodel/parse.py.",
+  "quote": "the reply parsers (`parse.py`)",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/3",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "ChatModelSeats must be defined in the chatmodel package and implement both ObligationCompiler and ChangeJudge over a single ChatRunner.",
+  "quote": "`ChatModelSeats`, which implements both `ObligationCompiler` and `ChangeJudge` over one `ChatRunner`",
+  "checkability": "structural",
+  "mandates": [
+   "ChatModelSeats",
+   "ObligationCompiler",
+   "ChangeJudge",
+   "ChatRunner"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/4",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "A ChatRunner must turn one ChatRequest (system text plus user text) into one ChatReply (text and usage).",
+  "quote": "A `ChatRunner` turns one `ChatRequest` (system text plus user text) into one `ChatReply` (text and usage).",
+  "checkability": "structural",
+  "mandates": [
+   "ChatRunner",
+   "ChatRequest",
+   "ChatReply"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/5",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "Providers must be implemented as runners in src/adrcheck/adapters/, including ClaudeCliRunner over `claude -p` and AnthropicRunner over the Anthropic Messages API.",
+  "quote": "Providers are runners in `src/adrcheck/adapters/`: `ClaudeCliRunner` over `claude -p` and `AnthropicRunner` over the Anthropic Messages API",
+  "checkability": "structural",
+  "mandates": [
+   "src/adrcheck/adapters",
+   "ClaudeCliRunner",
+   "AnthropicRunner"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/6",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "Provider selection must go through a `provider:model` string handled in providers.py.",
+  "quote": "selected by a `provider:model` string in `providers.py`",
+  "checkability": "mechanical",
+  "mandates": [
+   "providers.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/7",
+  "adr_number": 9,
+  "kind": "MUST_NOT",
+  "text": "The chatmodel package must not import any adapter module.",
+  "quote": "`chatmodel` imports no adapter, no SDK and no subprocess.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": [
+   "from adrcheck.adapters",
+   "import adrcheck.adapters",
+   "from ..adapters"
+  ]
+ },
+ {
+  "id": "ADR-9/8",
+  "adr_number": 9,
+  "kind": "MUST_NOT",
+  "text": "The chatmodel package must not import any provider SDK (e.g. anthropic).",
+  "quote": "`chatmodel` imports no adapter, no SDK and no subprocess.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": [
+   "import anthropic",
+   "from anthropic"
+  ]
+ },
+ {
+  "id": "ADR-9/9",
+  "adr_number": 9,
+  "kind": "MUST_NOT",
+  "text": "The chatmodel package must not import or use subprocess.",
+  "quote": "`chatmodel` imports no adapter, no SDK and no subprocess.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": [
+   "import subprocess",
+   "from subprocess"
+  ]
+ },
+ {
+  "id": "ADR-9/10",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "When a runner raises, the judge must return an error response rather than letting the exception propagate through the use case.",
+  "quote": "A runner that raises makes the judge return an error response; it never raises through the use case.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/11",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "The compile prompt must remain byte-identical to the first adapter's so cached obligations under the current PROMPT_VERSION stay valid.",
+  "quote": "The compile prompt stays byte-identical to the first adapter's, so cached obligations under the current `PROMPT_VERSION` remain valid.",
+  "checkability": "intent",
+  "mandates": [
+   "PROMPT_VERSION"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/12",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "Every provider must send the same prompt words; providers must not carry their own prompt variants.",
+  "quote": "Every provider sends the same words, so the eval set compares models.",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/13",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "The system text of the judge request must be a cacheable block for providers that cache; claude -p concatenates it into one piece.",
+  "quote": "The system text of the judge request is a cacheable block for providers that cache; `claude -p` concatenates it",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-9/14",
+  "adr_number": 9,
+  "kind": "MUST",
+  "text": "The Anthropic runner's cost must be a list-price estimate from a table, and must be zero for an unknown model rather than guessed.",
+  "quote": "Cost for the Anthropic runner is a list-price estimate from a table and is zero for an unknown model, which is reported as such rather than guessed.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]

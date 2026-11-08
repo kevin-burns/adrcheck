@@ -194,7 +194,7 @@ class Failing:
 def test_a_runner_that_raises_is_a_judge_error_not_an_exception():
     """ADR-3: an unreachable model yields UNCLEAR with a reason, never a crash and never COMPLIANT."""
     resp = ChatModelSeats(Failing()).judge(CHANGE, (JudgeCase(ADR, (OBL,)),), Context(post_images={}))
-    assert resp.findings == () and resp.error.startswith("judge error: ConnectionError")
+    assert resp.findings == () and resp.error.startswith("ConnectionError")
 
 
 def test_the_compile_prompt_is_unchanged_by_the_move_so_the_cache_keys_still_hold():
