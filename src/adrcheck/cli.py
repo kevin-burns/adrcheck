@@ -20,7 +20,7 @@ from adrcheck.domain.verdict import Verdict
 from adrcheck.usecases.check import check
 from adrcheck.usecases.evaluate import score
 
-EXIT_OK, EXIT_ISSUES, EXIT_CONFLICT = 0, 1, 2
+EXIT_OK, EXIT_ISSUES, EXIT_CONFLICT, EXIT_UNEVALUATED = 0, 1, 2, 3
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -121,7 +121,19 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         return EXIT_ISSUES
     git = GitChanges(repo)
     changes = git.changes(args.range or f"{args.commit}~1..{args.commit}")
-    reports = check(changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git)
+    try:
+        reports = check(changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git)
+    except Exception as exc:
+        print(f"could not evaluate: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return EXIT_UNEVALUATED
     print(to_json(reports) if args.format == "json" else to_markdown(reports))
     conflicts = any(f.verdict is Verdict.CONFLICT for r in reports for f in r.findings)
-    return EXIT_CONFLICT if (args.fail_on == "conflict" and conflicts) else EXIT_OK
+    if args.fail_on == "conflict" and conflicts:
+        return EXIT_CONFLICT
+    judged = [r for r in reports if r.judge_calls]
+    if judged and all(r.judge_failed for r in judged):
+        # ADR-3: abstention never fails the build; this is not abstention. No case got a verdict, so the
+        # run says so with its own code instead of a green that nobody earned.
+        print("could not evaluate: every judge call failed; see the judge error notes", file=sys.stderr)
+        return EXIT_UNEVALUATED
+    return EXIT_OK

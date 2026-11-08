@@ -1,0 +1,138 @@
+[
+ {
+  "id": "ADR-3/1",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "The Verdict type must have exactly four values: CONFLICT, COMPLIANT, UNCLEAR and ADR-OVERTAKEN.",
+  "quote": "`Verdict` has four values: CONFLICT, COMPLIANT, UNCLEAR and ADR-OVERTAKEN.",
+  "checkability": "mechanical",
+  "mandates": [
+   "Verdict",
+   "CONFLICT",
+   "COMPLIANT",
+   "UNCLEAR"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/2",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "UNCLEAR must be reported as a first-class result together with its reason.",
+  "quote": "UNCLEAR is a first-class result, reported with its reason.",
+  "checkability": "structural",
+  "mandates": [
+   "UNCLEAR"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/3",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "A judge that errors, times out or returns unparseable output must yield an UNCLEAR finding whose reason begins with `judge error`.",
+  "quote": "A judge that errors, times out or returns unparseable output yields an UNCLEAR finding whose reason begins `judge error`",
+  "checkability": "mechanical",
+  "mandates": [
+   "UNCLEAR",
+   "judge error"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/4",
+  "adr_number": 3,
+  "kind": "MUST_NOT",
+  "text": "A judge error, timeout or unparseable output must never produce a COMPLIANT verdict.",
+  "quote": "it never yields COMPLIANT",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/5",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "Only a CONFLICT verdict may cause `adrcheck check` to exit 2 under `--fail-on conflict`.",
+  "quote": "Only CONFLICT can make `adrcheck check` exit 2 under `--fail-on conflict`.",
+  "checkability": "structural",
+  "mandates": [
+   "--fail-on"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/6",
+  "adr_number": 3,
+  "kind": "MUST_NOT",
+  "text": "UNCLEAR, COMPLIANT and ADR-OVERTAKEN verdicts (including judge-error UNCLEAR rows) must not cause exit 2.",
+  "quote": "Only CONFLICT can make `adrcheck check` exit 2 under `--fail-on conflict`.",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/7",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "A run in which the judge was called and no case received any verdict must exit 3.",
+  "quote": "A run in which the judge was called and no case received any verdict, or in which an ADR could not be compiled because the provider failed, exits 3",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/8",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "A run in which an ADR could not be compiled because the provider failed must exit 3.",
+  "quote": "or in which an ADR could not be compiled because the provider failed, exits 3",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/9",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "Exit code 3 must be distinct from exit 2 so a pipeline can distinguish an operational failure from a finding; the tool must not decide for the pipeline whether exit 3 is a stop.",
+  "quote": "exit 3 is distinct from exit 2 so a pipeline can tell \"the checker could not run\" from \"the checker found a problem\"",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/10",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "A partial failure, where some cases got a verdict and others a judge error, must still exit 0 or 2 and show the errors as UNCLEAR rows.",
+  "quote": "A partial failure, where some cases got a verdict and others a judge error, still exits 0 or 2 and shows the errors as UNCLEAR rows.",
+  "checkability": "structural",
+  "mandates": [
+   "UNCLEAR"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/11",
+  "adr_number": 3,
+  "kind": "MUST_NOT",
+  "text": "An unreachable model must not result in a green (exit 0) build or in a reported conflict.",
+  "quote": "An unreachable model cannot turn a build green by accident, and cannot mark a conflict either",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-3/12",
+  "adr_number": 3,
+  "kind": "MUST",
+  "text": "The report must show UNCLEAR counts so a run that abstained on everything is visible.",
+  "quote": "The report must show UNCLEAR counts so a run that abstained on everything is visible as such.",
+  "checkability": "structural",
+  "mandates": [
+   "UNCLEAR"
+  ],
+  "forbids": []
+ }
+]

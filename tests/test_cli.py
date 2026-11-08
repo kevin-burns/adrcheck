@@ -143,3 +143,35 @@ def test_eval_scores_a_saved_report_against_frozen_cases_without_a_model(tmp_pat
     assert code == 0 and "2/2 hits" in err  # COMPLIANT asks for silence, so nothing raised is a hit
     assert out.splitlines()[0].startswith("hit    ADR-2 abc expected CONFLICT got CONFLICT")
     assert out.splitlines()[1].startswith("quiet  ADR-2 abc expected COMPLIANT got -")
+
+
+class FailingJudge(FakeJudge):
+    def judge(self, change, cases, context):
+        return JudgeResponse(error="APIConnectionError: no route to host")
+
+
+def test_a_run_in_which_no_case_got_a_verdict_exits_three_not_green(tmp_path: Path, capsys):
+    """Operational failure is not a finding: not 0 (nothing wrong), not 2 (a conflict), but 3."""
+    repo = make_repo(tmp_path)
+    code = main(
+        ["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--commit", "HEAD", "--format", "json"],
+        judge=FailingJudge(),
+    )
+    out, err = capsys.readouterr()
+    assert code == 3
+    assert "could not evaluate" in err and json.loads(out)["findings"][0]["verdict"] == "UNCLEAR"
+
+
+class ExplodingCompiler(FakeJudge):
+    def compile(self, adr):
+        raise RuntimeError("provider down")
+
+
+def test_a_compile_that_cannot_reach_the_model_exits_three_with_the_reason(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    code = main(
+        ["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--commit", "HEAD"],
+        judge=ExplodingCompiler(),
+    )
+    _, err = capsys.readouterr()
+    assert code == 3 and "could not evaluate" in err and "provider down" in err

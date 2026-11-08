@@ -314,3 +314,10 @@ def test_a_finding_for_an_obligation_nobody_asked_about_is_a_problem_not_a_verdi
     report, _ = run(JudgeResponse(findings=(stray,)))
     assert [(f.adr_number, f.verdict) for f in report.findings] == [(2, Verdict.COMPLIANT)]
     assert report.problems == ("judge named ADR-7/3, which was not asked about",)
+
+
+def test_a_report_records_that_its_judge_call_failed_so_the_caller_can_tell_abstention_from_absence():
+    report, _ = run(JudgeResponse(error="AuthenticationError: no credentials"))
+    assert report.judge_failed is True and report.judge_calls == 1
+    report, _ = run(JudgeResponse(findings=()))
+    assert report.judge_failed is False

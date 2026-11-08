@@ -57,6 +57,7 @@ class ChangeReport:
     problems: tuple[str, ...] = ()
     uncovered: int = 0
     judge_calls: int = 0
+    judge_failed: bool = False  # the judge was called and returned no verdict at all (error, not abstention)
     tokens_in: int = 0
     tokens_out: int = 0
     cost_usd: float = 0.0
@@ -155,6 +156,7 @@ def check(
         excluded = [Excluded(e.adr.number, e.reason) for e in selection.excluded]
         calls = tokens_in = tokens_out = 0
         cost = 0.0
+        judge_failed = False
         context: Context | None = None
         judged: list[Selection] = []
 
@@ -177,6 +179,7 @@ def check(
             context = _context(repo, change)
             response = judge.judge(change, tuple(case for _, case in cases), context)
             calls += 1
+            judge_failed = bool(response.error)
             tokens_in += response.tokens_in
             tokens_out += response.tokens_out
             cost += response.cost_usd
@@ -214,6 +217,7 @@ def check(
                 problems=problems,
                 uncovered=_uncovered(change, judged),
                 judge_calls=calls,
+                judge_failed=judge_failed,
                 tokens_in=tokens_in,
                 tokens_out=tokens_out,
                 cost_usd=cost,
