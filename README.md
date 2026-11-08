@@ -48,6 +48,18 @@ Waive an ADR for one commit with a trailer that carries a reason:
 Adr-Exception: ADR-3 migration script, reverted in the next commit
 ```
 
+### Adopting on a repository with history
+
+The first run lists every accepted ADR whose named anchors are no longer in the tree. Review that list
+once and keep it:
+
+```bash
+adrcheck check --adr-dir docs/adr --commit HEAD --write-baseline   # writes .adrcheck/baseline.json
+```
+
+Commit the file. Later runs count the rows it names and list only new ones. Nothing rewrites it except
+another `--write-baseline`; edit it like source when an ADR is retired or an anchor is renamed.
+
 ### In a pull request
 
 ```yaml
