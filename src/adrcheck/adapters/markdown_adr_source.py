@@ -10,6 +10,28 @@ from adrcheck.domain.adr import Adr
 
 _NUMBERED = re.compile(r"^\d+.*\.md$")
 
+# Where teams keep ADRs, most specific first: Nygard's docs/adr, MADR's docs/decisions, adr-tools'
+# docs/architecture/decisions, then the shorter variants.
+CONVENTIONAL_DIRS = (
+    "docs/adr",
+    "docs/decisions",
+    "docs/architecture/decisions",
+    "doc/adr",
+    "doc/architecture/decisions",
+    "adr",
+    "adrs",
+    "decisions",
+)
+
+
+def discover_adr_dir(repo: Path) -> Path | None:
+    """The first conventional ADR directory that exists under the repository root, or None."""
+    for rel in CONVENTIONAL_DIRS:
+        candidate = Path(repo) / rel
+        if candidate.is_dir():
+            return candidate
+    return None
+
 
 class MarkdownAdrSource:
     def __init__(self, directory: Path):

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from adrcheck.adapters.eval_cases import load_cases
 from adrcheck.adapters.git_changes import GitChanges
-from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource
+from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource, discover_adr_dir
 from adrcheck.adapters.obligation_cache import CachedCompiler
 from adrcheck.adapters.providers import runner_for
 from adrcheck.adapters.render import to_json, to_markdown
@@ -31,7 +31,10 @@ def _parser() -> argparse.ArgumentParser:
 
     def common(sp):
         sp.add_argument(
-            "--adr-dir", default="docs/adr", help="directory of numbered ADR markdown files (default docs/adr)"
+            "--adr-dir",
+            default=None,
+            help="directory of numbered ADR markdown files (default: the first of docs/adr, docs/decisions, "
+            "docs/architecture/decisions, doc/adr, adr, decisions that exists)",
         )
         sp.add_argument("--repo", default=".", help="git repository root (default .)")
         sp.add_argument(
@@ -61,7 +64,8 @@ def _parser() -> argparse.ArgumentParser:
     lint_p = sub.add_parser(
         "lint", help="hygiene of the ADR set: dangling refs, cycles, status mismatch, missing status"
     )
-    lint_p.add_argument("--adr-dir", default="docs/adr")
+    lint_p.add_argument("--adr-dir", default=None)
+    lint_p.add_argument("--repo", default=".")
     return p
 
 
@@ -83,7 +87,10 @@ def main(argv: list[str] | None = None, judge=None) -> int:
             print(f"  expected {exp} got {got or 'absent'}: {n}", file=sys.stderr)
         return EXIT_OK if result.hits == result.total else EXIT_ISSUES
 
-    adr_dir = Path(args.adr_dir)
+    adr_dir = Path(args.adr_dir) if args.adr_dir else discover_adr_dir(Path(args.repo))
+    if adr_dir is None:
+        print("no ADR directory found; pass --adr-dir", file=sys.stderr)
+        return EXIT_ISSUES
 
     if args.command == "lint":
         issues = lint(MarkdownAdrSource(adr_dir).adrs())

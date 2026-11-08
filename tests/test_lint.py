@@ -50,3 +50,10 @@ def test_an_accepted_adr_with_no_binding_role_is_reported_not_guessed():
         ("no-binding-section", 4, "no decision or consequences section found; nothing binds")
     ]
     assert issues(adr(5, Status.PROPOSED, sections={})) == []
+
+
+def test_two_adrs_sharing_a_number_are_reported_once_per_pair():
+    """Seen in the wild (two 0007 files in one directory): every reference to ADR-7 is then ambiguous."""
+    a, b = adr(7), adr(7)
+    found = issues(a, b, adr(8))
+    assert found == [("duplicate-number", 7, "two records share number 7: 0007.md and 0007.md")]

@@ -36,7 +36,14 @@ def lint(adrs: list[Adr]) -> tuple[HygieneIssue, ...]:
     supersedes = {a.number: a.supersedes for a in adrs if a.number is not None and a.supersedes}
     reported_cycles: set[frozenset[int]] = set()
 
+    seen_numbers: dict[int, Adr] = {}
     for adr in adrs:
+        if adr.number is not None:
+            if (first := seen_numbers.get(adr.number)) is not None:
+                detail = f"two records share number {adr.number}: {first.source} and {adr.source}"
+                issues.append(HygieneIssue("duplicate-number", adr.number, detail))
+            else:
+                seen_numbers[adr.number] = adr
         if adr.status is Status.UNKNOWN:
             issues.append(HygieneIssue("missing-status", adr.number, "no recognisable Status"))
         if adr.status is Status.ACCEPTED and not (adr.section("decision") or adr.section("consequences")).strip():

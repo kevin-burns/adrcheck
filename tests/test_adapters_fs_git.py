@@ -125,3 +125,13 @@ def test_staged_is_one_change_from_the_index_with_head_as_parent(tmp_path: Path)
     assert GitRepo(repo).read("STAGED", "b.py") == "print('new')\n"
     assert GitRepo(repo).contains("STAGED", "extra = 1") is True
     assert GitRepo(repo).contains("HEAD", "extra = 1") is False
+
+
+def test_the_adr_directory_is_discovered_at_the_common_paths_when_none_is_given(tmp_path: Path):
+    from adrcheck.adapters.markdown_adr_source import discover_adr_dir
+
+    assert discover_adr_dir(tmp_path) is None
+    (tmp_path / "docs" / "architecture" / "decisions").mkdir(parents=True)
+    assert discover_adr_dir(tmp_path) == tmp_path / "docs" / "architecture" / "decisions"
+    (tmp_path / "docs" / "adr").mkdir()
+    assert discover_adr_dir(tmp_path) == tmp_path / "docs" / "adr"  # the most specific conventional name wins
