@@ -72,8 +72,9 @@ def stale_sweep(adrs: list[Adr], compiler: ObligationCompiler, repo: RepoReader,
         if adr.status is not Status.ACCEPTED or adr.number is None:
             continue
         for o in compiler.compile(adr):
+            # ADR-5: stale only when every named anchor is gone. One surviving anchor is a foothold.
             missing = tuple(n for n in o.mandates if repo.contains(ref, n) is False)
-            if missing:
+            if missing and len(missing) == len(o.mandates):
                 out.append(StaleAdr(adr.number, o.id, missing))
     return tuple(out)
 
@@ -183,18 +184,22 @@ def check(
             tokens_in += response.tokens_in
             tokens_out += response.tokens_out
             cost += response.cost_usd
-            by_id = {o.id: (sel, case) for sel, case in cases for o in case.obligations}
-            by_number = {case.adr.number: (sel, case) for sel, case in cases}
-            findings_of: dict[int | None, list[Finding]] = {case.adr.number: [] for _, case in cases}
+            # Cases are keyed by position, not ADR number: two records can share a number (lint says so),
+            # and a finding must land on exactly one of them.
+            by_id = {o.id: i for i, (_, case) in enumerate(cases) for o in case.obligations}
+            by_number = {case.adr.number: i for i, (_, case) in enumerate(cases)}
+            findings_of: list[list[Finding]] = [[] for _ in cases]
             for raw in response.findings:
-                owner = by_id.get(raw.obligation_id) or by_number.get(_adr_number_of(raw.obligation_id))
+                owner = by_id.get(raw.obligation_id)
+                if owner is None:
+                    owner = by_number.get(_adr_number_of(raw.obligation_id))
                 if owner is None:
                     problems += (f"judge named {raw.obligation_id}, which was not asked about",)
                     continue
-                sel, case = owner
+                sel, case = cases[owner]
                 obligation = next((o for o in case.obligations if o.id == raw.obligation_id), None)
-                findings_of[case.adr.number].append(_settle(raw, obligation, change, case.adr, sel.signals, repo))
-            for sel, case in cases:
+                findings_of[owner].append(_settle(raw, obligation, change, case.adr, sel.signals, repo))
+            for i, (sel, case) in enumerate(cases):
                 adr = case.adr
                 if response.error:
                     judged.append(sel)
@@ -206,7 +211,7 @@ def check(
                 else:
                     judged.append(sel)
                     compliant = Finding(adr.number, None, Verdict.COMPLIANT, sel.signals)
-                    findings.extend(findings_of[adr.number] or [compliant])
+                    findings.extend(findings_of[i] or [compliant])
 
         reports.append(
             ChangeReport(

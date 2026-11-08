@@ -254,7 +254,7 @@ def test_the_stale_sweep_reports_an_accepted_adr_whose_named_anchors_are_all_gon
         applies_to=("enrich/linkedin.py",),
         sections={"decision": "q"},
     )
-    repo = FakeRepo({("c1", "import_rows"): False, ("c1", "li-assist"): True, ("c1", "row_key"): True})
+    repo = FakeRepo({("c1", "import_rows"): False, ("c1", "li-assist"): False, ("c1", "row_key"): True})
     reports = check(
         changes=[change()],
         adrs=[ADR, stale_adr],
@@ -262,7 +262,9 @@ def test_the_stale_sweep_reports_an_accepted_adr_whose_named_anchors_are_all_gon
         judge=FakeJudge(JudgeResponse(findings=())),
         repo=repo,
     )
-    assert [(s.adr_number, s.obligation_id, s.missing) for s in reports[-1].stale] == [(4, "ADR-4/2", ("import_rows",))]
+    assert [(s.adr_number, s.obligation_id, s.missing) for s in reports[-1].stale] == [
+        (4, "ADR-4/2", ("import_rows", "li-assist"))
+    ]
 
 
 def test_the_stale_sweep_is_quiet_when_anchors_are_present():
@@ -321,3 +323,79 @@ def test_a_report_records_that_its_judge_call_failed_so_the_caller_can_tell_abst
     assert report.judge_failed is True and report.judge_calls == 1
     report, _ = run(JudgeResponse(findings=()))
     assert report.judge_failed is False
+
+
+def test_two_adrs_sharing_a_number_do_not_duplicate_each_others_findings():
+    """Seen on a public corpus with two 0007 files: every ADR-7 finding was printed twice."""
+    twin = Adr(
+        title="Other seven",
+        status=Status.ACCEPTED,
+        source="0007-b.md",
+        number=7,
+        applies_to=("enrich/**",),
+        sections={"decision": "x"},
+    )
+    first = Adr(
+        title="Seven",
+        status=Status.ACCEPTED,
+        source="0007-a.md",
+        number=7,
+        applies_to=("enrich/**",),
+        sections={"decision": "y"},
+    )
+    seven = Obligation(id="ADR-7/1", adr_number=7, kind="MUST", text="t", quote="x", checkability=Checkability.INTENT)
+    repo = FakeRepo({("c0", 'key = row["url"]'): False})
+    raw7 = RawFinding("ADR-7/1", Verdict.COMPLIANT, "enrich/store.py", 'key = row["url"]', "x", "fine")
+    reports = check(
+        changes=[change()],
+        adrs=[first, twin],
+        compiler=FakeCompiler({7: (seven,)}),
+        judge=FakeJudge(JudgeResponse(findings=(raw7,))),
+        repo=repo,
+    )
+    # one finding for the obligation that was judged, one ADR-level COMPLIANT for the twin that got nothing
+    assert sorted(((f.adr_number, f.obligation_id or "", f.verdict) for f in reports[0].findings), key=str) == [
+        (7, "", Verdict.COMPLIANT),
+        (7, "ADR-7/1", Verdict.COMPLIANT),
+    ]
+
+
+def test_the_stale_sweep_fires_only_when_every_anchor_of_an_obligation_is_gone():
+    """ADR-5: 'an obligation whose named anchors are all missing'. One surviving anchor means the decision still has a foothold."""
+    half = Obligation(
+        id="ADR-4/1",
+        adr_number=4,
+        kind="MUST",
+        text="t",
+        quote="q",
+        checkability=Checkability.MECHANICAL,
+        mandates=("gone", "still_here"),
+    )
+    all_gone = Obligation(
+        id="ADR-4/2",
+        adr_number=4,
+        kind="MUST",
+        text="t",
+        quote="q",
+        checkability=Checkability.MECHANICAL,
+        mandates=("gone", "also_gone"),
+    )
+    stale_adr = Adr(
+        title="S",
+        status=Status.ACCEPTED,
+        source="0004.md",
+        number=4,
+        applies_to=("other/**",),
+        sections={"decision": "q"},
+    )
+    repo = FakeRepo(
+        {("c1", "gone"): False, ("c1", "also_gone"): False, ("c1", "still_here"): True, ("c1", "row_key"): True}
+    )
+    reports = check(
+        changes=[change()],
+        adrs=[ADR, stale_adr],
+        compiler=FakeCompiler({2: (OBLIGATION,), 4: (half, all_gone)}),
+        judge=FakeJudge(JudgeResponse(findings=())),
+        repo=repo,
+    )
+    assert [(s.obligation_id, s.missing) for s in reports[-1].stale] == [("ADR-4/2", ("gone", "also_gone"))]
