@@ -1,0 +1,917 @@
+{
+ "changes": [
+  {
+   "commit": "e1e037ece2bfcd94faa1432834c38ba20f2a751f",
+   "subject": "Hotfix/consultation create slug (#1821)",
+   "uncovered": 3,
+   "judge_calls": 1,
+   "tokens_in": 96407,
+   "tokens_out": 969,
+   "cost_usd": 0.0193,
+   "excluded": [
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 8,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 9,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 10,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 13,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 15,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 16,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "2e73711748996fbf83c053ac366cfcd29476fc1d",
+   "subject": "PRO-962: Make PR reviewer assignment manual (#1820)",
+   "uncovered": 2,
+   "judge_calls": 1,
+   "tokens_in": 84502,
+   "tokens_out": 58,
+   "cost_usd": 0.187,
+   "excluded": [
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 8,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 9,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 10,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 13,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 15,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 16,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "subject": "PRO-897: Trace every evaluation run on the platform that has a connection (#1816)",
+   "uncovered": 16,
+   "judge_calls": 1,
+   "tokens_in": 113769,
+   "tokens_out": 3377,
+   "cost_usd": 0.3373,
+   "excluded": [
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 8,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 9,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 15,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 16,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "6f5e77c25fe45ca3b47581cde1d83d1a90740ae3",
+   "subject": "PRO-897: Fold the benchmark into run_eval.py as a model comparison (#1793)",
+   "uncovered": 19,
+   "judge_calls": 1,
+   "tokens_in": 137601,
+   "tokens_out": 2963,
+   "cost_usd": 0.4285,
+   "excluded": [
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 8,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 9,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 10,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 15,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 16,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "340a76d795185ce1f6a6c5fcd2de4dc0e57c56cf",
+   "subject": "PRO-897: Fix the faults the model comparison carried over from benchmark.py (#1817)",
+   "uncovered": 2,
+   "judge_calls": 1,
+   "tokens_in": 103346,
+   "tokens_out": 722,
+   "cost_usd": 0.2691,
+   "excluded": [
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 8,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 9,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 10,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 15,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 16,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "dfdaad727e842eb6c063b427127cd7e9a88697c1",
+   "subject": "Change CODEOWNERS so the team doesn't get auto-assigned on each PR (#1831)",
+   "uncovered": 1,
+   "judge_calls": 1,
+   "tokens_in": 80802,
+   "tokens_out": 48,
+   "cost_usd": 0.1721,
+   "excluded": [
+    {
+     "adr": 12,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 14,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 8,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 9,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 10,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 13,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 15,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 16,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  }
+ ],
+ "findings": [
+  {
+   "commit": "e1e037ece2bfcd94faa1432834c38ba20f2a751f",
+   "adr": 7,
+   "obligation": "ADR-7/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": ".github/workflows/release-app.yml",
+   "line_text": "ENVIRONMENT: ${{ needs.set-vars.outputs.environment }}",
+   "quote": "**`release-app`** \u2014 responsible solely for building Docker images and deploying container services to ECS.",
+   "reason": "The added ENVIRONMENT input only passes the target environment into the existing build-images job, so release-app stays confined to building images and deploying containers.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "e1e037ece2bfcd94faa1432834c38ba20f2a751f",
+   "adr": 7,
+   "obligation": "ADR-7/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": ".github/workflows/release-app.yml",
+   "line_text": "ENVIRONMENT: ${{ needs.set-vars.outputs.environment }}",
+   "quote": "**`release-app`** \u2014 responsible solely for building Docker images and deploying container services to ECS.",
+   "reason": "The added ENVIRONMENT input only passes the target environment into the existing build-images job, so release-app stays confined to building images and deploying containers.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "2e73711748996fbf83c053ac366cfcd29476fc1d",
+   "adr": 7,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "2e73711748996fbf83c053ac366cfcd29476fc1d",
+   "adr": 7,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "adr": 10,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "adr": 11,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "adr": 13,
+   "obligation": "ADR-13/27",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": "themefinder/evals/config.py",
+   "line_text": "    tracer = _resolve_tracer(settings, context_for)",
+   "quote": "tracing is now a port that `resolve_backends()` enables whenever a Langfuse connection is available, for single runs and comparisons alike.",
+   "reason": "resolve_backends() now picks the tracer from the Langfuse credentials alone and passes it into EvalBackends, which is the behaviour the ADR describes.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "adr": 13,
+   "obligation": "ADR-13/8",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "model"
+   ],
+   "path": "themefinder/evals/eval_types.py",
+   "line_text": "class RunLabels:",
+   "quote": "identifies its runs through platform-neutral `RunLabels` and relies on the tracer `resolve_backends()` picks from the credentials present.",
+   "reason": "RunLabels is a platform-neutral dataclass that run_eval.py passes through to resolve_backends(), and the tracer is chosen from the credentials.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "adr": 13,
+   "obligation": "ADR-13/7",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "model"
+   ],
+   "path": "themefinder/evals/config.py",
+   "line_text": "    return \"langfuse\" if settings.active_langfuse is not None else None",
+   "quote": "Langfuse-specific code is confined to the Langfuse adapters and to `evals/config.py::resolve_backends()`",
+   "reason": "This Langfuse-specific decision sits in a config.py helper outside resolve_backends() itself. The diff doesn't settle whether the helper counts as part of that function. The component runner and run_eval.py call only the neutral tracer methods.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "adr": 13,
+   "obligation": "ADR-13/10",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "model"
+   ],
+   "path": "themefinder/evals/config.py",
+   "line_text": "    tracer = _resolve_tracer(settings, context_for)",
+   "quote": "This check is answered from settings directly, without needing to construct a Langfuse context first \u2014 a fully local run never touches `langfuse_utils` at all.",
+   "reason": "The check is still made from settings. But with complete credentials and local sources, a Langfuse context is now created for tracing, so it is unclear whether that still counts as a fully local run.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f36396b131b7df00f45916a59257c57e5d5169ff",
+   "adr": 13,
+   "obligation": "ADR-13/1",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "model"
+   ],
+   "path": "themefinder/evals/adapters/tracing.py",
+   "line_text": "class TracerPort(Protocol):",
+   "quote": "each defined as an explicit `abc.ABC` base class (not structural typing), so adapters must genuinely subclass the interface they implement.",
+   "reason": "The new tracer port is a structural Protocol that its implementations do not subclass. The ADR's rule names only four ports, so it is unclear whether a fifth port must also be an ABC.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "6f5e77c25fe45ca3b47581cde1d83d1a90740ae3",
+   "adr": 13,
+   "obligation": "ADR-13/15",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "ref"
+   ],
+   "path": "themefinder/evals/run_eval.py",
+   "line_text": "import comparison",
+   "quote": "Model comparisons run through the same `run_eval.py` CLI (`--models`, `--family`, `--all`); the former `benchmark.py` is gone.",
+   "reason": "run_eval.py now imports comparison and the diff deletes benchmark.py, so model comparison runs through the single CLI as required.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "6f5e77c25fe45ca3b47581cde1d83d1a90740ae3",
+   "adr": 13,
+   "obligation": "ADR-13/7",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "ref"
+   ],
+   "path": "themefinder/evals/comparison.py",
+   "line_text": "from utils import gateway",
+   "quote": "Component definitions and the unified API/CLI contain no Langfuse-specific code.",
+   "reason": "The previous `from utils import gateway, langfuse` is reduced to the gateway import, so the comparison runner no longer imports the Langfuse helper.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "6f5e77c25fe45ca3b47581cde1d83d1a90740ae3",
+   "adr": 13,
+   "obligation": "ADR-13/8",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "ref"
+   ],
+   "path": "themefinder/evals/comparison.py",
+   "line_text": "from eval_types import RunLabels",
+   "quote": "The model comparison (`comparison.py`, reached through `run_eval.py`) identifies its runs through platform-neutral `RunLabels` and relies on the tracer `resolve_backends()` picks from the credentials present.",
+   "reason": "comparison.py now identifies its runs with platform-neutral RunLabels instead of building a Langfuse context.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "6f5e77c25fe45ca3b47581cde1d83d1a90740ae3",
+   "adr": 13,
+   "obligation": "ADR-13/19",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "ref"
+   ],
+   "path": "themefinder/evals/run_eval.py",
+   "line_text": "asyncio.run(comparison.run_comparison(args, evaluate_component))",
+   "quote": "Every supported component run \u2014 direct CLI (`python run_eval.py --component ...`), a model comparison, the `themefinder-eval.yml` CI workflow, and the future top-level DVC pipeline \u2014 converges on `evaluate_component(...)`",
+   "reason": "The comparison path is handed evaluate_component as its single run primitive, so model comparisons converge on the shared entry point.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "6f5e77c25fe45ca3b47581cde1d83d1a90740ae3",
+   "adr": 13,
+   "obligation": "ADR-13/20",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "ref"
+   ],
+   "path": "themefinder/evals/comparison.py",
+   "line_text": "from components import COMPONENT_NAMES",
+   "quote": "The shared `COMPONENT_NAMES` tuple is derived from the registry keys and used by datasets, benchmark, and the CLI",
+   "reason": "The comparison runner defaults its component list from the shared COMPONENT_NAMES rather than a separate hand-kept list.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "6f5e77c25fe45ca3b47581cde1d83d1a90740ae3",
+   "adr": 13,
+   "obligation": "ADR-13/27",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "ref"
+   ],
+   "path": "themefinder/evals/comparison.py",
+   "line_text": "llm = model_config.create_llm()",
+   "quote": "tracing is now a port that `resolve_backends()` enables whenever a Langfuse connection is available, for single runs and comparisons alike.",
+   "reason": "The comparison no longer passes a Langfuse client to the LLM, so tracing must come from a tracer port in `adapters/tracing.py`, but that code is not in this diff and cannot be checked.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "340a76d795185ce1f6a6c5fcd2de4dc0e57c56cf",
+   "adr": 13,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "model"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  }
+ ],
+ "stale": [
+  {
+   "adr": 3,
+   "obligation": "ADR-3/4",
+   "missing": [
+    "question_part.json"
+   ]
+  },
+  {
+   "adr": 3,
+   "obligation": "ADR-3/6",
+   "missing": [
+    "meta.json"
+   ]
+  },
+  {
+   "adr": 3,
+   "obligation": "ADR-3/9",
+   "missing": [
+    "/backend/consultations/import_schema/"
+   ]
+  },
+  {
+   "adr": 6,
+   "obligation": "ADR-6/5",
+   "missing": [
+    "confirmed_themes"
+   ]
+  },
+  {
+   "adr": 6,
+   "obligation": "ADR-6/6",
+   "missing": [
+    "closed_question_id"
+   ]
+  },
+  {
+   "adr": 7,
+   "obligation": "ADR-7/1",
+   "missing": [
+    "SQS"
+   ]
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/7",
+   "missing": [
+    "output_json",
+    "metrics_json"
+   ]
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/13",
+   "missing": [
+    "confirmed_themes"
+   ]
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/14",
+   "missing": [
+    "external_id",
+    "completed_at",
+    "parameters_json",
+    "metrics_json",
+    "output_json"
+   ]
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/18",
+   "missing": [
+    "SQS"
+   ]
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/20",
+   "missing": [
+    "representative_responses"
+   ]
+  },
+  {
+   "adr": 9,
+   "obligation": "ADR-9/13",
+   "missing": [
+    "build-gh.yml"
+   ]
+  },
+  {
+   "adr": 14,
+   "obligation": "ADR-14/2",
+   "missing": [
+    "download_data"
+   ]
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/1",
+   "missing": [
+    "dataset_id",
+    "source_type",
+    "labelling_method",
+    "transformations",
+    "contains_pii",
+    "permitted_for_product_improvements",
+    "retention_end_date",
+    "split_role"
+   ]
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/2",
+   "missing": [
+    "source_type"
+   ]
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/3",
+   "missing": [
+    "labelling_method"
+   ]
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/4",
+   "missing": [
+    "transformations"
+   ]
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/5",
+   "missing": [
+    "contains_pii",
+    "permitted_for_product_improvements",
+    "retention_end_date"
+   ]
+  },
+  {
+   "adr": 15,
+   "obligation": "ADR-15/6",
+   "missing": [
+    "split_role"
+   ]
+  }
+ ]
+}
