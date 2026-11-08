@@ -4,15 +4,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
-from adrcheck.adapters.claude_judge import PROMPT_VERSION, ClaudeJudge
 from adrcheck.adapters.eval_cases import load_cases
 from adrcheck.adapters.git_changes import GitChanges
 from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource
 from adrcheck.adapters.obligation_cache import CachedCompiler
+from adrcheck.adapters.providers import runner_for
 from adrcheck.adapters.render import to_json, to_markdown
+from adrcheck.chatmodel import PROMPT_VERSION, ChatModelSeats
 from adrcheck.domain.lint import lint
 from adrcheck.domain.verdict import Verdict
 from adrcheck.usecases.check import check
@@ -32,7 +34,12 @@ def _parser() -> argparse.ArgumentParser:
             "--adr-dir", default="docs/adr", help="directory of numbered ADR markdown files (default docs/adr)"
         )
         sp.add_argument("--repo", default=".", help="git repository root (default .)")
-        sp.add_argument("--model", default="sonnet", help="model for the judge via claude -p (default sonnet)")
+        sp.add_argument(
+            "--model",
+            default=None,
+            help="provider:model for compiler and judge, e.g. anthropic:claude-sonnet-5-5 or claude-cli:sonnet "
+            "(default: anthropic:claude-sonnet-5-5 when the Anthropic key variable is set, else claude-cli:sonnet)",
+        )
 
     c = sub.add_parser("check", help="judge commits against the accepted ADRs")
     common(c)
@@ -56,6 +63,10 @@ def _parser() -> argparse.ArgumentParser:
     )
     lint_p.add_argument("--adr-dir", default="docs/adr")
     return p
+
+
+def _default_model() -> str:
+    return "anthropic:claude-sonnet-5-5" if os.environ.get("ANTHROPIC_API_KEY") else "claude-cli:sonnet"
 
 
 def main(argv: list[str] | None = None, judge=None) -> int:
@@ -83,7 +94,7 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         return EXIT_ISSUES if issues else EXIT_OK
 
     repo = Path(args.repo)
-    judge = judge or ClaudeJudge(model=args.model)
+    judge = judge or ChatModelSeats(runner_for(args.model or _default_model()))
     compiler = CachedCompiler(judge, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
     adrs = MarkdownAdrSource(adr_dir).adrs()
 

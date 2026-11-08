@@ -1,8 +1,9 @@
-"""The claude -p judge: prompts are built from obligations and the diff, replies are parsed strictly."""
+"""The chat-model seats: prompts are built from obligations and the diff, replies are parsed strictly, any provider."""
 
 import json
 
-from adrcheck.adapters.claude_judge import ClaudeJudge, parse_compile_reply, parse_judge_reply
+from adrcheck.chatmodel import ChatModelSeats, ChatReply, ChatRequest
+from adrcheck.chatmodel.parse import parse_compile_reply, parse_judge_reply
 from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.change import Change, FileChange, Line
 from adrcheck.domain.obligation import Checkability, Obligation
@@ -35,22 +36,19 @@ CHANGE = Change(
 
 
 class Recorder:
+    """A ChatRunner that records what it was asked and answers the same text every time."""
+
     def __init__(self, reply):
         self.reply, self.prompts = reply, []
 
-    def __call__(self, prompt, model):
-        self.prompts.append(prompt)
-        return {
-            "result": self.reply,
-            "usage": {"input_tokens": 10, "cache_read_input_tokens": 5, "output_tokens": 3},
-            "total_cost_usd": 0.01,
-            "duration_api_ms": 200,
-        }
+    def run(self, request: ChatRequest) -> ChatReply:
+        self.prompts.append(request.system + "\n" + request.user)
+        return ChatReply(text=self.reply, tokens_in=15, tokens_out=3, cost_usd=0.01, latency_ms=200)
 
 
 def test_judge_prompt_carries_the_obligations_the_diff_lines_and_the_post_image():
     run = Recorder(json.dumps({"not_relevant": [], "findings": []}))
-    judge = ClaudeJudge(run=run, model="sonnet")
+    judge = ChatModelSeats(run)
     judge.judge(CHANGE, (JudgeCase(ADR, (OBL,)),), Context(post_images={"enrich/store.py": "def save(): ..."}))
     [prompt] = run.prompts
     assert "ADR-2/1" in prompt and "keyed by store.row_key" in prompt
@@ -76,9 +74,7 @@ def test_one_prompt_carries_every_adr_of_the_change_and_the_diff_once():
         checkability=Checkability.INTENT,
     )
     run = Recorder(json.dumps({"not_relevant": [9], "findings": []}))
-    ClaudeJudge(run=run, model="sonnet").judge(
-        CHANGE, (JudgeCase(ADR, (OBL,)), JudgeCase(other, (nine,))), Context(post_images={})
-    )
+    ChatModelSeats(run).judge(CHANGE, (JudgeCase(ADR, (OBL,)), JudgeCase(other, (nine,))), Context(post_images={}))
     [prompt] = run.prompts
     assert "ADR-2: One key" in prompt and "ADR-9: No url keys" in prompt
     assert "ADR-2/1" in prompt and "ADR-9/1" in prompt
@@ -101,7 +97,7 @@ def test_judge_reply_is_parsed_into_findings_with_verdicts_and_token_counts():
             ],
         }
     )
-    judge = ClaudeJudge(run=Recorder(reply), model="sonnet")
+    judge = ChatModelSeats(Recorder(reply))
     resp = judge.judge(CHANGE, (JudgeCase(ADR, (OBL,)),), Context(post_images={}))
     assert resp.not_relevant == frozenset() and resp.findings[0].verdict is Verdict.CONFLICT
     assert (resp.tokens_in, resp.tokens_out, resp.cost_usd, resp.latency_ms) == (15, 3, 0.01, 200)
@@ -188,3 +184,22 @@ def test_compile_splits_a_dotted_anchor_into_the_names_code_spells():
     )
     [o] = parse_compile_reply(reply, adr)
     assert o.mandates == ("RepoReader", "contains", "src/adrcheck/ports.py")
+
+
+class Failing:
+    def run(self, request: ChatRequest) -> ChatReply:
+        raise ConnectionError("no route to host")
+
+
+def test_a_runner_that_raises_is_a_judge_error_not_an_exception():
+    """ADR-3: an unreachable model yields UNCLEAR with a reason, never a crash and never COMPLIANT."""
+    resp = ChatModelSeats(Failing()).judge(CHANGE, (JudgeCase(ADR, (OBL,)),), Context(post_images={}))
+    assert resp.findings == () and resp.error.startswith("judge error: ConnectionError")
+
+
+def test_the_compile_prompt_is_unchanged_by_the_move_so_the_cache_keys_still_hold():
+    from adrcheck.chatmodel.prompts import PROMPT_VERSION, compile_request
+
+    req = compile_request(ADR)
+    assert req.system == "" and req.user.startswith("You compile an architecture decision record")
+    assert PROMPT_VERSION == "2026-11-07.1"
