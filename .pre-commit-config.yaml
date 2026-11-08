@@ -72,3 +72,11 @@ repos:
         entry: scripts/hooks/check-commit-msg.sh
         language: system
         stages: [commit-msg]
+      # The suite runs in under five seconds. Two commits on 2026-11-08 carried a failing
+      # test past a lint-only gate; this is the cheapest fix, and CI still runs the matrix.
+      - id: pytest
+        name: pytest
+        entry: uv run pytest -q
+        language: system
+        pass_filenames: false
+        always_run: true
