@@ -120,3 +120,23 @@ def test_judge_text_is_bounded_so_one_finding_cannot_fill_the_comment():
     md = to_markdown([ChangeReport(ref="abc", message="m", findings=(_finding(reason="r" * 2000, quote="q" * 2000),))])
     lines = [ln for ln in md.splitlines() if ln.startswith("  - ")]
     assert all(len(ln) < 320 for ln in lines) and all(ln.endswith("…") for ln in lines)
+
+
+def test_findings_are_ordered_by_adr_then_by_how_bad_the_verdict_is():
+    report = ChangeReport(
+        ref="abc1234",
+        message="m",
+        findings=(
+            _finding(adr_number=7, obligation_id="ADR-7/1", verdict=Verdict.COMPLIANT),
+            _finding(adr_number=2, obligation_id="ADR-2/3", verdict=Verdict.COMPLIANT),
+            _finding(adr_number=2, obligation_id="ADR-2/1", verdict=Verdict.CONFLICT),
+            _finding(adr_number=2, obligation_id="ADR-2/2", verdict=Verdict.UNCLEAR),
+        ),
+    )
+    heads = [ln for ln in to_markdown([report]).splitlines() if ln.startswith("- **")]
+    assert [h.split()[1:3] for h in heads] == [
+        ["**CONFLICT**", "ADR-2"],
+        ["**UNCLEAR**", "ADR-2"],
+        ["**COMPLIANT**", "ADR-2"],
+        ["**COMPLIANT**", "ADR-7"],
+    ]

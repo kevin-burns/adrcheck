@@ -507,3 +507,42 @@ def test_a_removed_definition_nothing_referenced_is_dead_code_even_when_no_adr_a
     # a definition that was still used somewhere stays a conflict
     used = removal_run({("c0", "DELAY"): 2}, obligations=(PATH_OBLIGATION,), cited="ADR-4/0", line="DELAY = 1.2")
     assert used.verdict is Verdict.CONFLICT
+
+
+SIBLING = Obligation(
+    "ADR-2/7",
+    2,
+    "MUST",
+    "Callers never build a key by hand",
+    "Callers never build a key by hand",
+    Checkability.STRUCTURAL,
+)
+
+
+def test_two_obligations_of_one_adr_that_disagree_on_one_line_become_unclear_with_the_contradiction_named():
+    agree = RawFinding("ADR-2/7", Verdict.COMPLIANT, "enrich/store.py", '    key = row["url"]', SIBLING.quote, "fine")
+    repo = FakeRepo({("c0", "row_key"): True, ("c0", 'key = row["url"]'): False})
+    reports = check(
+        changes=[change()],
+        adrs=[ADR],
+        compiler=FakeCompiler({2: (OBLIGATION, SIBLING)}),
+        judge=FakeJudge(JudgeResponse(findings=(raw(), agree))),
+        repo=repo,
+    )
+    pair = sorted((f.obligation_id, f.verdict) for f in reports[0].findings)
+    assert pair == [("ADR-2/1", Verdict.UNCLEAR), ("ADR-2/7", Verdict.UNCLEAR)]
+    notes = {f.note for f in reports[0].findings}
+    assert notes == {"judge contradicts itself on this line: ADR-2/1 CONFLICT, ADR-2/7 COMPLIANT"}
+
+
+def test_disagreement_on_different_lines_is_not_a_contradiction():
+    agree = RawFinding("ADR-2/7", Verdict.COMPLIANT, "enrich/store.py", "    key = row_key(row)", SIBLING.quote, "ok")
+    repo = FakeRepo({("c0", "row_key"): True, ("c0", 'key = row["url"]'): False})
+    reports = check(
+        changes=[change()],
+        adrs=[ADR],
+        compiler=FakeCompiler({2: (OBLIGATION, SIBLING)}),
+        judge=FakeJudge(JudgeResponse(findings=(raw(), agree))),
+        repo=repo,
+    )
+    assert sorted(f.verdict.value for f in reports[0].findings) == ["COMPLIANT", "CONFLICT"]

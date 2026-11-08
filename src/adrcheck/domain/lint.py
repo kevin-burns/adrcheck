@@ -52,12 +52,21 @@ def lint(adrs: list[Adr]) -> tuple[HygieneIssue, ...]:
                     "no-binding-section", adr.number, "no decision or consequences section found; nothing binds"
                 )
             )
+        if adr.number is not None and adr.number in (*adr.supersedes, *adr.superseded_by):
+            issues.append(HygieneIssue("self-supersede", adr.number, f"ADR-{adr.number} supersedes itself"))
+        if len(targets := sorted(set(adr.superseded_by))) > 1:
+            names = " and ".join(f"ADR-{n}" for n in targets)
+            detail = f"superseded by {names}; one decision has one successor"
+            issues.append(HygieneIssue("multiple-supersede-targets", adr.number, detail))
         for old in adr.supersedes:
+            if old == adr.number:
+                continue
             if old not in by_number:
                 issues.append(
                     HygieneIssue("dangling-supersede-ref", adr.number, f"supersedes ADR-{old}, which does not exist")
                 )
-            elif by_number[old].status is not Status.SUPERSEDED:
+            elif by_number[old].status is not Status.SUPERSEDED and adr.status is not Status.PROPOSED:
+                # a proposed successor is a pending proposal; the old decision holds until the new one is accepted
                 issues.append(
                     HygieneIssue(
                         "status-mismatch",

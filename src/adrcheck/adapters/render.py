@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 
+from adrcheck.domain.verdict import Verdict
 from adrcheck.usecases.check import ChangeReport
 
+_SEVERITY = {Verdict.CONFLICT: 0, Verdict.UNCLEAR: 1, Verdict.ADR_OVERTAKEN: 2, Verdict.COMPLIANT: 3}
 TEXT_LIMIT = 300  # judge text, cited lines and quotes are untrusted input to a PR comment
 
 
@@ -86,7 +88,7 @@ def to_markdown(reports: list[ChangeReport]) -> str:
         if not r.findings and not dismissed:
             out.append("_No ADR applied to this change._")
             out.append("")
-        for f in r.findings:
+        for f in sorted(r.findings, key=lambda f: (f.adr_number, _SEVERITY.get(f.verdict, 9), f.obligation_id or "")):
             head = f"- **{f.verdict.value}** ADR-{f.adr_number}" + (f" ({f.obligation_id})" if f.obligation_id else "")
             if f.note:
                 head += f" — {_prose(f.note)}"

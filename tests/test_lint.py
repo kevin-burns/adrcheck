@@ -57,3 +57,22 @@ def test_two_adrs_sharing_a_number_are_reported_once_per_pair():
     a, b = adr(7), adr(7)
     found = issues(a, b, adr(8))
     assert found == [("duplicate-number", 7, "two records share number 7: 0007.md and 0007.md")]
+
+
+def test_an_adr_that_names_itself_as_successor_or_predecessor_is_a_self_supersede():
+    assert issues(adr(4, Status.SUPERSEDED, superseded_by=(4,))) == [("self-supersede", 4, "ADR-4 supersedes itself")]
+    assert ("self-supersede", 5, "ADR-5 supersedes itself") in issues(adr(5, supersedes=(5,)))
+
+
+def test_more_than_one_distinct_successor_is_reported():
+    got = issues(adr(2, Status.SUPERSEDED, superseded_by=(3, 4)), adr(3, supersedes=(2,)), adr(4, supersedes=(2,)))
+    assert ("multiple-supersede-targets", 2, "superseded by ADR-3 and ADR-4; one decision has one successor") in got
+
+
+def test_a_proposed_successor_may_declare_supersedes_while_the_predecessor_stays_accepted():
+    # a pending proposal, not a status mismatch: the old decision still holds until the new one is accepted
+    assert issues(adr(1), adr(2, Status.PROPOSED, supersedes=(1,))) == []
+    # once the successor is accepted the predecessor must say so
+    assert issues(adr(1), adr(2, supersedes=(1,))) == [
+        ("status-mismatch", 1, "superseded by ADR-2 but status is accepted")
+    ]

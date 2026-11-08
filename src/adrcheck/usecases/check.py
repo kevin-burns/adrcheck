@@ -232,6 +232,7 @@ def check(
                 obligation = next((o for o in case.obligations if o.id == raw.obligation_id), None)
                 anchors = tuple(n for o in case.obligations for n in o.mandates)
                 findings_of[owner].append(_settle(raw, obligation, change, case.adr, sel.signals, repo, anchors))
+            findings_of = [_reconcile(group) for group in findings_of]
             for i, (sel, case) in enumerate(cases):
                 adr = case.adr
                 if response.error:
@@ -271,6 +272,24 @@ def check(
 
 
 _OBLIGATION_ID = re.compile(r"ADR-(\d+)/")
+
+
+def _reconcile(group: list[Finding]) -> list[Finding]:
+    """One ADR, one line, two obligations, opposite verdicts: the judge has contradicted itself and neither
+    answer is reported as settled (bead rnr). Both become UNCLEAR with the pair named."""
+    by_line: dict[tuple[str, str], list[int]] = {}
+    for i, f in enumerate(group):
+        if f.line_text:
+            by_line.setdefault((f.path, f.line_text), []).append(i)
+    for idxs in by_line.values():
+        verdicts = {group[i].verdict for i in idxs}
+        if Verdict.CONFLICT in verdicts and Verdict.COMPLIANT in verdicts:
+            named = ", ".join(f"{group[i].obligation_id} {group[i].verdict.value}" for i in idxs)
+            for i in idxs:
+                group[i] = replace(
+                    group[i], verdict=Verdict.UNCLEAR, note=f"judge contradicts itself on this line: {named}"
+                )
+    return group
 
 
 def _adr_number_of(obligation_id: str) -> int | None:
