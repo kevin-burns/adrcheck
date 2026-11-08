@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from adrcheck.adapters.git_changes import GitRepo
 from adrcheck.adapters.markdown_adr import parse_adr
 from adrcheck.domain.adr import Adr
 
@@ -40,3 +41,9 @@ class MarkdownAdrSource:
     def adrs(self) -> list[Adr]:
         files = sorted(p for p in self.directory.iterdir() if _NUMBERED.match(p.name))
         return [parse_adr(p.read_text(), source=str(p)) for p in files]
+
+
+def adrs_at(repo: GitRepo, ref: str, adr_dir: str) -> list[Adr]:
+    """The ADR directory as it stood at `ref`: what an eval corpus frozen at that revision was labelled against."""
+    paths = sorted(p for p in repo.ls(ref, adr_dir) if _NUMBERED.match(Path(p).name))
+    return [parse_adr(repo.read(ref, p), source=f"{ref}:{p}") for p in paths]

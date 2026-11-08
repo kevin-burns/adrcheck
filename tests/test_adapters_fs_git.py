@@ -159,3 +159,19 @@ def test_occurrences_counts_whole_identifiers_in_code_so_a_definition_alone_is_o
     assert r.occurrences("HEAD", "fetch") == 3
     assert r.occurrences("HEAD", "nothing_here") == 0
     assert r.occurrences("no-such-ref", "fetch") is None
+
+
+def test_adrs_at_reads_the_adr_directory_as_it_stood_at_a_ref(tmp_path: Path):
+    from adrcheck.adapters.markdown_adr_source import adrs_at
+
+    repo = make_repo(tmp_path)
+    (repo / "docs" / "adr").mkdir(parents=True)
+    (repo / "docs" / "adr" / "0001-key.md").write_text("# 1. Key\n\nStatus: accepted\n\n## Decision\n\nOld text.\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "adr v1")
+    frozen = git(repo, "rev-parse", "HEAD").strip()
+    (repo / "docs" / "adr" / "0001-key.md").write_text("# 1. Key\n\nStatus: deprecated\n\n## Decision\n\nNew text.\n")
+    git(repo, "commit", "-q", "-am", "adr v2")
+    [adr] = adrs_at(GitRepo(repo), frozen, "docs/adr")
+    assert adr.number == 1 and adr.status.value == "accepted" and adr.section("decision") == "Old text."
+    assert adrs_at(GitRepo(repo), frozen, "no/such/dir") == []

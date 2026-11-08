@@ -11,7 +11,7 @@ from pathlib import Path
 from adrcheck.adapters.baseline_file import load_baseline, write_baseline
 from adrcheck.adapters.eval_cases import load_cases
 from adrcheck.adapters.git_changes import GitChanges
-from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource, discover_adr_dir
+from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource, adrs_at, discover_adr_dir
 from adrcheck.adapters.obligation_cache import CachedCompiler
 from adrcheck.adapters.providers import runner_for
 from adrcheck.adapters.render import to_json, to_markdown
@@ -79,7 +79,10 @@ def _parser() -> argparse.ArgumentParser:
 
     e = sub.add_parser("eval", help="score a saved check report (--format json) against frozen cases; no model")
     e.add_argument("--cases", required=True, help="evals/cases/<corpus>.json")
-    e.add_argument("--report", required=True, help="output of adrcheck check --format json")
+    e.add_argument("--report", required=True, help="output of adrcheck check --format json; written when --run")
+    e.add_argument("--run", action="store_true", help="run check over the corpus commits first and write --report")
+    e.add_argument("--model", default=None, help="provider:model for --run (default as for check)")
+    e.add_argument("--compile-model", default=None, help="provider:model for the compile seat during --run")
 
     lint_p = sub.add_parser(
         "lint", help="hygiene of the ADR set: dangling refs, cycles, status mismatch, missing status"
@@ -102,10 +105,44 @@ def _seats(model: str, compile_model: str | None) -> tuple[ChatModelSeats, ChatM
     return ChatModelSeats(runner_for(compile_model)), judge
 
 
+def _run_corpus(cases_path: Path, judge, model: str, compile_model: str | None):
+    """Execute `check` over a corpus file's commits with the ADRs it was labelled against. The corpus header
+    names the repo (`repo`, or `repo_env` for a private one), the ADRs (`adr_dir`, or `adrs_at` for a frozen
+    revision) and the commits (`commits`, else every commit the cases name). The repo itself never travels."""
+    head = json.loads(cases_path.read_text())
+    if "repo_env" in head:
+        location = os.environ.get(head["repo_env"])
+        if not location:
+            raise RuntimeError(f"set {head['repo_env']} to the path of the {head.get('corpus', '')} repository")
+        repo = Path(location)
+    else:
+        repo = Path(head.get("repo", "."))  # as for `check --repo`: relative to the working directory
+    git = GitChanges(repo)
+    adr_dir = head.get("adr_dir", "docs/adr")
+    adrs = adrs_at(git, head["adrs_at"], adr_dir) if "adrs_at" in head else MarkdownAdrSource(repo / adr_dir).adrs()
+    adrs, _ = scope(adrs, load_scope_map(repo / ".adrcheck" / "map.toml"))
+    commits = head.get("commits") or list(dict.fromkeys(str(c["commit"]) for c in head["cases"]))
+    if judge is None:
+        compile_seat, judge = _seats(model, compile_model)
+    else:
+        compile_seat = judge
+    compiler = CachedCompiler(compile_seat, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
+    changes = [git.changes(f"{c}~1..{c}")[0] for c in commits]
+    return check(changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git)
+
+
 def main(argv: list[str] | None = None, judge=None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "eval":
         cases = load_cases(Path(args.cases))
+        if args.run:
+            try:
+                reports = _run_corpus(Path(args.cases), judge, args.model or _default_model(), args.compile_model)
+            except Exception as exc:
+                print(f"could not run the corpus: {type(exc).__name__}: {exc}", file=sys.stderr)
+                return EXIT_UNEVALUATED
+            Path(args.report).write_text(to_json(reports) + "\n")
+            print(f"report written: {args.report}", file=sys.stderr)
         report = json.loads(Path(args.report).read_text())
         result = score(cases, report.get("findings", []))
         for r in result.rows:

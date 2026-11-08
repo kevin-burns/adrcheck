@@ -65,6 +65,11 @@ class GitRepo:
             errors="replace",
         )
 
+    def ls(self, ref: str, directory: str) -> list[str]:
+        """Paths under `directory` at `ref`; empty when the directory or the ref does not exist."""
+        out = self._git("ls-tree", "-r", "--name-only", ref, "--", directory.rstrip("/") + "/", check=False)
+        return [p for p in out.stdout.split("\n") if p] if out.returncode == 0 else []
+
     def read(self, ref: str, path: str) -> str:
         # STAGED is the index: `git show :path`. Everything else is a commit-ish.
         return self._git("show", f"{'' if ref == STAGED else ref}:{path}").stdout

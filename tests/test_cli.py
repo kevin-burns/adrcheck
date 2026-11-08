@@ -253,3 +253,52 @@ def test_the_compile_seat_can_run_on_a_different_provider_than_the_judge_seat(mo
     assert isinstance(judge.runner, ClaudeCliRunner) and judge.runner.model == "sonnet"
     compiler, judge = _seats(model="claude-cli:sonnet", compile_model=None)
     assert compiler is judge
+
+
+def test_eval_run_executes_the_corpus_commits_writes_the_report_and_scores_it(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    head = git(repo, "rev-parse", "HEAD").strip()
+    cases = tmp_path / "cases.json"
+    cases.write_text(
+        json.dumps(
+            {
+                "corpus": "t",
+                "repo": str(repo),
+                "adr_dir": "docs/adr",
+                "commits": [head[:7]],
+                "cases": [
+                    {"commit": head[:7], "adr": 1, "quote": "keyed by row_key and nothing else", "expected": "CONFLICT"}
+                ],
+            }
+        )
+    )
+    report = tmp_path / "out.json"
+    code = main(["eval", "--cases", str(cases), "--run", "--report", str(report)], judge=FakeJudge())
+    out, err = capsys.readouterr()
+    assert code == 0 and "1/1 hits" in err and out.startswith("hit")
+    assert json.loads(report.read_text())["findings"][0]["verdict"] == "CONFLICT"
+
+
+def test_eval_run_reads_the_adrs_at_the_frozen_ref_when_the_corpus_says_so(tmp_path: Path, capsys, monkeypatch):
+    repo = make_repo(tmp_path)
+    head = git(repo, "rev-parse", "HEAD").strip()
+    (repo / "docs" / "adr" / "0001-row-key.md").write_text(ADR.replace("accepted", "deprecated"))
+    git(repo, "commit", "-q", "-am", "deprecate")
+    monkeypatch.setenv("ADRCHECK_EVAL_T_REPO", str(repo))
+    cases = tmp_path / "cases.json"
+    cases.write_text(
+        json.dumps(
+            {
+                "corpus": "t",
+                "repo_env": "ADRCHECK_EVAL_T_REPO",
+                "adrs_at": head[:7],
+                "cases": [
+                    {"commit": head[:7], "adr": 1, "quote": "keyed by row_key and nothing else", "expected": "CONFLICT"}
+                ],
+            }
+        )
+    )
+    code = main(["eval", "--cases", str(cases), "--run", "--report", str(tmp_path / "o.json")], judge=FakeJudge())
+    assert (
+        code == 0 and "1/1 hits" in capsys.readouterr().err
+    )  # the working tree says deprecated; the ref says accepted
