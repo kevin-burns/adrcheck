@@ -126,7 +126,12 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         spent = 0.0
         for adr in adrs:
             print(f"ADR-{adr.number}: {adr.title} [{adr.status.value}]")
-            for o in compiler.compile(adr):
+            try:
+                obligations = compiler.compile(adr)
+            except Exception as exc:
+                print(f"could not compile ADR-{adr.number}: {type(exc).__name__}: {exc}", file=sys.stderr)
+                return EXIT_UNEVALUATED
+            for o in obligations:
                 print(f"  {o.id} [{o.kind}, {o.checkability.value}] {o.text}")
                 print(f"      quote: {o.quote!r}")
                 if o.mandates or o.forbids:

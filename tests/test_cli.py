@@ -233,3 +233,10 @@ def test_the_scope_map_keeps_an_unscoped_adr_off_a_change_outside_its_paths(tmp_
     (repo / ".adrcheck" / "map.toml").write_text('[[adr]]\nid = 1\npaths = ["lib/**"]\n')
     code = main(["lint", *base], judge=FakeJudge())
     assert code == 1 and "scope-disagreement\tADR-1\t" in capsys.readouterr().out
+
+
+def test_a_compile_that_cannot_reach_the_model_exits_three_from_the_compile_command_too(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    code = main(["compile", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr")], judge=ExplodingCompiler())
+    err = capsys.readouterr().err
+    assert code == 3 and "could not compile ADR-1: RuntimeError: provider down" in err

@@ -70,3 +70,20 @@ def test_provider_specs_wire_openai_and_ollama_from_the_environment(monkeypatch)
     r = runner_for("openai:some/model")
     assert (r.base_url, r.api_key) == ("https://openrouter.example/api/v1", "sk-test")
     assert runner_for("ollama:tev1").base_url == "http://kb-macm-2026:11434/v1"
+
+
+def test_an_http_error_surfaces_the_endpoints_own_message_not_a_traceback(monkeypatch):
+    import io
+    import urllib.error
+    import urllib.request
+
+    from adrcheck.adapters.openai_compat import _post_json
+
+    body = b'{"error":{"message":"model requires 17.5 GiB but only 17.3 GiB are available","type":"api_error"}}'
+
+    def boom(req, timeout):
+        raise urllib.error.HTTPError(req.full_url, 500, "Internal Server Error", {}, io.BytesIO(body))
+
+    monkeypatch.setattr(urllib.request, "urlopen", boom)
+    with pytest.raises(RuntimeError, match=r"HTTP 500 from http://h/v1/chat/completions: model requires 17.5 GiB"):
+        _post_json("http://h/v1/chat/completions", {}, b"{}")

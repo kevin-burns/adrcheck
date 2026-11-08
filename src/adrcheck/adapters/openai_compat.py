@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import time
+import urllib.error
 import urllib.request
 from collections.abc import Callable
 from urllib.parse import urlsplit
@@ -20,8 +21,18 @@ def _post_json(url: str, headers: dict[str, str], body: bytes, timeout: float = 
     if urlsplit(url).scheme not in ("http", "https"):
         raise ValueError(f"base_url must be http(s): {url!r}")
     req = urllib.request.Request(url, data=body, headers=headers, method="POST")  # noqa: S310
-    with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310  # nosec B310
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310  # nosec B310
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        # the endpoint's own message is the diagnosis (Ollama: "model requires 17.5 GiB but only 17.3 GiB ...")
+        raw = exc.read().decode("utf-8", errors="replace")[:2000]
+        try:
+            detail = json.loads(raw).get("error", {})
+            detail = detail.get("message", raw) if isinstance(detail, dict) else str(detail)
+        except ValueError:
+            detail = raw
+        raise RuntimeError(f"HTTP {exc.code} from {url}: {' '.join(str(detail).split())[:300]}") from exc
 
 
 class OpenAICompatRunner:
