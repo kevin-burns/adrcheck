@@ -135,3 +135,14 @@ def test_the_adr_directory_is_discovered_at_the_common_paths_when_none_is_given(
     assert discover_adr_dir(tmp_path) == tmp_path / "docs" / "architecture" / "decisions"
     (tmp_path / "docs" / "adr").mkdir()
     assert discover_adr_dir(tmp_path) == tmp_path / "docs" / "adr"  # the most specific conventional name wins
+
+
+def test_a_binary_file_in_the_tree_does_not_break_the_probe_or_the_post_image(tmp_path: Path):
+    """Seen on the first public corpus: one undecodable blob and the whole run died with exit 3."""
+    repo = make_repo(tmp_path)
+    (repo / "logo.ico").write_bytes(b"\x00\x00\x01\x00\xa8\xff\xfe binary")
+    (repo / "b.py").write_text("needle_in_code = 1\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "binary")
+    assert GitRepo(repo).contains("HEAD", "needle_in_code") is True
+    assert "binary" in GitRepo(repo).read("HEAD", "logo.ico")

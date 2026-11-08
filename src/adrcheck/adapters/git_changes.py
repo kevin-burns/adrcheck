@@ -54,8 +54,14 @@ class GitRepo:
         self._code_cache: dict[str, str] = {}
 
     def _git(self, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+        # errors="replace": a binary blob in the tree (an icon, a font, a parquet file) must not end the run.
         return subprocess.run(  # nosec B603 B607 - argv list, no shell, fixed executable
-            ["git", "-C", str(self.root), *args], check=check, capture_output=True, text=True
+            ["git", "-C", str(self.root), *args],
+            check=check,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
         )
 
     def read(self, ref: str, path: str) -> str:
