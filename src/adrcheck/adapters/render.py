@@ -52,7 +52,7 @@ def to_json(reports: list[ChangeReport]) -> str:
             ],
             "findings": _finding_rows(reports),
             "stale": [
-                {"adr": s.adr_number, "obligation": s.obligation_id, "missing": list(s.missing)}
+                {"adr": s.adr_number, "obligation": s.obligation_id, "missing": list(s.missing), "known": s.known}
                 for r in reports
                 for s in r.stale
             ],
@@ -95,6 +95,9 @@ def to_markdown(reports: list[ChangeReport]) -> str:
         out.append("## Possibly overtaken ADRs (named anchors missing at the end of the range)")
         out.append("")
         for s in stale:
-            out.append(f"- ADR-{s.adr_number} {s.obligation_id}: missing {', '.join(repr(m) for m in s.missing)}")
+            if not s.known:
+                out.append(f"- ADR-{s.adr_number} {s.obligation_id}: missing {', '.join(repr(m) for m in s.missing)}")
+        if known := sum(s.known for s in stale):
+            out.append(f"- {known} already in the baseline")
         out.append("")
     return "\n".join(out)

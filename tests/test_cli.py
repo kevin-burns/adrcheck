@@ -189,3 +189,21 @@ def test_check_staged_judges_the_index_against_the_adrs(tmp_path: Path, capsys):
     assert code == 0 and out["changes"][0]["commit"] == "STAGED"
     # HEAD already holds the cited line, so the index did not introduce it: the parent of a staged change is HEAD
     assert out["findings"][0]["verdict"] == "ADR-OVERTAKEN"
+
+
+def test_write_baseline_records_the_stale_list_and_the_next_run_reports_those_rows_as_known(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)  # HEAD no longer contains row_key, so ADR-1/1 is stale
+    base = ["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--commit", "HEAD", "--format", "json"]
+    code = main([*base, "--write-baseline"], judge=FakeJudge())
+    out = json.loads(capsys.readouterr().out)
+    assert code == 0 and out["stale"] == [{"adr": 1, "obligation": "ADR-1/1", "missing": ["row_key"], "known": False}]
+    written = json.loads((repo / ".adrcheck" / "baseline.json").read_text())
+    assert [r["obligation"] for r in written["stale"]] == ["ADR-1/1"]
+
+    code = main(base, judge=FakeJudge())
+    out = json.loads(capsys.readouterr().out)
+    assert code == 0 and out["stale"][0]["known"] is True
+
+    main([*base[:-2], "--format", "md"], judge=FakeJudge())
+    md = capsys.readouterr().out
+    assert "1 already in the baseline" in md and "ADR-1 ADR-1/1: missing" not in md

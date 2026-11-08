@@ -64,3 +64,17 @@ def test_markdown_is_lint_clean_with_blank_lines_after_headings_and_around_lists
         if line.startswith("## "):
             assert lines[i + 1] == "", f"no blank line after heading at {i}"
             assert i == 0 or lines[i - 1] == "", f"no blank line before heading at {i}"
+
+
+def test_stale_rows_known_from_the_baseline_are_counted_not_listed():
+    from adrcheck.usecases.check import StaleAdr
+
+    report = ChangeReport(
+        ref="abc1234",
+        message="m",
+        stale=(StaleAdr(4, "ADR-4/2", ("import_rows",), known=True), StaleAdr(5, "ADR-5/1", ("Clef",))),
+    )
+    md = to_markdown([report])
+    assert "- ADR-5 ADR-5/1: missing 'Clef'" in md
+    assert "ADR-4/2" not in md and "1 already in the baseline" in md
+    assert [s["known"] for s in json.loads(to_json([report]))["stale"]] == [True, False]

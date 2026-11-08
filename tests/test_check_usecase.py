@@ -399,3 +399,22 @@ def test_the_stale_sweep_fires_only_when_every_anchor_of_an_obligation_is_gone()
         repo=repo,
     )
     assert [(s.obligation_id, s.missing) for s in reports[-1].stale] == [("ADR-4/2", ("gone", "also_gone"))]
+
+
+def test_stale_rows_named_in_the_baseline_are_reported_as_known_not_dropped():
+    from adrcheck.domain.baseline import Baseline
+
+    gone = Obligation("ADR-4/2", 4, "MUST", "t", "q", Checkability.MECHANICAL, mandates=("import_rows",))
+    also = Obligation("ADR-4/3", 4, "MUST", "t", "q", Checkability.MECHANICAL, mandates=("li-assist",))
+    stale_adr = Adr(title="Importer", status=Status.ACCEPTED, source="0004.md", number=4, sections={"decision": "q"})
+    repo = FakeRepo({("c1", "import_rows"): False, ("c1", "li-assist"): False, ("c1", "row_key"): True})
+    reports = check(
+        changes=[change()],
+        adrs=[ADR, stale_adr],
+        compiler=FakeCompiler({2: (OBLIGATION,), 4: (gone, also)}),
+        judge=FakeJudge(JudgeResponse(findings=())),
+        repo=repo,
+        baseline=Baseline(stale=frozenset({(4, "ADR-4/2")})),
+    )
+    # the reviewed row stays in the report, flagged, so a later --write-baseline can carry it forward
+    assert [(s.obligation_id, s.known) for s in reports[-1].stale] == [("ADR-4/2", True), ("ADR-4/3", False)]

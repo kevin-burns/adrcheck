@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, replace
 
 from adrcheck.domain.adr import Adr, Status
+from adrcheck.domain.baseline import EMPTY, Baseline
 from adrcheck.domain.change import Change
 from adrcheck.domain.decision_signals import DecisionSignal, decision_signals
 from adrcheck.domain.exception import parse_exceptions
@@ -46,6 +47,7 @@ class StaleAdr:
     adr_number: int
     obligation_id: str
     missing: tuple[str, ...]
+    known: bool = False  # already reviewed: the baseline names this row
 
 
 @dataclass(frozen=True)
@@ -65,7 +67,9 @@ class ChangeReport:
     stale: tuple[StaleAdr, ...] = ()  # populated on the last report of a run
 
 
-def stale_sweep(adrs: list[Adr], compiler: ObligationCompiler, repo: RepoReader, ref: str) -> tuple[StaleAdr, ...]:
+def stale_sweep(
+    adrs: list[Adr], compiler: ObligationCompiler, repo: RepoReader, ref: str, baseline: Baseline = EMPTY
+) -> tuple[StaleAdr, ...]:
     """Per run, not per diff: a stale ADR's files may never be touched again, so selection cannot find it."""
     out: list[StaleAdr] = []
     for adr in adrs:
@@ -75,7 +79,7 @@ def stale_sweep(adrs: list[Adr], compiler: ObligationCompiler, repo: RepoReader,
             # ADR-5: stale only when every named anchor is gone. One surviving anchor is a foothold.
             missing = tuple(n for n in o.mandates if repo.contains(ref, n) is False)
             if missing and len(missing) == len(o.mandates):
-                out.append(StaleAdr(adr.number, o.id, missing))
+                out.append(StaleAdr(adr.number, o.id, missing, known=baseline.knows(adr.number, o.id)))
     return tuple(out)
 
 
@@ -142,6 +146,7 @@ def check(
     compiler: ObligationCompiler,
     judge: ChangeJudge,
     repo: RepoReader,
+    baseline: Baseline = EMPTY,
 ) -> list[ChangeReport]:
     reports: list[ChangeReport] = []
     for change in changes:
@@ -233,7 +238,7 @@ def check(
         )
     if reports:
         last = reports[-1]
-        reports[-1] = replace(last, stale=stale_sweep(adrs, compiler, repo, last.ref))
+        reports[-1] = replace(last, stale=stale_sweep(adrs, compiler, repo, last.ref, baseline))
     return reports
 
 

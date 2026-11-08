@@ -8,6 +8,7 @@ import os
 import sys
 from pathlib import Path
 
+from adrcheck.adapters.baseline_file import load_baseline, write_baseline
 from adrcheck.adapters.eval_cases import load_cases
 from adrcheck.adapters.git_changes import GitChanges
 from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource, discover_adr_dir
@@ -52,6 +53,16 @@ def _parser() -> argparse.ArgumentParser:
     g.add_argument("--staged", action="store_true", help="the index, as a pre-commit hook sees it")
     c.add_argument("--format", choices=("json", "md"), default="md")
     c.add_argument("--fail-on", choices=("conflict",), help="exit 2 when any CONFLICT is reported")
+    c.add_argument(
+        "--baseline",
+        default=".adrcheck/baseline.json",
+        help="reviewed stale rows, relative to --repo; rows named here are counted, not listed (default %(default)s)",
+    )
+    c.add_argument(
+        "--write-baseline",
+        action="store_true",
+        help="record this run's stale list to --baseline; a deliberate act, review the diff like source",
+    )
 
     k = sub.add_parser("compile", help="compile ADRs into obligations and print them")
     common(k)
@@ -131,12 +142,19 @@ def main(argv: list[str] | None = None, judge=None) -> int:
             return EXIT_OK
     else:
         changes = git.changes(args.range or f"{args.commit}~1..{args.commit}")
+    baseline_path = repo / args.baseline
     try:
-        reports = check(changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git)
+        reports = check(
+            changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git, baseline=load_baseline(baseline_path)
+        )
     except Exception as exc:
         print(f"could not evaluate: {type(exc).__name__}: {exc}", file=sys.stderr)
         return EXIT_UNEVALUATED
     print(to_json(reports) if args.format == "json" else to_markdown(reports))
+    if args.write_baseline:
+        stale = [s for r in reports for s in r.stale]
+        write_baseline(baseline_path, stale)
+        print(f"baseline written: {len(stale)} stale obligations -> {baseline_path}", file=sys.stderr)
     conflicts = any(f.verdict is Verdict.CONFLICT for r in reports for f in r.findings)
     if args.fail_on == "conflict" and conflicts:
         return EXIT_CONFLICT
