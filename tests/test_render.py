@@ -91,3 +91,32 @@ def test_a_proposed_adr_whose_paths_the_change_touched_gets_its_own_line():
     )
     md = to_markdown([report])
     assert "- proposed, not enforced, touches its paths: ADR-7" in md and "ADR-8" not in md
+
+
+def _finding(**kw):
+    base = {
+        "adr_number": 2,
+        "obligation_id": "ADR-2/1",
+        "verdict": Verdict.CONFLICT,
+        "signals": frozenset(),
+        "path": "a.py",
+    }
+    return Finding(**{**base, **kw})
+
+
+def test_judge_text_cannot_start_a_new_markdown_block_or_hide_html_in_the_comment():
+    reason = "keys by url\n\n## Injected heading\n<!-- adrcheck-report --> <img src=x>"
+    md = to_markdown([ChangeReport(ref="abc", message="m", findings=(_finding(reason=reason),))])
+    assert "\n## Injected" not in md and "<!--" not in md and "<img" not in md
+    assert "  - keys by url ## Injected heading &lt;!-- adrcheck-report --> &lt;img src=x>" in md
+
+
+def test_a_backtick_in_a_cited_line_or_path_stays_inside_its_code_span():
+    md = to_markdown([ChangeReport(ref="abc", message="m", findings=(_finding(path="a`b.py", line_text="x = `y`"),))])
+    assert "`a'b.py`: `x = 'y'`" in md
+
+
+def test_judge_text_is_bounded_so_one_finding_cannot_fill_the_comment():
+    md = to_markdown([ChangeReport(ref="abc", message="m", findings=(_finding(reason="r" * 2000, quote="q" * 2000),))])
+    lines = [ln for ln in md.splitlines() if ln.startswith("  - ")]
+    assert all(len(ln) < 320 for ln in lines) and all(ln.endswith("…") for ln in lines)

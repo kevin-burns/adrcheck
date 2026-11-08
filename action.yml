@@ -89,7 +89,13 @@ runs:
           3) head="**adrcheck**: could not evaluate (no verdicts). This is not a finding." ;;
           *) head="**adrcheck**: exit ${CODE}." ;;
         esac
-        body="$(printf '%s\n%s\n\n%s\n' "${marker}" "${head}" "$(cat "${REPORT}")")"
+        # GitHub caps a comment at 65536 characters; a long range or a chatty judge must not fail the post.
+        if [ "$(wc -c < "${REPORT}")" -gt 60000 ]; then
+          report="$(head -c 60000 "${REPORT}"; printf '\n\n_Report truncated; the full report is in the job log._\n')"
+        else
+          report="$(cat "${REPORT}")"
+        fi
+        body="$(printf '%s\n%s\n\n%s\n' "${marker}" "${head}" "${report}")"
         query=".[] | select(.body | startswith(\"${marker}\")) | .id"
         existing="$(gh api "repos/${REPO}/issues/${PR}/comments" --paginate --jq "${query}" | head -1)"
         if [ -n "${existing}" ]; then

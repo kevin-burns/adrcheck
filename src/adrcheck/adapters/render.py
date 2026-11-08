@@ -6,6 +6,20 @@ import json
 
 from adrcheck.usecases.check import ChangeReport
 
+TEXT_LIMIT = 300  # judge text, cited lines and quotes are untrusted input to a PR comment
+
+
+def _prose(text: str) -> str:
+    """One line, no HTML, bounded: model text cannot open a heading, hide a comment or fill the page."""
+    flat = " ".join(text.split()).replace("<", "&lt;")
+    return flat if len(flat) <= TEXT_LIMIT else flat[:TEXT_LIMIT] + "…"
+
+
+def _code(text: str) -> str:
+    """Fit for one backtick span: a backtick inside would end it early."""
+    flat = " ".join(text.split()).replace("`", "'")
+    return flat if len(flat) <= TEXT_LIMIT else flat[:TEXT_LIMIT] + "…"
+
 
 def _finding_rows(reports: list[ChangeReport]) -> list[dict]:
     rows = []
@@ -75,14 +89,14 @@ def to_markdown(reports: list[ChangeReport]) -> str:
         for f in r.findings:
             head = f"- **{f.verdict.value}** ADR-{f.adr_number}" + (f" ({f.obligation_id})" if f.obligation_id else "")
             if f.note:
-                head += f" — {f.note}"
+                head += f" — {_prose(f.note)}"
             out.append(head)
             if f.line_text:
-                out.append(f"  - `{f.path}`: `{f.line_text.strip()}`")
+                out.append(f"  - `{_code(f.path)}`: `{_code(f.line_text)}`")
             if f.quote:
-                out.append(f"  - > {f.quote}")
+                out.append(f"  - > {_prose(f.quote)}")
             if f.reason:
-                out.append(f"  - {f.reason}")
+                out.append(f"  - {_prose(f.reason)}")
         if dismissed:
             out.append("- judged, not relevant: " + ", ".join(f"ADR-{n}" for n in dismissed))
         if proposed := [e.adr_number for e in r.excluded if "touches its paths" in e.reason]:
@@ -90,7 +104,7 @@ def to_markdown(reports: list[ChangeReport]) -> str:
         if r.uncovered:
             out.append(f"- uncovered files: {r.uncovered}")
         for p in r.problems:
-            out.append(f"- problem: {p}")
+            out.append(f"- problem: {_prose(p)}")
         out.append("")
     stale = [s for r in reports for s in r.stale]
     if stale:
