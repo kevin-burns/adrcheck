@@ -1,0 +1,104 @@
+# adrcheck as a GitHub Action: judge the pull request's commits against the repository's ADRs and post one
+# comment, updated in place on every run. Exit 2 (a verified CONFLICT) fails the step; exit 3 (the checker
+# could not evaluate: no key, provider down) is reported as a warning and does not fail the step, because an
+# unreachable model is not a finding (ADR-3). Secrets: pass the Anthropic key in; this action reads no other.
+name: adrcheck
+description: Check a pull request's code changes against the architecture decision records in the repository
+author: KevinB
+
+inputs:
+  adr-dir:
+    description: Directory of numbered ADR markdown files
+    default: docs/adr
+  model:
+    description: provider:model for compiler and judge
+    default: anthropic:claude-sonnet-5-5
+  base:
+    description: Git ref the pull request is compared against (fetched as origin/<base>)
+    default: ${{ github.base_ref }}
+  comment:
+    description: Post the markdown report as one PR comment, updated in place
+    default: "true"
+  fail-on-conflict:
+    description: Fail the step when a verified CONFLICT is reported
+    default: "true"
+  github-token:
+    description: Token used to post the comment (pull-requests write)
+    default: ${{ github.token }}
+
+outputs:
+  exit-code:
+    description: "0 clean, 2 conflict, 3 could not evaluate"
+    value: ${{ steps.check.outputs.code }}
+  report:
+    description: Path to the markdown report
+    value: ${{ steps.check.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - uses: astral-sh/setup-uv@v10.3.3
+      with:
+        enable-cache: true
+        python-version: "3.13"
+
+    - name: Install adrcheck from the action checkout
+      shell: bash
+      run: uv tool install --quiet "${GITHUB_ACTION_PATH}"
+
+    - name: Fetch the base ref
+      shell: bash
+      env:
+        BASE: ${{ inputs.base }}
+      run: git fetch --no-tags --depth=200 origin "+refs/heads/${BASE}:refs/remotes/origin/${BASE}"
+
+    - name: Check the pull request against the ADRs
+      id: check
+      shell: bash
+      env:
+        BASE: ${{ inputs.base }}
+        ADR_DIR: ${{ inputs.adr-dir }}
+        MODEL: ${{ inputs.model }}
+      run: |
+        set +e
+        report="${RUNNER_TEMP}/adrcheck-report.md"
+        adrcheck check --adr-dir "${ADR_DIR}" --range "origin/${BASE}..HEAD" --model "${MODEL}" \
+          --format md --fail-on conflict > "${report}" 2> "${RUNNER_TEMP}/adrcheck.err"
+        code=$?
+        set -e
+        cat "${report}"
+        cat "${RUNNER_TEMP}/adrcheck.err" >&2
+        echo "code=${code}" >> "${GITHUB_OUTPUT}"
+        echo "report=${report}" >> "${GITHUB_OUTPUT}"
+        if [ "${code}" = "3" ]; then echo "::warning title=adrcheck::could not evaluate; see the report"; fi
+
+    - name: Post or update the PR comment
+      if: inputs.comment == 'true' && github.event_name == 'pull_request'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        REPORT: ${{ steps.check.outputs.report }}
+        CODE: ${{ steps.check.outputs.code }}
+        PR: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        marker="<!-- adrcheck-report -->"
+        case "${CODE}" in
+          0) head="**adrcheck**: no conflict with the ADRs." ;;
+          2) head="**adrcheck**: a change conflicts with an ADR. See the CONFLICT rows below." ;;
+          3) head="**adrcheck**: could not evaluate (no verdicts). This is not a finding." ;;
+          *) head="**adrcheck**: exit ${CODE}." ;;
+        esac
+        body="$(printf '%s\n%s\n\n%s\n' "${marker}" "${head}" "$(cat "${REPORT}")")"
+        query=".[] | select(.body | startswith(\"${marker}\")) | .id"
+        existing="$(gh api "repos/${REPO}/issues/${PR}/comments" --paginate --jq "${query}" | head -1)"
+        if [ -n "${existing}" ]; then
+          gh api --method PATCH "repos/${REPO}/issues/comments/${existing}" -f body="${body}" > /dev/null
+        else
+          gh api --method POST "repos/${REPO}/issues/${PR}/comments" -f body="${body}" > /dev/null
+        fi
+
+    - name: Fail on a verified conflict
+      if: inputs.fail-on-conflict == 'true' && steps.check.outputs.code == '2'
+      shell: bash
+      run: exit 2

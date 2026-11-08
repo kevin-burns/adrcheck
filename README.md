@@ -12,8 +12,76 @@ and publishes its own false-alarm rate.
 
 Advisory by default. Structured JSON out, so a caller can gate if it wants to.
 
-Status: pre-release. A one-day spike is measuring it on a real repository before any of this
-is promised. See `docs/design.md` for the module boundaries and `docs/spikes/` for results.
+Status: pre-release. Measured on two repositories so far; the numbers and the labelled rows are in
+`docs/spikes/` and `evals/cases/`. See `docs/design.md` for the module boundaries and `docs/adr/` for
+the decisions adrcheck holds itself to (it checks its own pull requests against them).
+
+## Quickstart
+
+ADRs live in the repository as numbered markdown files, in any of the common shapes (Nygard, MADR,
+Y-statements, Tyree and Akerman, bold labels, a table). adrcheck binds on the role of a section, not
+its heading: the decision and its consequences bind, the context explains, the considered options
+never bind.
+
+```bash
+# run from a clone, no install
+uvx --from git+https://github.com/kevin-burns/adrcheck adrcheck --help
+
+# hygiene of the ADR set, no model
+adrcheck lint --adr-dir docs/adr
+
+# compile ADRs into obligations once; cached under .adrcheck/obligations, safe to commit
+adrcheck compile --adr-dir docs/adr
+
+# judge the commits on a branch; exit 2 on a verified CONFLICT, 3 when nothing could be evaluated
+adrcheck check --adr-dir docs/adr --range origin/main..HEAD --format md --fail-on conflict
+```
+
+The model is chosen with `--model provider:model`. `anthropic:claude-sonnet-5-5` uses the Anthropic
+API and needs `ANTHROPIC_API_KEY` in the environment; `claude-cli:sonnet` uses a logged-in Claude Code
+install and needs no key. A commit that touches nothing an ADR governs costs no model call. A
+commit that does costs one call, about 100k input tokens; measured runs are in `docs/spikes/`.
+
+Waive an ADR for one commit with a trailer that carries a reason:
+
+```text
+Adr-Exception: ADR-3 migration script, reverted in the next commit
+```
+
+### In a pull request
+
+```yaml
+# .github/workflows/adrcheck.yml
+on: pull_request
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  adrcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: kevin-burns/adrcheck@main
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          adr-dir: docs/adr
+```
+
+The action posts one comment with the report and updates it on every push. A verified CONFLICT fails
+the step. "Could not evaluate" (no key, provider down) is a warning, not a failure: an unreachable
+model is not a finding.
+
+### Verdicts
+
+| Verdict | Meaning | Exit code |
+|---|---|---|
+| CONFLICT | a changed line contradicts a quoted sentence of the ADR's decision; both verified | 2 with `--fail-on conflict` |
+| COMPLIANT | the change touches the ADR's ground and keeps to it | 0 |
+| UNCLEAR | the diff does not settle it; the reason is shown | 0 |
+| ADR-OVERTAKEN | the contradiction already existed at the parent commit; the ADR, not the change, is stale | 0 |
 
 ## Prior art and credit
 

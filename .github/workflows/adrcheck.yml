@@ -1,0 +1,29 @@
+# adrcheck checks adrcheck: every pull request is judged against the ADRs under docs/adr using the action in
+# this very repository. The first consumer of the Action is the repository that ships it (bead adrcheck-dzz).
+# Needs the repository secret ANTHROPIC_API_KEY; without it the step reports "could not evaluate" (exit 3)
+# as a warning and does not fail, so a fork's pull request still runs the rest of CI.
+name: adrcheck
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  self-check:
+    name: adrcheck on this pull request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Check this pull request against docs/adr
+        uses: ./
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          adr-dir: docs/adr
+          model: anthropic:claude-sonnet-5-5
