@@ -448,20 +448,20 @@ def removal(path="enrich/linkedin.py", text="def import_rows(rows):"):
     return Change(ref="c1", parent="c0", message="remove the importer", files=files)
 
 
-def removal_run(counts):
-    repo = FakeRepo({("c0", "import_rows"): True}, counts)
+def removal_run(counts, obligations=(IMPORT_OBLIGATION,), cited="ADR-4/1", line="def import_rows(rows):"):
+    repo = FakeRepo({("c0", "import_rows"): True, ("c0", "enrich/linkedin.py"): True}, counts)
     judged = RawFinding(
-        "ADR-4/1",
+        cited,
         Verdict.CONFLICT,
         "enrich/linkedin.py",
-        "def import_rows(rows):",
+        line,
         "calls import_rows for every sweep",
         "the importer is deleted",
     )
     reports = check(
-        changes=[removal()],
+        changes=[removal(text=line)],
         adrs=[IMPORTER],
-        compiler=FakeCompiler({4: (IMPORT_OBLIGATION,)}),
+        compiler=FakeCompiler({4: tuple(obligations)}),
         judge=FakeJudge(JudgeResponse(findings=(judged,))),
         repo=repo,
     )
@@ -481,3 +481,29 @@ def test_removing_an_anchor_that_had_callers_at_parent_stays_a_conflict():
 
 def test_without_the_occurrence_probe_the_judge_stands():
     assert removal_run({}).verdict is Verdict.CONFLICT
+
+
+PATH_OBLIGATION = Obligation(
+    "ADR-4/0",
+    4,
+    "MUST",
+    "the importer lives in enrich/linkedin.py",
+    "calls import_rows for every sweep",
+    Checkability.STRUCTURAL,
+    mandates=("enrich/linkedin.py",),
+)
+
+
+def test_an_anchor_named_by_a_sibling_obligation_of_the_same_adr_counts():
+    # job-search 614a20d: the judge cited the def line under the obligation whose anchor is the file path;
+    # import_rows is an anchor of the next obligation. The ADR's anchor set is what the removed line is read against.
+    f = removal_run({("c0", "import_rows"): 1}, obligations=(PATH_OBLIGATION, IMPORT_OBLIGATION), cited="ADR-4/0")
+    assert f.verdict is Verdict.ADR_OVERTAKEN and "import_rows" in f.note
+
+
+def test_a_removed_definition_nothing_referenced_is_dead_code_even_when_no_adr_anchor_names_it():
+    f = removal_run({("c0", "DELAY"): 1}, obligations=(PATH_OBLIGATION,), cited="ADR-4/0", line="DELAY = 1.2  # gap")
+    assert f.verdict is Verdict.ADR_OVERTAKEN and "removed anchor DELAY had no callers at parent" in f.note
+    # a definition that was still used somewhere stays a conflict
+    used = removal_run({("c0", "DELAY"): 2}, obligations=(PATH_OBLIGATION,), cited="ADR-4/0", line="DELAY = 1.2")
+    assert used.verdict is Verdict.CONFLICT

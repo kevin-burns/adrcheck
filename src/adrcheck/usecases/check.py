@@ -111,23 +111,29 @@ def _precedent(repo: RepoReader, change: Change, path: str, line_text: str) -> b
 
 
 _IDENTIFIER = re.compile(r"^\w+$")
+_DEFINITION = re.compile(r"^\s*(?:(?:async\s+)?def|class)\s+(\w+)|^\s*(\w+)\s*(?::[^=]*)?=[^=]")
 
 
-def _dead_removal(repo: RepoReader, change: Change, obligation: Obligation, raw) -> str | None:
-    """The anchor this conflict removed, if nothing but its own definition referenced it at the parent.
+def _dead_removal(repo: RepoReader, change: Change, adr_anchors: tuple[str, ...], raw) -> str | None:
+    """The name this conflict removed, if nothing but its own definition referenced it at the parent.
 
-    A removal has no added line for `_precedent` to find, and the anchor did exist at the parent, so the two
-    older probes say nothing. One count over the parent's code settles it: a lone occurrence is the definition.
+    A removal has no added line for `_precedent` to find, and the name did exist at the parent, so the two
+    older probes say nothing. One whole-identifier count over the parent's code settles it: a lone occurrence
+    is the definition. Candidates are the name the removed line defines and any identifier anchor of the ADR
+    (not only of the cited obligation: the judge files a line under one obligation, the anchors sit on another).
     """
     if change.parent is None or not change.touched(raw.path, raw.line_text, kinds=("-",)):
         return None
     if change.touched(raw.path, raw.line_text, kinds=("+",)):
         return None  # moved, not removed
-    for name in obligation.mandates:
-        if _IDENTIFIER.match(name) and name in raw.line_text:
-            count = repo.occurrences(change.parent, name)
-            if count is not None and count <= 1:
-                return name
+    candidates: list[str] = []
+    if m := _DEFINITION.match(raw.line_text):
+        candidates.append(m.group(1) or m.group(2))
+    candidates += [n for n in adr_anchors if _IDENTIFIER.match(n) and n in raw.line_text and n not in candidates]
+    for name in candidates:
+        count = repo.occurrences(change.parent, name)
+        if count is not None and count <= 1:
+            return name
     return None
 
 
@@ -224,7 +230,8 @@ def check(
                     continue
                 sel, case = cases[owner]
                 obligation = next((o for o in case.obligations if o.id == raw.obligation_id), None)
-                findings_of[owner].append(_settle(raw, obligation, change, case.adr, sel.signals, repo))
+                anchors = tuple(n for o in case.obligations for n in o.mandates)
+                findings_of[owner].append(_settle(raw, obligation, change, case.adr, sel.signals, repo, anchors))
             for i, (sel, case) in enumerate(cases):
                 adr = case.adr
                 if response.error:
@@ -272,7 +279,13 @@ def _adr_number_of(obligation_id: str) -> int | None:
 
 
 def _settle(
-    raw, obligation: Obligation | None, change: Change, adr: Adr, signals: frozenset[str], repo: RepoReader
+    raw,
+    obligation: Obligation | None,
+    change: Change,
+    adr: Adr,
+    signals: frozenset[str],
+    repo: RepoReader,
+    adr_anchors: tuple[str, ...] = (),
 ) -> Finding:
     verdict = raw.verdict
     failed: tuple[str, ...] = ()
@@ -289,7 +302,7 @@ def _settle(
         note = "claim failed verification: " + ", ".join(failed)
     mandated = _all_present(repo, change.parent, obligation.mandates) if obligation else None
     forbidden = _precedent(repo, change, raw.path, raw.line_text) if verdict is Verdict.CONFLICT else None
-    dead_anchor = _dead_removal(repo, change, obligation, raw) if verdict is Verdict.CONFLICT and obligation else None
+    dead_anchor = _dead_removal(repo, change, adr_anchors, raw) if verdict is Verdict.CONFLICT else None
     settled = classify(
         verdict, mandated_at_parent=mandated, forbidden_at_parent=forbidden, dead_at_parent=dead_anchor is not None
     )
