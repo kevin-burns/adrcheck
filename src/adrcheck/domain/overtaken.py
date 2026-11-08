@@ -10,9 +10,17 @@ from __future__ import annotations
 from adrcheck.domain.verdict import Verdict
 
 
-def classify(judge: Verdict, *, mandated_at_parent: bool | None, forbidden_at_parent: bool | None) -> Verdict:
+def classify(
+    judge: Verdict,
+    *,
+    mandated_at_parent: bool | None,
+    forbidden_at_parent: bool | None,
+    dead_at_parent: bool | None = None,
+) -> Verdict:
+    """`dead_at_parent`: the conflict cites the removal of an anchor nothing else referenced at the parent.
+    Deleting dead code does not break a decision; the decision had already been left behind (bead ihg)."""
     if mandated_at_parent is False:
         return Verdict.ADR_OVERTAKEN
-    if judge is Verdict.CONFLICT and forbidden_at_parent is True:
+    if judge is Verdict.CONFLICT and (forbidden_at_parent is True or dead_at_parent is True):
         return Verdict.ADR_OVERTAKEN
     return judge

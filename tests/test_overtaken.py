@@ -26,3 +26,16 @@ from adrcheck.domain.verdict import Verdict
 )
 def test_classification_table(judge, mandated_at_parent, forbidden_at_parent, expected):
     assert classify(judge, mandated_at_parent=mandated_at_parent, forbidden_at_parent=forbidden_at_parent) is expected
+
+
+def test_a_conflict_over_a_removed_anchor_that_nothing_used_at_parent_is_overtaken():
+    assert classify(Verdict.CONFLICT, mandated_at_parent=True, forbidden_at_parent=False, dead_at_parent=True) is (
+        Verdict.ADR_OVERTAKEN
+    )
+    assert classify(Verdict.CONFLICT, mandated_at_parent=True, forbidden_at_parent=False, dead_at_parent=False) is (
+        Verdict.CONFLICT
+    )
+    # the probe is only about conflicts; a compliant verdict never flips on it
+    assert classify(Verdict.COMPLIANT, mandated_at_parent=True, forbidden_at_parent=False, dead_at_parent=True) is (
+        Verdict.COMPLIANT
+    )

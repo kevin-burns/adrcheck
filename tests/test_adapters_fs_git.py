@@ -146,3 +146,16 @@ def test_a_binary_file_in_the_tree_does_not_break_the_probe_or_the_post_image(tm
     git(repo, "commit", "-q", "-m", "binary")
     assert GitRepo(repo).contains("HEAD", "needle_in_code") is True
     assert "binary" in GitRepo(repo).read("HEAD", "logo.ico")
+
+
+def test_occurrences_counts_whole_identifiers_in_code_so_a_definition_alone_is_one(tmp_path: Path):
+    repo = make_repo(tmp_path)
+    (repo / "lib.py").write_text("def import_rows(rows):\n    return rows\n\ndef fetch(): pass\n")
+    (repo / "b.py").write_text("from lib import fetch\nfetch()\n# import_rows mentioned in a comment only\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "third")
+    r = GitRepo(repo)
+    assert r.occurrences("HEAD", "import_rows") == 1  # the def; the comment is stripped, 'rows' is not a match
+    assert r.occurrences("HEAD", "fetch") == 3
+    assert r.occurrences("HEAD", "nothing_here") == 0
+    assert r.occurrences("no-such-ref", "fetch") is None

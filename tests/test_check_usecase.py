@@ -69,9 +69,13 @@ class FakeJudge:
 @dataclass
 class FakeRepo:
     present: dict[tuple[str, str], bool]
+    counts: dict[tuple[str, str], int] = field(default_factory=dict)
 
     def contains(self, ref, needle):
         return self.present.get((ref, needle))
+
+    def occurrences(self, ref, needle):
+        return self.counts.get((ref, needle))
 
     def read(self, ref, path):
         return ""
@@ -418,3 +422,62 @@ def test_stale_rows_named_in_the_baseline_are_reported_as_known_not_dropped():
     )
     # the reviewed row stays in the report, flagged, so a later --write-baseline can carry it forward
     assert [(s.obligation_id, s.known) for s in reports[-1].stale] == [("ADR-4/2", True), ("ADR-4/3", False)]
+
+
+IMPORTER = Adr(
+    title="Importer",
+    status=Status.ACCEPTED,
+    source="0004.md",
+    number=4,
+    applies_to=("enrich/**",),
+    sections={"decision": "The LinkedIn importer calls import_rows for every sweep."},
+)
+IMPORT_OBLIGATION = Obligation(
+    "ADR-4/1",
+    4,
+    "MUST",
+    "importer calls import_rows",
+    "calls import_rows for every sweep",
+    Checkability.STRUCTURAL,
+    mandates=("import_rows",),
+)
+
+
+def removal(path="enrich/linkedin.py", text="def import_rows(rows):"):
+    files = (FileChange(path=path, old_path=path, removed=(Line(path=path, kind="-", number=3, text=text),)),)
+    return Change(ref="c1", parent="c0", message="remove the importer", files=files)
+
+
+def removal_run(counts):
+    repo = FakeRepo({("c0", "import_rows"): True}, counts)
+    judged = RawFinding(
+        "ADR-4/1",
+        Verdict.CONFLICT,
+        "enrich/linkedin.py",
+        "def import_rows(rows):",
+        "calls import_rows for every sweep",
+        "the importer is deleted",
+    )
+    reports = check(
+        changes=[removal()],
+        adrs=[IMPORTER],
+        compiler=FakeCompiler({4: (IMPORT_OBLIGATION,)}),
+        judge=FakeJudge(JudgeResponse(findings=(judged,))),
+        repo=repo,
+    )
+    [f] = reports[0].findings
+    return f
+
+
+def test_removing_an_anchor_nothing_called_at_parent_is_overtaken_dead_code_not_a_conflict():
+    f = removal_run({("c0", "import_rows"): 1})  # the definition was the only occurrence
+    assert f.verdict is Verdict.ADR_OVERTAKEN
+    assert "removed anchor import_rows had no callers at parent" in f.note
+
+
+def test_removing_an_anchor_that_had_callers_at_parent_stays_a_conflict():
+    assert removal_run({("c0", "import_rows"): 3}).verdict is Verdict.CONFLICT
+
+
+def test_without_the_occurrence_probe_the_judge_stands():
+    assert removal_run({}).verdict is Verdict.CONFLICT

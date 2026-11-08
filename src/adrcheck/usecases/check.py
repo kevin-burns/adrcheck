@@ -110,6 +110,27 @@ def _precedent(repo: RepoReader, change: Change, path: str, line_text: str) -> b
     return repo.contains(change.parent, text)
 
 
+_IDENTIFIER = re.compile(r"^\w+$")
+
+
+def _dead_removal(repo: RepoReader, change: Change, obligation: Obligation, raw) -> str | None:
+    """The anchor this conflict removed, if nothing but its own definition referenced it at the parent.
+
+    A removal has no added line for `_precedent` to find, and the anchor did exist at the parent, so the two
+    older probes say nothing. One count over the parent's code settles it: a lone occurrence is the definition.
+    """
+    if change.parent is None or not change.touched(raw.path, raw.line_text, kinds=("-",)):
+        return None
+    if change.touched(raw.path, raw.line_text, kinds=("+",)):
+        return None  # moved, not removed
+    for name in obligation.mandates:
+        if _IDENTIFIER.match(name) and name in raw.line_text:
+            count = repo.occurrences(change.parent, name)
+            if count is not None and count <= 1:
+                return name
+    return None
+
+
 def _post_image(repo: RepoReader, ref: str, path: str) -> str | None:
     """The file after the change, or None when it no longer exists (a deleted file has no post-image)."""
     try:
@@ -268,9 +289,17 @@ def _settle(
         note = "claim failed verification: " + ", ".join(failed)
     mandated = _all_present(repo, change.parent, obligation.mandates) if obligation else None
     forbidden = _precedent(repo, change, raw.path, raw.line_text) if verdict is Verdict.CONFLICT else None
-    settled = classify(verdict, mandated_at_parent=mandated, forbidden_at_parent=forbidden)
+    dead_anchor = _dead_removal(repo, change, obligation, raw) if verdict is Verdict.CONFLICT and obligation else None
+    settled = classify(
+        verdict, mandated_at_parent=mandated, forbidden_at_parent=forbidden, dead_at_parent=dead_anchor is not None
+    )
     if settled is Verdict.ADR_OVERTAKEN and settled is not verdict:
-        note = (note + "; " if note else "") + "contradiction already present at parent commit"
+        why = (
+            f"removed anchor {dead_anchor} had no callers at parent"
+            if dead_anchor
+            else "contradiction already present at parent commit"
+        )
+        note = (note + "; " if note else "") + why
     return Finding(
         adr_number=adr.number or 0,
         obligation_id=raw.obligation_id,

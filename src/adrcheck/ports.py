@@ -68,6 +68,11 @@ class RepoReader(Protocol):
         """Does `needle` occur anywhere in the tree at `ref`? None when the probe cannot run."""
         ...
 
+    def occurrences(self, ref: str, needle: str) -> int | None:
+        """How many times `needle` occurs as a whole identifier in the code at `ref`. A definition counts once;
+        so a count of one means nothing used it. None when the probe cannot run."""
+        ...
+
 
 class ObligationCompiler(Protocol):
     def compile(self, adr: Adr) -> tuple[Obligation, ...]: ...

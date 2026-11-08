@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import re
 import subprocess  # nosec B404 - argv-list calls only, see GitRepo._git
 import tokenize
 from pathlib import Path
@@ -95,6 +96,12 @@ class GitRepo:
     def contains(self, ref: str, needle: str) -> bool | None:
         code = self._code_text(ref)
         return None if code is None else needle in code
+
+    def occurrences(self, ref: str, needle: str) -> int | None:
+        code = self._code_text(ref)
+        if code is None:
+            return None
+        return len(re.findall(rf"(?<![\w.]){re.escape(needle)}(?!\w)", code))
 
 
 class GitChanges(GitRepo):
