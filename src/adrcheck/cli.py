@@ -15,8 +15,10 @@ from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource, discover_ad
 from adrcheck.adapters.obligation_cache import CachedCompiler
 from adrcheck.adapters.providers import runner_for
 from adrcheck.adapters.render import to_json, to_markdown
+from adrcheck.adapters.scope_map import load_scope_map
 from adrcheck.chatmodel import PROMPT_VERSION, ChatModelSeats
 from adrcheck.domain.lint import lint
+from adrcheck.domain.scope import scope
 from adrcheck.domain.verdict import Verdict
 from adrcheck.usecases.check import check
 from adrcheck.usecases.evaluate import score
@@ -38,6 +40,7 @@ def _parser() -> argparse.ArgumentParser:
             "docs/architecture/decisions, doc/adr, adr, decisions that exists)",
         )
         sp.add_argument("--repo", default=".", help="git repository root (default .)")
+        sp.add_argument("--map", default=".adrcheck/map.toml", help="repo-side scope map, relative to --repo")
         sp.add_argument(
             "--model",
             default=None,
@@ -77,6 +80,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     lint_p.add_argument("--adr-dir", default=None)
     lint_p.add_argument("--repo", default=".")
+    lint_p.add_argument("--map", default=".adrcheck/map.toml")
     return p
 
 
@@ -103,8 +107,9 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         print("no ADR directory found; pass --adr-dir", file=sys.stderr)
         return EXIT_ISSUES
 
+    adrs, scope_issues = scope(MarkdownAdrSource(adr_dir).adrs(), load_scope_map(Path(args.repo) / args.map))
     if args.command == "lint":
-        issues = lint(MarkdownAdrSource(adr_dir).adrs())
+        issues = lint(adrs) + scope_issues
         for i in issues:
             print(f"{i.kind}\tADR-{i.adr_number}\t{i.detail}")
         if not issues:
@@ -114,7 +119,8 @@ def main(argv: list[str] | None = None, judge=None) -> int:
     repo = Path(args.repo)
     judge = judge or ChatModelSeats(runner_for(args.model or _default_model()))
     compiler = CachedCompiler(judge, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
-    adrs = MarkdownAdrSource(adr_dir).adrs()
+    for i in scope_issues:
+        print(f"{i.kind}: ADR-{i.adr_number}: {i.detail}", file=sys.stderr)
 
     if args.command == "compile":
         spent = 0.0

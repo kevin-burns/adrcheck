@@ -207,3 +207,29 @@ def test_write_baseline_records_the_stale_list_and_the_next_run_reports_those_ro
     main([*base[:-2], "--format", "md"], judge=FakeJudge())
     md = capsys.readouterr().out
     assert "1 already in the baseline" in md and "ADR-1 ADR-1/1: missing" not in md
+
+
+UNSCOPED_ADR = """# 2. Imports go through import_rows
+
+Status: accepted
+
+## Decision
+
+Every importer calls import_rows.
+"""
+
+
+def test_the_scope_map_keeps_an_unscoped_adr_off_a_change_outside_its_paths(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    (repo / "docs" / "adr" / "0002-import-rows.md").write_text(UNSCOPED_ADR)
+    (repo / ".adrcheck").mkdir()
+    (repo / ".adrcheck" / "map.toml").write_text('[[adr]]\nid = 2\npaths = ["enrich/**"]\n')
+    base = ["--repo", str(repo), "--adr-dir", str(repo / "docs/adr")]
+    code = main(["check", *base, "--commit", "HEAD", "--format", "json"], judge=FakeJudge())
+    out = json.loads(capsys.readouterr().out)
+    excluded = {e["adr"]: e["reason"] for e in out["changes"][0]["excluded"]}
+    assert code == 0 and excluded[2] == "globs did not match any changed path"
+
+    (repo / ".adrcheck" / "map.toml").write_text('[[adr]]\nid = 1\npaths = ["lib/**"]\n')
+    code = main(["lint", *base], judge=FakeJudge())
+    assert code == 1 and "scope-disagreement\tADR-1\t" in capsys.readouterr().out
