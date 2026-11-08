@@ -82,16 +82,34 @@ class GitRepo:
         if listing.returncode != 0:
             return None
         parts: list[str] = [listing.stdout]  # file paths count as presence too: an ADR may name a module
-        for path in listing.stdout.split("\n"):
-            if not path or path.lower().endswith(_PROSE):
-                continue
-            blob = self._git("show", f"{'' if ref == STAGED else ref}:{path}", check=False)
-            if blob.returncode != 0:
-                continue
-            text = blob.stdout
+        wanted = [p for p in listing.stdout.split("\n") if p and not p.lower().endswith(_PROSE)]
+        for path, text in self._blobs(ref, wanted).items():
             parts.append(strip_python_prose(text) if path.endswith(".py") else text)
         self._code_cache[key] = joined = "\n".join(parts)
         return joined
+
+    def _blobs(self, ref: str, paths: list[str]) -> dict[str, str]:
+        """Every blob in one `git cat-file --batch` process; one `git show` per file cost 17 ms a file (bead zsj)."""
+        if not paths:
+            return {}
+        prefix = "" if ref == STAGED else ref
+        request = "".join(f"{prefix}:{p}\n" for p in paths).encode("utf-8")
+        proc = subprocess.run(  # nosec B603 B607 - argv list, no shell
+            ["git", "-C", str(self.root), "cat-file", "--batch"], input=request, capture_output=True, check=False
+        )
+        out, pos, blobs = proc.stdout, 0, {}
+        for path in paths:
+            nl = out.find(b"\n", pos)
+            if nl < 0:
+                break
+            header = out[pos:nl].split()
+            pos = nl + 1
+            if len(header) != 3:  # "<spec> missing", or an ambiguous object: nothing to read for this path
+                continue
+            size = int(header[2])
+            blobs[path] = out[pos : pos + size].decode("utf-8", errors="replace")
+            pos += size + 1  # the trailing newline cat-file appends after each object
+        return blobs
 
     def contains(self, ref: str, needle: str) -> bool | None:
         code = self._code_text(ref)
