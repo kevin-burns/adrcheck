@@ -103,6 +103,18 @@ The action posts one comment with the report and updates it on every push. A ver
 the step. "Could not evaluate" (no key, provider down) is a warning, not a failure: an unreachable
 model is not a finding.
 
+### Measuring a change to the prompts or the rules
+
+Labelled cases live under `evals/cases/`, one JSON file per corpus: commit, ADR, the verbatim binding
+quote, the agreed verdict. Re-run a corpus and score it in one command:
+
+```bash
+adrcheck eval --cases evals/cases/adrcheck.json --run --report /tmp/adrcheck-eval.json
+```
+
+Exit 0 only when every case hits. A private corpus names its repository by environment variable and the
+ADR revision it was labelled against; the repository itself is never bundled.
+
 ### Verdicts
 
 | Verdict | Meaning | Exit code |
