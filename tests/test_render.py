@@ -78,3 +78,16 @@ def test_stale_rows_known_from_the_baseline_are_counted_not_listed():
     assert "- ADR-5 ADR-5/1: missing 'Clef'" in md
     assert "ADR-4/2" not in md and "1 already in the baseline" in md
     assert [s["known"] for s in json.loads(to_json([report]))["stale"]] == [True, False]
+
+
+def test_a_proposed_adr_whose_paths_the_change_touched_gets_its_own_line():
+    report = ChangeReport(
+        ref="abc1234",
+        message="m",
+        excluded=(
+            Excluded(7, "status is proposed; this change touches its paths, not enforced"),
+            Excluded(8, "status is proposed"),
+        ),
+    )
+    md = to_markdown([report])
+    assert "- proposed, not enforced, touches its paths: ADR-7" in md and "ADR-8" not in md

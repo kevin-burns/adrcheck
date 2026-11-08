@@ -85,6 +85,8 @@ def to_markdown(reports: list[ChangeReport]) -> str:
                 out.append(f"  - {f.reason}")
         if dismissed:
             out.append("- judged, not relevant: " + ", ".join(f"ADR-{n}" for n in dismissed))
+        if proposed := [e.adr_number for e in r.excluded if "touches its paths" in e.reason]:
+            out.append("- proposed, not enforced, touches its paths: " + ", ".join(f"ADR-{n}" for n in proposed))
         if r.uncovered:
             out.append(f"- uncovered files: {r.uncovered}")
         for p in r.problems:

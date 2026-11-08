@@ -62,6 +62,10 @@ def _referenced_numbers(change: Change) -> set[int]:
     return {int(n) for t in texts for n in _ADR_REF.findall(t)}
 
 
+def _touches(adr: Adr, change: Change) -> bool:
+    return bool(adr.applies_to) and any(_glob_matches(p, path) for p in adr.applies_to for path in change.paths())
+
+
 def select(adrs: list[Adr], change: Change) -> SelectionResult:
     refs = _referenced_numbers(change)
     selected: list[Selection] = []
@@ -69,12 +73,16 @@ def select(adrs: list[Adr], change: Change) -> SelectionResult:
     undetermined: list[Selection] = []
     for adr in adrs:
         if adr.status is not Status.ACCEPTED:
-            excluded.append(Exclusion(adr, f"status is {adr.status.value}"))
+            reason = f"status is {adr.status.value}"
+            if adr.status is Status.PROPOSED and _touches(adr, change):
+                # a pending decision is visible at the moment code touches its ground, and still not enforced
+                reason += "; this change touches its paths, not enforced"
+            excluded.append(Exclusion(adr, reason))
             continue
         signals: set[str] = set()
         if adr.number is not None and adr.number in refs:
             signals.add("ref")
-        if adr.applies_to and any(_glob_matches(p, path) for p in adr.applies_to for path in change.paths()):
+        if _touches(adr, change):
             signals.add("glob")
         if signals:
             selected.append(Selection(adr, frozenset(signals)))

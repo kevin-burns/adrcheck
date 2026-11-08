@@ -49,7 +49,7 @@ def test_only_accepted_adrs_are_considered():
     result = select(adrs, change("enrich/store.py"))
     assert result.selected == () and result.undetermined == ()
     assert sorted(e.reason for e in result.excluded) == [
-        "status is proposed",
+        "status is proposed; this change touches its paths, not enforced",
         "status is rejected",
         "status is superseded",
     ]
@@ -64,3 +64,13 @@ def test_a_reference_in_prose_or_data_does_not_select():
     assert select(adrs, data).selected == ()
     code = change("lib/x.py", added_text=("# per ADR-4",))
     assert [s.adr.number for s in select(adrs, code).selected] == [4]
+
+
+def test_a_proposed_adr_whose_paths_are_touched_is_excluded_with_a_notice_not_silently():
+    result = select([adr(7, Status.PROPOSED, applies_to=("enrich/**",))], change("enrich/store.py"))
+    assert [(e.adr.number, e.reason) for e in result.excluded] == [
+        (7, "status is proposed; this change touches its paths, not enforced")
+    ]
+    # the same ADR off its paths keeps the plain reason
+    off = select([adr(7, Status.PROPOSED, applies_to=("enrich/**",))], change("bin/x.py"))
+    assert [e.reason for e in off.excluded] == ["status is proposed"]
