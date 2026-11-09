@@ -61,6 +61,13 @@ def _parser() -> argparse.ArgumentParser:
     g.add_argument("--range", help="git revision range, e.g. HEAD~20..HEAD")
     g.add_argument("--commit", help="one commit")
     g.add_argument("--staged", action="store_true", help="the index, as a pre-commit hook sees it")
+    c.add_argument(
+        "--tier",
+        choices=("free", "judge"),
+        default=None,
+        help="free: no model, no key; forbidden patterns on added lines from the cached compile, lint, stale "
+        "sweep. judge: the model. Default free with --staged, else judge",
+    )
     c.add_argument("--format", choices=("json", "md"), default="md")
     c.add_argument("--fail-on", choices=("conflict",), help="exit 2 when any CONFLICT is reported")
     c.add_argument(
@@ -221,11 +228,17 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         return EXIT_ISSUES if issues else EXIT_OK
 
     repo = Path(args.repo)
-    if judge is None:
-        compile_seat, judge = _seats(args.model or _default_model(), args.compile_model)
+    tier = getattr(args, "tier", None) or ("free" if getattr(args, "staged", False) else "judge")
+    if args.command == "check" and tier == "free":
+        # no model is built and none is called: the cache is read, the mechanical judge runs in the use case
+        compile_seat = None
+        compiler = CachedCompiler(None, repo / ".adrcheck", prompt_version=PROMPT_VERSION).cached_only()
     else:
-        compile_seat = judge  # a test's fake fills both seats
-    compiler = CachedCompiler(compile_seat, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
+        if judge is None:
+            compile_seat, judge = _seats(args.model or _default_model(), args.compile_model)
+        else:
+            compile_seat = judge  # a test's fake fills both seats
+        compiler = CachedCompiler(compile_seat, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
     for i in scope_issues:
         print(f"{i.kind}: ADR-{i.adr_number}: {i.detail}", file=sys.stderr)
 
@@ -272,6 +285,7 @@ def main(argv: list[str] | None = None, judge=None) -> int:
             repo=git,
             baseline=load_baseline(baseline_path),
             max_calls=args.max_calls,
+            tier=tier,
         )
     except Exception as exc:
         print(f"could not evaluate: {type(exc).__name__}: {exc}", file=sys.stderr)

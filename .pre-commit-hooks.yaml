@@ -3,7 +3,8 @@
 #     rev: main
 #     hooks:
 #       - id: adrcheck-lint          # free: hygiene of the ADR set, no model
-#       - id: adrcheck-staged        # opt-in: judges the staged diff; needs a provider (see --model)
+#       - id: adrcheck-staged        # free tier: cached forbids on added lines, stale sweep; no model, no key
+#       - id: adrcheck-staged-judge  # opt-in: the model judges the staged diff; needs a provider (see --model)
 - id: adrcheck-lint
   name: adrcheck lint (ADR set hygiene, no model)
   entry: adrcheck lint
@@ -11,8 +12,14 @@
   pass_filenames: false
   files: ^docs/(adr|decisions|architecture/decisions)/.*\.md$
 - id: adrcheck-staged
-  name: adrcheck check --staged (judges the staged diff against the ADRs)
-  entry: adrcheck check --staged --format md --fail-on conflict
+  name: adrcheck check --staged, free tier (no model, no key)
+  entry: adrcheck check --staged --tier free --format md --fail-on conflict
+  language: python
+  pass_filenames: false
+  verbose: true
+- id: adrcheck-staged-judge
+  name: adrcheck check --staged, judge tier (the model; needs a provider)
+  entry: adrcheck check --staged --tier judge --format md --fail-on conflict
   language: python
   pass_filenames: false
   verbose: true

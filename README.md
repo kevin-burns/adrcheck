@@ -84,6 +84,23 @@ paths = ["enrich/**", "cli.py"]
 
 The header wins where both exist, and `adrcheck lint` reports the disagreement.
 
+### Before a commit
+
+```yaml
+# .pre-commit-config.yaml
+- repo: https://github.com/kevin-burns/adrcheck
+  rev: main
+  hooks:
+    - id: adrcheck-lint          # ADR hygiene when an ADR file changes; no model
+    - id: adrcheck-staged        # free tier: forbidden patterns from the cached compile, stale sweep; no key
+    - id: adrcheck-staged-judge  # opt-in: the model judges the index on the developer's own provider
+```
+
+The free tier is the default for `--staged`. It never compiles and never calls a model: an ADR with no cached
+obligations is reported as not compiled, an ADR with no forbidden pattern as not judged, and only a forbidden
+pattern on an added line is a CONFLICT, which goes through the same verification and parent probes as a
+model's claim.
+
 ### In a pull request
 
 ```yaml

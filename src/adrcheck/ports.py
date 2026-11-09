@@ -53,6 +53,14 @@ class Context:
     module_map: str = ""
 
 
+class NotCompiled(Exception):
+    """Raised by a cache-only compiler when an ADR has no cached obligations. The free tier never compiles."""
+
+    def __init__(self, adr):
+        super().__init__(f"ADR-{adr.number} not compiled")
+        self.adr = adr
+
+
 class AdrSource(Protocol):
     def adrs(self) -> list[Adr]: ...
 

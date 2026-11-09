@@ -10,12 +10,13 @@ from adrcheck.domain.baseline import EMPTY, Baseline
 from adrcheck.domain.change import Change
 from adrcheck.domain.decision_signals import DecisionSignal, decision_signals
 from adrcheck.domain.exception import parse_exceptions
+from adrcheck.domain.mechanical import MechanicalJudge
 from adrcheck.domain.obligation import Checkability, Obligation
 from adrcheck.domain.overtaken import classify
 from adrcheck.domain.select import Selection, select
 from adrcheck.domain.verdict import Verdict
 from adrcheck.domain.verify import Claim, verify
-from adrcheck.ports import ChangeJudge, Context, JudgeCase, ObligationCompiler, RepoReader
+from adrcheck.ports import ChangeJudge, Context, JudgeCase, NotCompiled, ObligationCompiler, RepoReader
 
 POST_IMAGE_BUDGET_CHARS = 60_000
 
@@ -75,7 +76,11 @@ def stale_sweep(
     for adr in adrs:
         if adr.status is not Status.ACCEPTED or adr.number is None:
             continue
-        for o in compiler.compile(adr):
+        try:
+            obligations = compiler.compile(adr)
+        except NotCompiled:
+            continue  # free tier with a cold cache: the change report already says so
+        for o in obligations:
             # ADR-5: stale only when every named anchor is gone. One surviving anchor is a foothold.
             missing = tuple(n for n in o.mandates if repo.contains(ref, n) is False)
             if missing and len(missing) == len(o.mandates):
@@ -175,10 +180,18 @@ def check(
     repo: RepoReader,
     baseline: Baseline = EMPTY,
     max_calls: int | None = None,
+    tier: str = "judge",
 ) -> list[ChangeReport]:
     """`max_calls` caps judge calls for the run. A change past the budget is not judged: its selected ADRs read
     UNCLEAR with the reason and the report carries a problem line, so a capped run is visibly partial, never a
-    green nobody earned."""
+    green nobody earned.
+
+    `tier="free"` (bead 2wa): no model. Forbidden patterns on added lines are judged by `MechanicalJudge`, an
+    ADR with no mechanical hit is excluded as not judged, and an ADR with no cached compile is excluded as not
+    compiled with a problem line. Nothing in the free tier can be a COMPLIANT nobody earned."""
+    free = tier == "free"
+    if free:
+        judge = MechanicalJudge()
     reports: list[ChangeReport] = []
     total_calls = 0
     for change in changes:
@@ -209,7 +222,12 @@ def check(
                 )
                 judged.append(sel)
                 continue
-            obligations = compiler.compile(adr)
+            try:
+                obligations = compiler.compile(adr)
+            except NotCompiled:
+                problems += (f"ADR-{adr.number} not compiled; run adrcheck compile",)
+                excluded.append(Excluded(adr.number, "not compiled"))
+                continue
             checkable = tuple(o for o in obligations if o.checkability is not Checkability.PROCESS)
             cases.append((Selection(adr, sel.signals or frozenset({"model"})), JudgeCase(adr, checkable)))
 
@@ -234,8 +252,9 @@ def check(
         if cases:
             context = _context(repo, change)
             response = judge.judge(change, tuple(case for _, case in cases), context)
-            calls += 1
-            total_calls += 1
+            if not free:
+                calls += 1
+                total_calls += 1
             judge_failed = bool(response.error)
             tokens_in += response.tokens_in
             tokens_out += response.tokens_out
@@ -266,6 +285,8 @@ def check(
                     )
                 elif adr.number in response.not_relevant:
                     excluded.append(Excluded(adr.number, "model: not relevant to this change"))
+                elif free and not findings_of[i]:
+                    excluded.append(Excluded(adr.number, "free tier: no mechanical rule fired; judge not run"))
                 else:
                     judged.append(sel)
                     compliant = Finding(adr.number, None, Verdict.COMPLIANT, sel.signals)

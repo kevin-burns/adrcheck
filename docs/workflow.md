@@ -79,7 +79,7 @@ Three places a decision can be enforced, and they are the same check with a diff
 
 | Where | Range | Who pays | When to use |
 |---|---|---|---|
-| developer's machine | `--staged`, the index | the developer's own key or CLI | before commit, opt-in; the lint hook is free and runs when an ADR file changes |
+| developer's machine | `--staged`, the index | nothing: the free tier runs no model | before commit; forbidden patterns from the cached compile and the stale sweep, no key. `--tier judge` adds the model on the developer's own provider |
 | pull request | `origin/<base>..HEAD` | the repository's CI key | the default; one comment per PR, updated on every push |
 | a sweep over history | `--range v1.0..v2.0` | whoever runs it | adopting on a repository with history; finding when a decision was left behind |
 
@@ -89,8 +89,9 @@ The two hooks, for a repository that uses pre-commit or prek:
 - repo: https://github.com/kevin-burns/adrcheck
   rev: main
   hooks:
-    - id: adrcheck-lint     # no model; runs when a file under the ADR directory changes
-    - id: adrcheck-staged   # judges the index; needs a provider in the developer's environment
+    - id: adrcheck-lint          # no model; runs when a file under the ADR directory changes
+    - id: adrcheck-staged        # free tier: no model, no key; forbidden patterns and the stale sweep
+    - id: adrcheck-staged-judge  # opt-in: the model judges the index on the developer's own provider
 ```
 
 ## What a CONFLICT asks of you

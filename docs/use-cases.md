@@ -14,8 +14,11 @@ Make your change. Before committing, run it against the index:
 adrcheck check --staged --format md
 ```
 
-Check that `.adrcheck/obligations/` is in the repository first. If it is, the ADRs are already compiled
-and the run costs one judge call; if not, your first run compiles every ADR that applies, on your key.
+With `--staged` the default is the free tier: no model, no key. It reads the committed obligation cache,
+flags any forbidden pattern an ADR names that appears on a line you added, and runs the stale sweep. ADRs
+with no forbidden pattern are listed as not judged rather than passed. Add `--tier judge` to have the model
+read the diff on your own provider; then check that `.adrcheck/obligations/` is in the repository first, or
+your first run compiles every ADR that applies, on your key.
 
 Three things the report tells you that the ADRs alone do not:
 
@@ -35,9 +38,10 @@ Adr-Exception: ADR-12 the batch endpoint needs the raw rows; discuss superseding
 
 The waiver is visible in the report and in history, which is how a decision gets reopened honestly.
 
-If the repository has the pre-commit hooks installed, the lint hook runs for free whenever an ADR file changes
-and the staged check runs if the team enabled it. Nothing you do on your machine spends the team's key; `--staged`
-uses whatever provider your own environment names.
+If the repository has the pre-commit hooks installed, the lint hook runs whenever an ADR file changes and
+the staged hook runs the free tier on every commit, both without a key. The judge-tier hook is a separate,
+opt-in entry. Nothing you do on your machine spends the team's key; `--tier judge` uses whatever provider
+your own environment names.
 
 ## You are an architect with ADRs and no enforcement
 
