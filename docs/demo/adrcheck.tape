@@ -1,4 +1,5 @@
-# adrcheck in about ninety seconds on the small planted repository: the judge first, then the free tier.
+# adrcheck on the small planted repository: the judge first, then the free tier. The raw render is 98 s;
+# the README GIF cuts the two model waits to two seconds each (docs/img/README.md has the recipe).
 # Render from the repository root with a judge key in the environment (the tape uses openai:gpt-6-luna):
 #   ADRCHECK_DEMO_REPO=/path/to/planted vhs docs/demo/adrcheck.tape
 # The planted repository: uv run python evals/planted/build.py /path/to/planted, then adrcheck compile there once.
