@@ -182,6 +182,42 @@ ADR revision it was labelled against; the repository itself is never bundled.
 | UNCLEAR | the diff does not settle it; the reason is shown | 0 |
 | ADR-OVERTAKEN | the contradiction was already there at the parent commit: an anchor already gone, the same line already elsewhere, or a removed name nothing called; the ADR, not the change, is stale | 0 |
 
+## What it has found so far
+
+Three kinds of evidence, each reproducible from this repository.
+
+**Its own pull requests.** adrcheck judges every pull request here against the thirteen records in
+`docs/adr`. Two verified CONFLICTs so far, both real. A pull request moved the mechanical judge into the
+domain package, where it imported the ports module; ADR-1 forbids that, and the judge quoted the import
+(fixed in 9839c26). Another pull request renamed the precedent probe from `contains()` to `has_line()`
+while ADR-7 still named the old function; the record was amended rather than the code (6594d1c). The
+second case is the common one in practice: the code was right and the decision log had fallen behind.
+
+**A repository nobody here wrote.** One run over six squash-merged pull requests of i-dot-ai/consult (MIT,
+Python, 18 ADRs under the adr-tools default path). No CONFLICT. The stale sweep listed 8 of 16 accepted
+records as naming a file, field or service the code no longer carries. No maintainer has labelled any of
+it, so those are the checker's words, not ground truth. The run also found four defects in adrcheck, all
+fixed the same day. Details and cost in
+[docs/spikes/2026-11-08-public-corpus.md](docs/spikes/2026-11-08-public-corpus.md).
+
+**Planted breaches with labels written before any judge ran.** Two toy repositories are built
+deterministically by `evals/planted/`, so their commit hashes and labels are stable. The small corpus
+(5 ADRs, 9 rows) is 9/9 for every judge tried. The large one (16 ADRs, 25 rows) plants what reviewers
+argue about: an import behind an alias and behind `importlib`, the forbidden word inside a string and a
+comment, a body moved to another module, an edit under a superseded record, a trailer naming a record
+that does not exist.
+
+| Judge | Large corpus | Misses |
+|---|---|---|
+| claude-haiku-5.5 | 23/25 | one honest UNCLEAR, one refactor read too literally |
+| claude-sonnet-5.5 | 23/25 | same two shapes |
+| deepseek-v4-flash | 19/25 | two planted breaches missed, two false CONFLICTs |
+
+The large corpus found two rule bugs and one counting bug in adrcheck before it found anything about the
+judges; both corpora run on every pull request that touches the rules. Write-ups:
+[planted](docs/spikes/2026-11-09-planted-corpus.md),
+[planted-large](docs/spikes/2026-11-09-planted-large.md).
+
 ## Prior art and credit
 
 - Michael Nygard, "Documenting Architecture Decisions" (2011), the ADR format.
