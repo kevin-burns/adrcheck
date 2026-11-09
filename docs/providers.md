@@ -61,9 +61,13 @@ JSONL events out, a read-only sandbox, nothing persisted (`--ephemeral`), and a 
 no project `AGENTS.md` joins the prompt. The reply is the last `agent_message` item and the token counts come
 from `turn.completed`. An empty model, `codex-cli:`, leaves the model to the Codex config.
 
-Measured once on codex-cli 0.166.0 (2026-11-10): Codex's own instructions add about 4,900 input tokens to
-every call, so compare token counts within this route only, as with the Claude CLI. Not yet scored on the
-eval corpora.
+Measured on codex-cli 0.166.0 with an API key, 2026-11-10: Codex's own instructions add about 13,000 input
+tokens to every call (a one-line prompt cost 13,216 in), so compare token counts within this route only, as
+with the Claude CLI. Scores with `codex-cli:gpt-5.5`: planted 9/9 in 1 min 8 s (7 calls, 150,936 in / 4,282
+out), adrcheck 11/11 with 7 of 11 rows asserted in 19 s (1 call, 54,428 / 1,733), planted-large 21/25 in
+5 min 35 s (19 calls, 523,391 / 13,553). The same model through the API directly, `openai:gpt-5.5`, scored
+the same 21/25 on 34,699 input tokens; the difference is Codex's instructions, nineteen times over. Both
+routes are in the table below.
 
 ```sh
 adrcheck check --range origin/main..HEAD --model codex-cli:gpt-5.5
@@ -164,6 +168,7 @@ Sonnet compile as above. The adapter reports no cost for this route, so the tabl
 |---|---|---|---|---|---|
 | gpt-6-luna | 9/9 | 11/11 | 20/25 | 34,699 / 24,896 | 4 min 52 s |
 | gpt-5.5 | 9/9 | 10/11 | 21/25 | 34,699 / 23,875 | 5 min 0 s |
+| gpt-5.5 through `codex-cli:` | 9/9 | 11/11 | 21/25 | 523,391 / 13,553 | 5 min 35 s |
 | gpt-5.4-mini | 8/9 | 10/11 | not run | | |
 
 Reading: both current models are clean on the small corpora and lose rows on the large one in the same
