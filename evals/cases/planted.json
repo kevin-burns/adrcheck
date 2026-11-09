@@ -1,0 +1,73 @@
+{
+ "corpus": "planted",
+ "about": "A toy ledger service built by evals/planted/build.py with pinned author and dates, so these hashes are stable. Five ADRs, nine commits; four break a decision on purpose. Labels are true by construction, not by a reader's judgement: this corpus measures a judge's recall on CONFLICT and ADR-OVERTAKEN, which corpora of real compliant commits cannot. Build it, point the variable at it, run.",
+ "repo_env": "ADRCHECK_EVAL_PLANTED_REPO",
+ "adr_dir": "docs/adr",
+ "commits": ["ca1e0ba", "36f6b01", "0b62162", "c722fe9", "d6923b0", "b90ba4c", "ad418e0", "c802e32"],
+ "stale_expected": [{"adr": 4, "missing": "import_rows"}],
+ "cases": [
+  {
+   "commit": "ca1e0ba",
+   "adr": 1,
+   "quote": "reads and writes ledger entries only through `Ledger` in `ledger/api.py`",
+   "expected": "COMPLIANT",
+   "note": "credit_note posts through Ledger"
+  },
+  {
+   "commit": "ca1e0ba",
+   "adr": 3,
+   "quote": "No amount is stored or passed as a `float`.",
+   "expected": "COMPLIANT",
+   "note": "amount is Money"
+  },
+  {
+   "commit": "36f6b01",
+   "adr": 1,
+   "quote": "It never imports `ledger.db`.",
+   "expected": "CONFLICT",
+   "note": "planted: from ledger.db import connection, sum_minor_units in services/billing/invoices.py"
+  },
+  {
+   "commit": "0b62162",
+   "adr": 2,
+   "quote": "They never import `requests` or call another service's HTTP endpoint from a request handler.",
+   "expected": "CONFLICT",
+   "note": "planted: import requests and requests.post to shipping in a handler"
+  },
+  {
+   "commit": "c722fe9",
+   "adr": 1,
+   "quote": "It never imports `ledger.db`.",
+   "expected": "COMPLIANT",
+   "note": "same breach as 36f6b01, waived by an Adr-Exception trailer with a reason"
+  },
+  {
+   "commit": "d6923b0",
+   "adr": 1,
+   "quote": "It never imports `ledger.db`.",
+   "expected": "COMPLIANT",
+   "note": "README only; no ADR applies and no model call is made"
+  },
+  {
+   "commit": "b90ba4c",
+   "adr": 4,
+   "quote": "`import_rows()` in `ingest/importer.py` is the only entry point for CSV ingestion.",
+   "expected": "ADR-OVERTAKEN",
+   "note": "planted: the importer is deleted; nothing called import_rows at the parent, so deleting dead code is not a breach"
+  },
+  {
+   "commit": "ad418e0",
+   "adr": 3,
+   "quote": "No amount is stored or passed as a `float`.",
+   "expected": "CONFLICT",
+   "note": "planted: late_fee takes rate: float and returns float"
+  },
+  {
+   "commit": "c802e32",
+   "adr": 1,
+   "quote": "It never imports `ledger.db`.",
+   "expected": "COMPLIANT",
+   "note": "numbering.py touches only ADR-5's paths, which is Proposed; noted, not enforced"
+  }
+ ]
+}

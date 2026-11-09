@@ -43,6 +43,7 @@ select = ["E", "F", "I", "B", "UP", "S", "RUF", "SIM", "C4"]
 "src/adrcheck/chatmodel/prompts.py" = ["E501"]
 # argv lists, no shell, fixed executables (git, claude) resolved from PATH on purpose.
 "src/adrcheck/adapters/claude_cli.py" = ["S603", "S607"]
+"evals/planted/build.py" = ["S603", "S607"]
 "src/adrcheck/adapters/git_changes.py" = ["S603", "S607"]
 
 [tool.bandit]

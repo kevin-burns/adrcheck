@@ -448,11 +448,13 @@ def removal(path="enrich/linkedin.py", text="def import_rows(rows):"):
     return Change(ref="c1", parent="c0", message="remove the importer", files=files)
 
 
-def removal_run(counts, obligations=(IMPORT_OBLIGATION,), cited="ADR-4/1", line="def import_rows(rows):"):
+def removal_run(
+    counts, obligations=(IMPORT_OBLIGATION,), cited="ADR-4/1", line="def import_rows(rows):", judged=Verdict.CONFLICT
+):
     repo = FakeRepo({("c0", "import_rows"): True, ("c0", "enrich/linkedin.py"): True}, counts)
     judged = RawFinding(
         cited,
-        Verdict.CONFLICT,
+        judged,
         "enrich/linkedin.py",
         line,
         "calls import_rows for every sweep",

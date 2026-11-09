@@ -18,7 +18,9 @@ when the contradiction can be shown at the parent commit: a named anchor the ADR
 already absent, the cited line already existed elsewhere in the code at the parent, or the cited
 line removes a named anchor that nothing but its own definition referenced at the parent. The
 `RepoReader.contains()` and `RepoReader.occurrences()` probes answer those questions against the
-parent ref. ADR-OVERTAKEN never fails the build.
+parent ref. The third probe also settles a judge's UNCLEAR about a removed line: a judge that sees
+only the diff cannot know whether a deleted name had callers, and the count can. A COMPLIANT verdict
+is never changed by any probe. ADR-OVERTAKEN never fails the build.
 
 ## Consequences
 

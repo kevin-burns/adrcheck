@@ -321,7 +321,7 @@ def _settle(
         note = "claim failed verification: " + ", ".join(failed)
     mandated = _all_present(repo, change.parent, obligation.mandates) if obligation else None
     forbidden = _precedent(repo, change, raw.path, raw.line_text) if verdict is Verdict.CONFLICT else None
-    dead_anchor = _dead_removal(repo, change, adr_anchors, raw) if verdict is Verdict.CONFLICT else None
+    dead_anchor = _dead_removal(repo, change, adr_anchors, raw) if verdict is not Verdict.COMPLIANT else None
     settled = classify(
         verdict, mandated_at_parent=mandated, forbidden_at_parent=forbidden, dead_at_parent=dead_anchor is not None
     )

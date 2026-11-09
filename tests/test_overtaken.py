@@ -45,3 +45,12 @@ def test_a_compliant_change_that_introduces_the_mandated_anchor_stays_compliant(
     assert classify(Verdict.COMPLIANT, mandated_at_parent=False, forbidden_at_parent=False) is Verdict.COMPLIANT
     assert classify(Verdict.UNCLEAR, mandated_at_parent=False, forbidden_at_parent=None) is Verdict.UNCLEAR
     assert classify(Verdict.CONFLICT, mandated_at_parent=False, forbidden_at_parent=False) is Verdict.ADR_OVERTAKEN
+
+
+def test_the_dead_removal_probe_also_settles_an_unclear_but_not_a_compliant():
+    assert classify(Verdict.UNCLEAR, mandated_at_parent=True, forbidden_at_parent=None, dead_at_parent=True) is (
+        Verdict.ADR_OVERTAKEN
+    )
+    assert classify(Verdict.COMPLIANT, mandated_at_parent=True, forbidden_at_parent=None, dead_at_parent=True) is (
+        Verdict.COMPLIANT
+    )

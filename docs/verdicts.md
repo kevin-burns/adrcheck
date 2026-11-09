@@ -59,8 +59,9 @@ attention. Three probes against the parent commit establish this:
 - the cited line removes a name that nothing but its own definition referenced, so the change deletes
   dead code.
 
-The note says which. ADR-OVERTAKEN never fails a build. Only a CONFLICT can become ADR-OVERTAKEN; a
-COMPLIANT or UNCLEAR verdict stands as the judge gave it.
+The note says which. ADR-OVERTAKEN never fails a build. The first two probes apply only to a CONFLICT. The
+third also settles an UNCLEAR about a removed line, because a judge that sees only the diff cannot know
+whether a deleted name had callers and the count can. A COMPLIANT verdict is never changed by a probe.
 
 ## Lines that are not verdicts
 

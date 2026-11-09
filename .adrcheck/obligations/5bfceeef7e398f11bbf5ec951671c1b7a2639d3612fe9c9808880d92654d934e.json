@@ -1,0 +1,110 @@
+[
+ {
+  "id": "ADR-7/1",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must be defined in src/adrcheck/domain/overtaken.py and must turn a judge's CONFLICT into ADR-OVERTAKEN when the contradiction can be shown at the parent commit.",
+  "quote": "`classify()` in `src/adrcheck/domain/overtaken.py` turns a judge's CONFLICT into ADR-OVERTAKEN when the contradiction can be shown at the parent commit",
+  "checkability": "structural",
+  "mandates": [
+   "classify",
+   "src/adrcheck/domain/overtaken.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/2",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must treat a CONFLICT as ADR-OVERTAKEN when a named anchor the ADR mandates was already absent at the parent commit.",
+  "quote": "a named anchor the ADR mandates was already absent",
+  "checkability": "intent",
+  "mandates": [
+   "classify"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/3",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must treat a CONFLICT as ADR-OVERTAKEN when the cited line already existed elsewhere in the code at the parent commit.",
+  "quote": "the cited line already existed elsewhere in the code at the parent",
+  "checkability": "intent",
+  "mandates": [
+   "classify"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/4",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must treat a CONFLICT as ADR-OVERTAKEN when the cited line removes a named anchor that nothing but its own definition referenced at the parent commit.",
+  "quote": "the cited line removes a named anchor that nothing but its own definition referenced at the parent",
+  "checkability": "intent",
+  "mandates": [
+   "classify"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/5",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "The parent-ref questions must be answered by the RepoReader contains and occurrences probes.",
+  "quote": "The `RepoReader.contains()` and `RepoReader.occurrences()` probes answer those questions against the parent ref.",
+  "checkability": "structural",
+  "mandates": [
+   "RepoReader",
+   "contains",
+   "occurrences"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/6",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "classify() must also settle a judge's UNCLEAR verdict about a removed line using the occurrence count at the parent (turning it into ADR-OVERTAKEN when the removed name had no callers).",
+  "quote": "The third probe also settles a judge's UNCLEAR about a removed line",
+  "checkability": "intent",
+  "mandates": [
+   "classify",
+   "occurrences"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/7",
+  "adr_number": 7,
+  "kind": "MUST_NOT",
+  "text": "No probe may change a COMPLIANT verdict.",
+  "quote": "A COMPLIANT verdict is never changed by any probe.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/8",
+  "adr_number": 7,
+  "kind": "MUST_NOT",
+  "text": "An ADR-OVERTAKEN finding must never fail the build.",
+  "quote": "ADR-OVERTAKEN never fails the build.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-7/9",
+  "adr_number": 7,
+  "kind": "MUST",
+  "text": "The occurrence count must be a whole-identifier match over the parent's code text, so a definition alone counts as one.",
+  "quote": "the occurrence count is a whole-identifier match over the parent's code text, so a definition alone counts as one",
+  "checkability": "intent",
+  "mandates": [
+   "occurrences"
+  ],
+  "forbids": []
+ }
+]
