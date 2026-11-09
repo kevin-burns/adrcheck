@@ -1,0 +1,85 @@
+[
+ {
+  "id": "ADR-14/1",
+  "adr_number": 14,
+  "kind": "MUST",
+  "text": "OpenAICompatRunner.run returns a ChatReply whose cost_usd is 0.0 for every model and endpoint.",
+  "quote": "always returns a `ChatReply` with `cost_usd` of 0.0, whatever the model or endpoint",
+  "checkability": "intent",
+  "mandates": [
+   "src/adrcheck/adapters/openai_compat.py",
+   "ChatReply",
+   "cost_usd"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-14/2",
+  "adr_number": 14,
+  "kind": "MUST_NOT",
+  "text": "OpenAICompatRunner must not compute a price from a model name or from a built-in price table.",
+  "quote": "It never computes a price from a model name or a built-in table.",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-14/3",
+  "adr_number": 14,
+  "kind": "MUST",
+  "text": "runner_for builds an OpenAICompatRunner for both the openai: prefix and the ollama: prefix.",
+  "quote": "`runner_for` in `src/adrcheck/adapters/providers.py` builds `OpenAICompatRunner` for both the `openai:` and the `ollama:` prefix, so both report zero cost.",
+  "checkability": "mechanical",
+  "mandates": [
+   "runner_for",
+   "OpenAICompatRunner",
+   "src/adrcheck/adapters/providers.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-14/4",
+  "adr_number": 14,
+  "kind": "MUST_NOT",
+  "text": "No price table is added to src/adrcheck/adapters/openai_compat.py or src/adrcheck/adapters/providers.py.",
+  "quote": "No price table is added to either file.",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-14/5",
+  "adr_number": 14,
+  "kind": "MUST",
+  "text": "OpenAICompatRunner reports tokens_in and tokens_out in its reply.",
+  "quote": "The runner does report `tokens_in` and `tokens_out`.",
+  "checkability": "mechanical",
+  "mandates": [
+   "tokens_in",
+   "tokens_out"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-14/6",
+  "adr_number": 14,
+  "kind": "MUST",
+  "text": "docs/providers.md states that a cost_usd of 0 for the openai: and ollama: providers means the cost is not reported, not that the call is free.",
+  "quote": "so `docs/providers.md` states it.",
+  "checkability": "mechanical",
+  "mandates": [
+   "docs/providers.md"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-14/7",
+  "adr_number": 14,
+  "kind": "MUST_NOT",
+  "text": "A non-zero cost must not be reported for the openai: or ollama: runners unless a new ADR supersedes ADR-14.",
+  "quote": "Reporting a real figure from these runners would change what the field means for users who rely on it, so it needs a new record that supersedes this one.",
+  "checkability": "process",
+  "mandates": [],
+  "forbids": []
+ }
+]
