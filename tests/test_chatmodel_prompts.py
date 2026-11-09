@@ -1,12 +1,11 @@
 """The judge prompt: what it asks for and in which order."""
 
 
-def test_judge_schema_asks_for_the_reason_before_the_verdict():
-    """A model that writes the label first and the reason second can talk itself out of the label while
-    writing (GitLab MR !6, ADR-1/7: verdict CONFLICT, reason 'the finding is withdrawn'). Reason first, then
-    the verdict that follows from it."""
+def test_judge_prompt_says_the_verdict_and_the_reason_must_agree():
+    """GitLab MR !6, ADR-1/7: verdict CONFLICT, reason 'the finding is withdrawn'. Asking for the reason first
+    cost recall on the planted corpora (PR #13, two runs), so the field order stays and the rule is said in
+    words instead."""
     from adrcheck.chatmodel.prompts import JUDGE_SYSTEM
 
-    schema = JUDGE_SYSTEM[JUDGE_SYSTEM.index('"findings"') :]
-    assert schema.index('"reason"') < schema.index('"verdict"')
-    assert "follows from the reason" in JUDGE_SYSTEM
+    assert "The verdict and the reason agree" in JUDGE_SYSTEM
+    assert "Never a verdict\nthe reason withdraws" in JUDGE_SYSTEM
