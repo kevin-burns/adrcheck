@@ -183,3 +183,33 @@ def test_compliant_verdicts_with_nothing_to_cite_share_one_line_instead_of_one_b
     md = to_markdown([report])
     assert "- compliant, nothing to cite: ADR-2, ADR-3" in md
     assert "- **COMPLIANT** ADR-2" not in md and "- **COMPLIANT** ADR-5 (ADR-5/1)" in md
+
+
+def test_codequality_renders_findings_in_the_code_climate_shape_gitlab_reads():
+    """GitLab's merge-request widget reads a Code Quality artifact: a JSON list of issues with description,
+    check_name, fingerprint, severity and a location. No token, no API call: the cheapest GitLab surface."""
+    from adrcheck.adapters.render import to_codequality
+
+    rows = json.loads(to_codequality([REPORT]))
+    [row] = rows
+    assert row["check_name"] == "adrcheck/ADR-2" and row["severity"] == "major"
+    assert row["location"] == {"path": "enrich/store.py", "lines": {"begin": 1}}
+    assert "keyed by store.row_key" in row["description"] and "keys by url" in row["description"]
+    assert len(row["fingerprint"]) == 64  # sha256 of commit, ADR, obligation, path and line: stable across runs
+    assert row["type"] == "issue" and row["categories"] == ["Style"]
+
+
+def test_codequality_maps_the_other_verdicts_to_lower_severities_and_skips_compliant():
+    from adrcheck.adapters.render import to_codequality
+
+    report = ChangeReport(
+        ref="abc1234",
+        message="m",
+        findings=(
+            _finding(adr_number=2, obligation_id="ADR-2/1", verdict=Verdict.UNCLEAR, line_text="x = 1"),
+            _finding(adr_number=3, obligation_id="ADR-3/1", verdict=Verdict.ADR_OVERTAKEN, line_text="y = 2"),
+            _finding(adr_number=4, obligation_id="ADR-4/1", verdict=Verdict.COMPLIANT, line_text="z = 3"),
+        ),
+    )
+    rows = json.loads(to_codequality([report]))
+    assert [(r["check_name"], r["severity"]) for r in rows] == [("adrcheck/ADR-2", "minor"), ("adrcheck/ADR-3", "info")]

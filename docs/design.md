@@ -4,8 +4,8 @@ adrcheck checks code changes against a team's architecture decision records
 (ADRs), in both directions: a change that breaks an accepted decision, and a decision the code
 has quietly overtaken. It is advisory, measured, and publishes its own false-alarm rate.
 
-The 37 settled decisions behind this layout live in beads issue `claude-skills-ol5w`
-(comment of 2026-11-06). This file records the module boundaries and why.
+The decisions behind this layout are the ADRs under `docs/adr/`; the frontier session that produced the
+first of them (2026-11-06) is in a private tracker. This file records the module boundaries and why.
 
 ## Bounded context and language
 
@@ -13,7 +13,7 @@ One context: decision compliance. Terms, used the same way in code, tests and re
 
 | Term | Meaning |
 |---|---|
-| ADR | One decision record, parsed from Nygard or MADR markdown. Has a Status and sections. |
+| ADR | One decision record, parsed from markdown in any of the common shapes (Nygard, MADR, Y-statement, tables, bold labels). Has a Status and sections. |
 | Obligation | One MUST or MUST NOT compiled from an ADR, with the quote it derives from and a checkability class (mechanical, structural, intent, process). |
 | Change | One commit (or staged diff): per file, the lines added and removed. |
 | Selection | The ADRs that apply to a change, with the signals that fired (glob, id reference, model). |
@@ -29,11 +29,14 @@ src/adrcheck/
   domain/      pure: ADR, Obligation, Change, Finding, verify rules, selection by glob and id,
                CONFLICT-vs-OVERTAKEN rule, hygiene lint, exception parsing. Imports nothing
                from adapters, subprocess, or the network.
-  ports.py     Protocols the domain and use cases need: AdrSource, ChangeSource, RepoReader,
-               ObligationCompiler, ChangeJudge, ObligationCache, Renderer.
-  usecases/    check, compile, lint, evaluate. Orchestrate ports and domain; hold no I/O.
-  adapters/    markdown ADR parser, git change source, repo reader, claude -p judge,
-               file-backed obligation cache, JSON and markdown renderers.
+  ports.py     Protocols the use cases need: AdrSource, ChangeSource, RepoReader, ObligationCompiler,
+               ChangeJudge; the judge's request and reply types; NotCompiled.
+  chatmodel/   prompts and reply parsers, provider-neutral (ADR-9).
+  usecases/    check (select, compile, judge, verify, classify, stale sweep), explain, mechanical
+               (the free tier's judge), evaluate. Orchestrate ports and domain; hold no I/O.
+  adapters/    markdown ADR parser and source, scope map, baseline file, git change source and repo
+               reader, chat runners (claude -p, Anthropic SDK, OpenAI-compatible), file-backed
+               obligation cache, JSON and markdown renderers, provider lookup.
   cli.py       composition root: parses flags, wires adapters to use cases.
 ```
 
@@ -101,7 +104,8 @@ Both came from reading the compiled obligations of the four job-search ADRs, not
 
 ## Rule learned from the portability question (2026-11-06)
 
-**Model roles, not model tiers.** adrcheck has three model seats: compiler, judge, gate. Each is a
+**Model roles, not model tiers.** adrcheck has two model seats today, compiler and judge, and a third,
+the gate, planned under bead c6l. Each is a
 role bound to a `provider:model` string in config. Claude is one provider; an OpenAI-compatible
 HTTP endpoint (OpenAI, Ollama, vLLM, LM Studio, Qwen, Granite) is another. Prompts and reply
 parsers are policy and belong outside any provider adapter, so every provider sends the same
@@ -136,4 +140,5 @@ needs no model at check time, and is the only form the checker should ever treat
 
 **Letter and intent are both reported, never merged.** An obligation carries its binding sentence
 and its driver. A finding that breaks the letter while meeting the stated intent is `letter_only`,
-shown as such, and warns by default. The checker does not decide which one the author meant.
+shown as such, and warns by default. Planned under bead git, not yet built. The checker does not decide
+which one the author meant.

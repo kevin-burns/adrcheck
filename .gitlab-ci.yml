@@ -1,0 +1,43 @@
+# adrcheck on GitLab: judge each merge request as the one change it merges (ADR-13) against docs/adr, and
+# hand the findings to the merge-request widget as a Code Quality report. No token and no API call: the
+# widget reads the artifact. The markdown report goes to the job log as well.
+#
+# Needs two CI/CD variables on the project (Settings, CI/CD, Variables, masked): OPENAI_BASE_URL
+# (https://openrouter.ai/api/v1) and OPENAI_API_KEY (an OpenRouter key with a credit limit). Without them
+# adrcheck exits 3, "could not evaluate", which allow_failure turns into a warning: an unreachable model is
+# not a finding (ADR-3). Exit 2, a verified CONFLICT, fails the job.
+#
+# Facts this file relies on, read from docs.gitlab.com on 2026-11-09: CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+# and CI_MERGE_REQUEST_DIFF_BASE_SHA are set in merge-request pipelines; artifacts:reports:codequality takes a
+# Code Climate JSON list with check_name, fingerprint, severity and location; allow_failure:exit_codes marks
+# only the listed exit codes as allowed.
+
+stages:
+  - check
+
+adrcheck:
+  stage: check
+  image: ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    GIT_DEPTH: "0"
+    MODEL: openai:anthropic/claude-haiku-5.5
+  before_script:
+    - uv tool install .
+    - export PATH="$HOME/.local/bin:$PATH"
+    - export TARGET="${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    - git fetch --no-tags origin "+refs/heads/${TARGET}:refs/remotes/origin/${TARGET}"
+  script:
+    # one judge run: the markdown to the log, the Code Quality JSON to the artifact
+    - adrcheck check --adr-dir docs/adr --range "origin/${TARGET}..HEAD" --as-one --model "${MODEL}"
+      --format md --fail-on conflict --codequality gl-code-quality-report.json
+  allow_failure:
+    exit_codes: [3]
+  artifacts:
+    when: always
+    reports:
+      codequality: gl-code-quality-report.json
+    paths:
+      - gl-code-quality-report.json
+    expire_in: 30 days

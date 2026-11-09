@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter
 from itertools import groupby
@@ -91,6 +92,36 @@ def _finding_lines(f, *, indent: str, label: str, with_id: bool) -> list[str]:
     if f.reason:
         lines.append(f"{indent}  - {_prose(f.reason)}")
     return lines
+
+
+_CQ_SEVERITY = {Verdict.CONFLICT: "major", Verdict.UNCLEAR: "minor", Verdict.ADR_OVERTAKEN: "info"}
+
+
+def to_codequality(reports: list[ChangeReport]) -> str:
+    """GitLab Code Quality (Code Climate) JSON: the merge-request widget reads it as an artifact, no token and no
+    API call. One issue per finding that is not COMPLIANT; the fingerprint is stable across runs so GitLab can
+    tell a new issue from one it has shown before."""
+    issues = []
+    for r in reports:
+        for f in r.findings:
+            if f.verdict not in _CQ_SEVERITY:
+                continue
+            quote = f" Decision: {f.quote}" if f.quote else ""
+            reason = f" {f.reason}" if f.reason else ""
+            note = f" ({f.note})" if f.note else ""
+            key = "|".join([r.ref, str(f.adr_number), f.obligation_id or "", f.path or "", f.line_text or ""])
+            issues.append(
+                {
+                    "type": "issue",
+                    "check_name": f"adrcheck/ADR-{f.adr_number}",
+                    "description": f"{f.verdict.value} ADR-{f.adr_number}{note}.{quote}{reason}".strip(),
+                    "categories": ["Style"],
+                    "severity": _CQ_SEVERITY[f.verdict],
+                    "fingerprint": hashlib.sha256(key.encode("utf-8")).hexdigest(),
+                    "location": {"path": f.path or "", "lines": {"begin": 1}},
+                }
+            )
+    return json.dumps(issues, indent=1)
 
 
 def to_markdown(reports: list[ChangeReport]) -> str:

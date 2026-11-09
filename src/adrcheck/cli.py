@@ -11,10 +11,10 @@ from pathlib import Path
 from adrcheck.adapters.baseline_file import load_baseline, write_baseline
 from adrcheck.adapters.eval_cases import load_cases
 from adrcheck.adapters.git_changes import GitChanges
-from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource, adrs_at, discover_adr_dir
+from adrcheck.adapters.markdown_adr_source import CONVENTIONAL_DIRS, MarkdownAdrSource, adrs_at, discover_adr_dir
 from adrcheck.adapters.obligation_cache import CachedCompiler
 from adrcheck.adapters.providers import runner_for
-from adrcheck.adapters.render import to_json, to_markdown
+from adrcheck.adapters.render import to_codequality, to_json, to_markdown
 from adrcheck.adapters.scope_map import load_scope_map
 from adrcheck.chatmodel import PROMPT_VERSION, ChatModelSeats
 from adrcheck.domain.lint import lint
@@ -37,8 +37,9 @@ def _parser() -> argparse.ArgumentParser:
         sp.add_argument(
             "--adr-dir",
             default=None,
-            help="directory of numbered ADR markdown files (default: the first of docs/adr, docs/decisions, "
-            "docs/architecture/decisions, doc/adr, adr, decisions that exists)",
+            help="directory of ADR markdown files (default: the first of "
+            + ", ".join(CONVENTIONAL_DIRS)
+            + " that exists)",
         )
         sp.add_argument("--repo", default=".", help="git repository root (default .)")
         sp.add_argument("--map", default=".adrcheck/map.toml", help="repo-side scope map, relative to --repo")
@@ -65,7 +66,7 @@ def _parser() -> argparse.ArgumentParser:
         "--tier",
         choices=("free", "judge"),
         default=None,
-        help="free: no model, no key; forbidden patterns on added lines from the cached compile, lint, stale "
+        help="free: no model, no key; forbidden patterns on added lines from the cached compile, and the stale "
         "sweep. judge: the model. Default free with --staged, else judge",
     )
     c.add_argument(
@@ -73,8 +74,19 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="judge --range as the one change it merges: net diff, every commit message, one judge call (ADR-13)",
     )
-    c.add_argument("--format", choices=("json", "md"), default="md")
+    c.add_argument(
+        "--format",
+        choices=("json", "md", "codequality"),
+        default="md",
+        help="json: the full report; md: the comment; codequality: GitLab Code Quality JSON for the MR widget",
+    )
     c.add_argument("--fail-on", choices=("conflict",), help="exit 2 when any CONFLICT is reported")
+    c.add_argument(
+        "--codequality",
+        default=None,
+        metavar="PATH",
+        help="also write the findings as GitLab Code Quality JSON to PATH, whatever --format prints",
+    )
     c.add_argument(
         "--baseline",
         default=".adrcheck/baseline.json",
@@ -156,6 +168,13 @@ def _run_corpus(cases_path: Path, judge, model: str, compile_model: str | None):
     return check(changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git)
 
 
+def _range_end(git: GitChanges, args) -> str:
+    """The ref the stale sweep runs at when the range has no commits: the range's end, or HEAD."""
+    spec = args.range or (args.commit if getattr(args, "commit", None) else "HEAD")
+    end = spec.partition("..")[2] if ".." in spec else spec
+    return git.rev_parse(end or "HEAD")
+
+
 def _explain(args, adrs, compiler, git) -> int:
     matching = [a for a in adrs if a.number == args.adr]
     if not matching:
@@ -227,7 +246,7 @@ def main(argv: list[str] | None = None, judge=None) -> int:
 
         issues = lint(adrs, link_exists) + scope_issues
         for i in issues:
-            print(f"{i.kind}\tADR-{i.adr_number}\t{i.detail}")
+            print(f"{i.kind}\tADR-{i.adr_number if i.adr_number is not None else '?'}\t{i.detail}")
         if not issues:
             print("ADR set is clean")
         return EXIT_ISSUES if issues else EXIT_OK
@@ -293,11 +312,15 @@ def main(argv: list[str] | None = None, judge=None) -> int:
             baseline=load_baseline(baseline_path),
             max_calls=args.max_calls,
             tier=tier,
+            sweep_ref=_range_end(git, args) if not changes else None,
         )
     except Exception as exc:
         print(f"could not evaluate: {type(exc).__name__}: {exc}", file=sys.stderr)
         return EXIT_UNEVALUATED
-    print(to_json(reports) if args.format == "json" else to_markdown(reports))
+    renderers = {"json": to_json, "md": to_markdown, "codequality": to_codequality}
+    print(renderers[args.format](reports))
+    if args.codequality:
+        Path(args.codequality).write_text(to_codequality(reports) + "\n")
     capped = sum(1 for r in reports if any(p.startswith("judge call budget") for p in r.problems))
     if capped:
         print(f"{capped} change(s) not judged: --max-calls {args.max_calls} reached", file=sys.stderr)

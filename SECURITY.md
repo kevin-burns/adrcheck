@@ -8,7 +8,7 @@ acknowledgement within a week and a fix or a reasoned decision within thirty day
 
 ## What adrcheck does with your code and keys
 
-- adrcheck sends the diff of each judged commit, the post-change text of the changed files, and the text
+- adrcheck sends the diff of each judged commit, its commit message, the post-change text of the changed files, and the text
   of the selected ADRs to the model provider you configure. Nothing else leaves the machine. A commit
   that touches no governed path makes no call.
 - Keys are read from the environment by `src/adrcheck/adapters/providers.py` and nowhere else. They are

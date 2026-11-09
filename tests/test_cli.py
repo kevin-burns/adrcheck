@@ -420,3 +420,66 @@ def test_check_range_as_one_reports_a_single_change_for_the_whole_range(tmp_path
     out = json.loads(capsys.readouterr().out)
     assert code == 0 and len(out["changes"]) == 1
     assert out["changes"][0]["subject"].startswith("one") or "one" in out["changes"][0]["subject"]
+
+
+def test_an_empty_range_sweeps_the_range_end_so_write_baseline_records_the_real_stale_rows(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)  # HEAD dropped row_key, which the only obligation mandates
+    assert main(["compile", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr")], judge=FakeJudge()) == 0
+    capsys.readouterr()
+    code = main(
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--range",
+            "HEAD..HEAD",
+            "--tier",
+            "free",
+            "--write-baseline",
+            "--format",
+            "json",
+        ]
+    )
+    out = json.loads(capsys.readouterr().out)
+    assert code == 0 and [s["obligation"] for s in out["stale"]] == ["ADR-1/1"]
+    baseline = json.loads((repo / ".adrcheck" / "baseline.json").read_text())
+    assert [row["obligation"] for row in baseline["stale"]] == ["ADR-1/1"]
+
+
+def test_lint_prints_a_question_mark_not_none_for_an_unnumbered_record(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    (repo / "docs" / "adr" / "no-number.md").write_text("# Use Nothing\n\nStatus: Accepted\n\n## Decision\n\nX.\n")
+    code = main(["lint", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr")])
+    out = capsys.readouterr().out
+    assert code == 1 and "missing-number\tADR-?\t" in out and "ADR-None" not in out
+
+
+def test_check_writes_the_code_quality_artifact_beside_whatever_format_it_prints(tmp_path: Path, capsys):
+    """GitLab wants the Code Quality JSON as an artifact and a human wants the markdown in the log; one judge
+    run must give both, so --codequality PATH writes the artifact while --format decides what is printed."""
+    repo = make_repo(tmp_path)
+    out_path = tmp_path / "gl-code-quality-report.json"
+    code = main(
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--range",
+            "HEAD~1..HEAD",
+            "--tier",
+            "judge",
+            "--format",
+            "md",
+            "--codequality",
+            str(out_path),
+        ],
+        judge=FakeJudge(),
+    )
+    printed = capsys.readouterr().out
+    assert code == 0 and printed.startswith("## ")
+    rows = json.loads(out_path.read_text())
+    assert rows and rows[0]["check_name"] == "adrcheck/ADR-1" and rows[0]["location"]["path"] == "src/a.py"

@@ -61,14 +61,15 @@ Supersedes: ADR-3
 Applies to: services/billing/**, libs/ledger/**
 ```
 
-- **Status.** One of Proposed, Accepted, Deprecated, Superseded, Rejected. Only Accepted is enforced. A
+- **Status.** Proposed, Accepted, Deprecated, Superseded or Rejected; common aliases such as Approved, Decided,
+  Draft and Retired are read as those five. Only Accepted is enforced. A
   Superseded record should say by what: `Status: Superseded by ADR-9`. Missing status is a lint finding and
   the record binds nothing.
 - **Supersedes.** When you supersede, change the old record's status in the same commit. Lint reports a
   successor whose predecessor still says Accepted, once the successor itself is Accepted.
 - **Depends on.** Optional, `Depends on: ADR-2, ADR-3`. Lint reports a dependency on a record that is
   Deprecated, Superseded or Rejected, and one on a record that does not exist.
-- **Applies to.** Globs, comma separated, gitignore style; `dir/**` also matches files directly under
+- **Applies to.** Globs, comma separated, matched with Python's `fnmatch`, where `*` crosses `/`; `dir/**` also matches files directly under
   `dir`. This is the cheapest cost control there is. A commit that touches no governed path makes no model
   call. A record without this header is shown to the judge on every commit and dismissed on most of them.
 
@@ -98,7 +99,7 @@ Every obligation is printed with its kind, its checkability, its quote and its a
 honest review of an ADR: not whether it reads well, but what it will be held to. Where an obligation is
 not what you meant, the sentence it quotes is ambiguous. Change the sentence, not the obligation.
 
-Three things to look for:
+Four things to look for:
 
 - An obligation quoting Context or Options. The compiler should not do this, and if it does the record's
   headings are not being recognised. Run `lint`, then check the heading names against the common templates.

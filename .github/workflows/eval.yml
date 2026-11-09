@@ -1,7 +1,9 @@
 # The eval corpora as a CI gate: build the planted repository, run both frozen case files with the judge the
 # repository recommends, fail on any miss, and put the scores in the job summary. This is adrcheck shown
 # working, on every change to the rules or the prompts, for about a cent a run (two corpora, eight judge
-# calls, Haiku 5.5 via OpenRouter). The same secret and variable the self-check uses.
+# calls, Haiku 5.5 via OpenRouter). The same secret and variable the self-check uses. The large corpus runs
+# as well but may not fail the job: it holds the breaches a judge is allowed to miss, and its score is the
+# measurement, not a gate.
 #
 # Runs on pull requests that touch the judgement, the prompts, the ADRs or the corpora, and on demand.
 name: eval
@@ -72,6 +74,28 @@ jobs:
             echo '```'
           } >> "${GITHUB_STEP_SUMMARY}"
           exit "${code}"
+      - name: Build the large planted repository
+        if: always()
+        run: |
+          uv run python evals/planted/build_large.py "${RUNNER_TEMP}/planted-large"
+          echo "ADRCHECK_EVAL_PLANTED_LARGE_REPO=${RUNNER_TEMP}/planted-large" >> "${GITHUB_ENV}"
+      - name: Large planted corpus (sixteen ADRs, the breaches a reviewer argues about; informational)
+        id: large
+        if: always()
+        continue-on-error: true
+        run: |
+          set +e
+          uv run adrcheck eval --cases evals/cases/planted-large.json --run --report planted-large.json \
+            --model "${MODEL}" > planted-large.log 2>&1
+          code=$?
+          set -e
+          cat planted-large.log
+          {
+            echo "## planted-large (informational: the judge is allowed to miss here)"; echo; echo '```'
+            grep -v "report written" planted-large.log
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit "${code}"
       - name: Keep the reports
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
@@ -80,6 +104,8 @@ jobs:
           path: |
             planted.json
             adrcheck.json
+            planted-large.json
             planted.log
             adrcheck.log
+            planted-large.log
           retention-days: 30

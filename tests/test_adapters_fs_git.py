@@ -1,3 +1,4 @@
+import os
 import subprocess
 from pathlib import Path
 
@@ -116,7 +117,10 @@ def test_staged_is_one_change_from_the_index_with_head_as_parent(tmp_path: Path)
     (repo / "a.py").write_text('key = row["url"]\nextra = 1\n')
     (repo / "b.py").write_text("print('new')\n")
     git(repo, "add", "a.py", "b.py")
-    (repo / ".git" / "COMMIT_EDITMSG").write_text("wip: add extra\n\nAdr-Exception: ADR-2 reason\n")
+    msg = repo / ".git" / "COMMIT_EDITMSG"
+    msg.write_text("wip: add extra\n\nAdr-Exception: ADR-2 reason\n")
+    head_time = int(git(repo, "log", "-1", "--format=%ct").strip())
+    os.utime(msg, (head_time + 10, head_time + 10))  # written after HEAD: a message prepared for this commit
     change = GitChanges(repo).staged()
     assert change.ref == "STAGED" and change.parent == git(repo, "rev-parse", "HEAD").strip()
     assert sorted(change.paths()) == ["a.py", "b.py"]
@@ -258,3 +262,43 @@ def test_combined_judges_a_range_as_the_one_change_it_merges(tmp_path: Path):
     assert "first: adds a bad line" in one.message and "Adr-Exception: ADR-1" in one.message
     added = [ln.text for f in one.files for ln in f.added]
     assert added == ["good = 1"]  # bad = import_db() was added then removed: not part of what merges
+
+
+def test_occurrences_counts_code_not_file_paths_so_a_module_named_after_its_function_is_still_dead(tmp_path: Path):
+    """planted-large: retry() lives in orders/infra/retry.py and nothing calls it. The path listing is part of the
+    code text for contains() so an ADR may name a module, but it must not count as a use of the identifier."""
+    repo = make_repo(tmp_path)
+    (repo / "retry.py").write_text("def retry(fn):\n    return fn()\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "third")
+    r = GitRepo(repo)
+    assert r.occurrences("HEAD", "retry") == 1  # the definition; retry.py in the listing is not a call
+    assert r.contains("HEAD", "retry.py") is True  # the path is still present for the stale sweep
+
+
+def test_a_commit_editmsg_older_than_head_is_the_previous_commits_message_and_is_not_read(tmp_path: Path):
+    """The pre-commit hook runs before git writes the new message, so .git/COMMIT_EDITMSG still holds the previous
+    commit's text. Reading it would carry an Adr-Exception forward to a change it was never written for (ADR-6
+    says the waiver is per commit). Only a file newer than HEAD counts."""
+    repo = make_repo(tmp_path)  # HEAD's own message carried "Adr-Exception: ADR-2 because"
+    (repo / "a.py").write_text('key = row["url"]\nextra = 1\n')
+    git(repo, "add", "a.py")
+    msg = repo / ".git" / "COMMIT_EDITMSG"
+    msg.write_text("second\n\nAdr-Exception: ADR-2 because\n")
+    head_time = int(git(repo, "log", "-1", "--format=%ct").strip())
+    os.utime(msg, (head_time - 10, head_time - 10))
+    assert GitChanges(repo).staged().message == ""
+
+
+def test_has_line_matches_a_whole_line_so_an_alias_import_or_a_string_mention_is_not_a_precedent(tmp_path: Path):
+    """planted-large 7e9b995: `import requests` was called already-present because contains() found it inside
+    `import requests as http` and inside a log string. A precedent is the same line, not the same substring."""
+    repo = make_repo(tmp_path)
+    (repo / "w.py").write_text("import requests as http\nlog.info('import requests is not allowed here')\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "third")
+    r = GitRepo(repo)
+    assert r.has_line("HEAD", "import requests") is False
+    assert r.has_line("HEAD", "import requests as http") is True
+    assert r.has_line("HEAD", "  import requests as http  ") is True  # surrounding whitespace does not matter
+    assert r.has_line("no-such-ref", "x") is None

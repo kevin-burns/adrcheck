@@ -44,6 +44,8 @@ select = ["E", "F", "I", "B", "UP", "S", "RUF", "SIM", "C4"]
 # argv lists, no shell, fixed executables (git, claude) resolved from PATH on purpose.
 "src/adrcheck/adapters/claude_cli.py" = ["S603", "S607"]
 "evals/planted/build.py" = ["S603", "S607"]
+# the large builder holds the toy repository's files as string literals; wrapping them changes the fixture
+"evals/planted/build_large.py" = ["S603", "S607", "E501"]
 "src/adrcheck/adapters/git_changes.py" = ["S603", "S607"]
 
 [tool.bandit]

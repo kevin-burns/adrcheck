@@ -81,6 +81,11 @@ class RepoReader(Protocol):
         so a count of one means nothing used it. None when the probe cannot run."""
         ...
 
+    def has_line(self, ref: str, text: str) -> bool | None:
+        """Does `text`, stripped, occur as a whole line of code at `ref`? The precedent question: a substring hit
+        inside a longer line or a string literal is not the same line. None when the ref cannot be read."""
+        ...
+
     def locate(self, ref: str, needle: str) -> list[str] | None:
         """Sorted paths of code files at `ref` whose text holds `needle`; a path anchor locates itself. None when
         the ref cannot be read."""
