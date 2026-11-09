@@ -35,9 +35,17 @@ adrcheck check --range origin/main..HEAD --model anthropic:claude-sonnet-5-5
 
 ### Claude Code CLI
 
-Needs a Claude Code install that is already logged in. No key is read. Per-run dollar figures from this
-route are noisy because the CLI's prompt cache state changes between runs; compare input tokens, not dollars,
-when two runs need to be compared.
+Needs a Claude Code install that is already logged in. No key is read. Three things to know about this
+route, all measured in [the CLI-route spike](spikes/2026-11-09-cli-route.md):
+
+- Every call carries the CLI's own system prompt, about 45,000 tokens, so input-token counts and reported
+  costs run far above the API route for the same prompts. Compare tokens within one route only.
+- Wall time is about three times the API route for the same calls, from process start and that prompt.
+- The same model judges differently behind that prompt. Haiku 5.5 scored 9/9 and 11/11 through OpenRouter
+  and 8/9 and 9/11 through the CLI, turning compliant rows UNCLEAR over files it had not been shown.
+
+Treat it as the zero-setup route for a developer who is logged in, and put CI's judge on `anthropic:` or
+`openai:`.
 
 ```sh
 adrcheck check --range origin/main..HEAD --model claude-cli:sonnet
@@ -107,7 +115,8 @@ output count almost certainly includes reasoning tokens.
 Reading: Haiku 5.5 asserted the same rows Sonnet did at about a thirtieth of the cost and finished in
 under half a minute. DeepSeek pro said almost nothing. DeepSeek flash was slow and verbose. On these
 numbers Haiku through OpenRouter is the judge to put in CI, and Sonnet stays the reference the eval set
-was labelled with.
+was labelled with. The Sonnet row went through the CLI, so its token count carries the CLI overhead
+described above; through the API it would be nearer Haiku's.
 
 Run files for these rows are in [the cheap-judges spike](spikes/2026-11-09-cheap-judges.md).
 

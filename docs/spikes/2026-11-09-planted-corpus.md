@@ -41,8 +41,8 @@ Same corpus, same prompts, same cached obligations: the Claude CLI reported 359,
 calls, about 51,000 a call, and Haiku through the API reported 10,593, about 1,500 a call. The prompts
 adrcheck sends are the same size on both routes. The difference is fixed per call and far larger than any
 diff in this corpus, which is consistent with `claude -p` counting its own system prompt and tool
-definitions as input on every call. Not verified against the CLI's internals; the measurement is what it
-is. Two consequences: compare token counts within one route only, and the CLI route costs more per call
+definitions as input on every call. Measured directly later the same day, about 45,000 tokens on a
+two-token prompt: see [the CLI-route spike](2026-11-09-cli-route.md). Two consequences: compare token counts within one route only, and the CLI route costs more per call
 than the model's list price would suggest.
 
 ## Limits

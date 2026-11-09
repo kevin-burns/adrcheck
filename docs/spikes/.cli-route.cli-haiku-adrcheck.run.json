@@ -1,0 +1,239 @@
+{
+ "changes": [
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "subject": "build: add pre-commit gate (ruff, bandit, markdownlint, yamllint, gitleaks)",
+   "uncovered": 31,
+   "judge_calls": 1,
+   "tokens_in": 109648,
+   "tokens_out": 12822,
+   "cost_usd": 0.1417,
+   "excluded": [
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 11,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-top-level-module",
+     "detail": "scripts/"
+    }
+   ]
+  }
+ ],
+ "findings": [
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 1,
+   "obligation": "ADR-1/7",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/domain/adr.py",
+   "line_text": "from collections.abc import Mapping",
+   "quote": "Modules under `src/adrcheck/domain/` import only the standard library and each other.",
+   "reason": "The changed import of Mapping from collections.abc is standard library only, so it stays within the ADR-1 domain import rule.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 2,
+   "obligation": "ADR-2/7",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "        result = verify(",
+   "quote": "No code path reports a CONFLICT that skipped `verify()`.",
+   "reason": "The reformatted line still calls verify() before the finding is settled, so the CONFLICT path still goes through verify().",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 3,
+   "obligation": "ADR-3/3",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "                     Finding(adr.number, None, Verdict.UNCLEAR, signals, note=f\"judge error: {response.error}\")",
+   "quote": "A judge that errors, times out or returns unparseable output yields an UNCLEAR finding whose reason begins `judge error`; it never yields COMPLIANT.",
+   "reason": "The judge-error UNCLEAR finding puts its 'judge error:' text in the note argument rather than a reason field, and the diff does not show whether note is what the ADR calls reason.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 3,
+   "obligation": "ADR-3/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "                     Finding(adr.number, None, Verdict.UNCLEAR, signals, note=f\"judge error: {response.error}\")",
+   "quote": "it never yields COMPLIANT",
+   "reason": "The judge-error line emits Verdict.UNCLEAR, not COMPLIANT, so a judge error cannot become a COMPLIANT verdict.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 4,
+   "obligation": "ADR-4/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/adapters/obligation_cache.py",
+   "line_text": "            {\"v\": self.prompt_version, \"title\": adr.title, \"sections\": dict(adr.sections)}, sort_keys=True",
+   "quote": "`CachedCompiler` stores the result under a key derived from the ADR's content hash and `PROMPT_VERSION`",
+   "reason": "The reformatted cache key material still combines prompt_version with the ADR title and sections, with the same keys and sort order as before.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 4,
+   "obligation": "ADR-4/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/adapters/claude_judge.py",
+   "line_text": "    obl = \"\\n\".join(f'- {o.id} [{o.kind}, {o.checkability.value}] {o.text}\\n  quote: \"{o.quote}\"' for o in obligations)",
+   "quote": "The judge sees compiled obligations, not the ADR prose.",
+   "reason": "The judge prompt still renders the compiled obligations (id, kind, checkability, text, quote) and this reformat leaves that rendering unchanged.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 6,
+   "obligation": "ADR-6/5",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "                        adr.number, None, Verdict.COMPLIANT, sel.signals, note=f\"waived: {waived_by_number[adr.number]}\"",
+   "quote": "A waived ADR is reported as COMPLIANT with the reason shown, so the waiver is visible in the report, never silent.",
+   "reason": "The reformatted waiver finding is still Verdict.COMPLIANT with the 'waived:' reason carried in note, so the waiver stays visible.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 8,
+   "obligation": "ADR-8/1",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "src/adrcheck/ports.py",
+   "line_text": "        self, change: Change, adr: Adr, obligations: tuple[Obligation, ...], context: Context",
+   "quote": "`ChangeJudge.judge()` in `src/adrcheck/ports.py` takes a `Change`, every `JudgeCase` selected for it and one `Context`, and returns one `JudgeResponse` for all of them.",
+   "reason": "The changed line only reflows the existing judge() signature, which takes one adr and its obligations rather than every JudgeCase, and this diff does not alter that contract either way.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  }
+ ],
+ "stale": [
+  {
+   "adr": 7,
+   "obligation": "ADR-7/9",
+   "missing": [
+    "occurrences"
+   ],
+   "known": false
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/5",
+   "missing": [
+    "not_relevant"
+   ],
+   "known": false
+  },
+  {
+   "adr": 9,
+   "obligation": "ADR-9/4",
+   "missing": [
+    "ChatRunner",
+    "ChatRequest",
+    "ChatReply"
+   ],
+   "known": false
+  },
+  {
+   "adr": 9,
+   "obligation": "ADR-9/6",
+   "missing": [
+    "providers.py"
+   ],
+   "known": false
+  },
+  {
+   "adr": 10,
+   "obligation": "ADR-10/1",
+   "missing": [
+    "--write-baseline",
+    ".adrcheck/baseline.json"
+   ],
+   "known": false
+  },
+  {
+   "adr": 11,
+   "obligation": "ADR-11/5",
+   "missing": [
+    "scope-disagreement"
+   ],
+   "known": false
+  },
+  {
+   "adr": 11,
+   "obligation": "ADR-11/6",
+   "missing": [
+    "map-unknown-adr"
+   ],
+   "known": false
+  }
+ ]
+}

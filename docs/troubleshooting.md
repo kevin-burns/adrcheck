@@ -81,9 +81,9 @@ obligations. Tighten the record.
 ## Costs that surprised you
 
 - Input tokens through `claude-cli:` run far higher than the same prompts through the API: on the planted
-  corpus, about 51,000 a call against 1,500. The difference is fixed per call and consistent with the CLI
-  counting its own system prompt; see [the planted spike](spikes/2026-11-09-planted-corpus.md). Compare
-  tokens within one route only.
+  corpus, about 51,000 a call against 1,500. The difference is the CLI's own system prompt, about 45,000
+  tokens on every call, measured with a two-token prompt in [the CLI-route spike](spikes/2026-11-09-cli-route.md).
+  Compare tokens within one route only, and expect the CLI route to judge more cautiously as well.
 - A range check is one call per commit that touches governed paths. Count before you run; `--max-calls`
   bounds it.
 - The first `check` on a repository with no committed `.adrcheck/obligations/` compiles every selected ADR.
