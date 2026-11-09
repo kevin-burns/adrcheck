@@ -204,3 +204,57 @@ def test_the_committed_obligation_cache_is_not_code_so_an_anchor_named_only_ther
     assert r.contains("HEAD", "import_rows") is False
     assert r.locate("HEAD", "import_rows") == []
     assert r.occurrences("HEAD", "import_rows") == 0
+
+
+ADR_BODY = "\n\nStatus: Accepted\n\n## Decision\n\nWe do X.\n"
+
+
+def test_the_source_reads_every_markdown_record_whatever_the_filename_shape_and_skips_the_non_records(tmp_path: Path):
+    """Kevin 2026-11-09: 'what if we have ADR-001 as the key?' The old filter read only names starting with digits,
+    so ADR-001-*.md was skipped silently. Now every .md is a record unless it is the directory's README, index
+    or template; the number comes from the title first, then the filename, and a date prefix is not a number."""
+    d = tmp_path / "adr"
+    d.mkdir()
+    (d / "0001-use-postgres.md").write_text("# 1. Use Postgres" + ADR_BODY)
+    (d / "ADR-002-use-redis.md").write_text("# Use Redis" + ADR_BODY)
+    (d / "adr_003_use_kafka.md").write_text("# Use Kafka" + ADR_BODY)
+    (d / "20220819-use-log4brains.md").write_text("# Use Log4brains" + ADR_BODY)
+    (d / "2026-01-10-use-sqlite.md").write_text("# [ADR-5] Use SQLite" + ADR_BODY)
+    (d / "no-number-at-all.md").write_text("# Use Nothing" + ADR_BODY)
+    (d / "README.md").write_text("# Architecture decision records\n\nAn index.\n")
+    (d / "index.md").write_text("# Index\n")
+    (d / "template.md").write_text("# NUMBER. TITLE" + ADR_BODY)
+    (d / "notes.txt").write_text("not markdown")
+    adrs = {Path(a.source).name: a for a in MarkdownAdrSource(d).adrs()}
+    assert set(adrs) == {
+        "0001-use-postgres.md",
+        "ADR-002-use-redis.md",
+        "adr_003_use_kafka.md",
+        "20220819-use-log4brains.md",
+        "2026-01-10-use-sqlite.md",
+        "no-number-at-all.md",
+    }
+    assert adrs["0001-use-postgres.md"].number == 1
+    assert adrs["ADR-002-use-redis.md"].number == 2
+    assert adrs["adr_003_use_kafka.md"].number == 3
+    assert adrs["20220819-use-log4brains.md"].number is None  # a date, not a number
+    assert adrs["2026-01-10-use-sqlite.md"].number == 5  # the title's [ADR-5] wins over the date prefix
+    assert adrs["no-number-at-all.md"].number is None
+
+
+def test_combined_judges_a_range_as_the_one_change_it_merges(tmp_path: Path):
+    """A pull request is judged as what it merges (ADR-13): one Change whose parent is the base, whose files are the
+    net diff, and whose message carries every commit's message so an Adr-Exception trailer on any of them counts.
+    A line added in one commit and removed in a later one is not in the change at all."""
+    repo = make_repo(tmp_path)
+    base = git(repo, "rev-parse", "HEAD").strip()
+    (repo / "a.py").write_text('key = row["url"]\nbad = import_db()\n')
+    git(repo, "commit", "-q", "-am", "first: adds a bad line")
+    (repo / "a.py").write_text('key = row["url"]\ngood = 1\n')
+    git(repo, "commit", "-q", "-am", "second: repairs it\n\nAdr-Exception: ADR-1 deliberate, see the thread")
+    head = git(repo, "rev-parse", "HEAD").strip()
+    one = GitChanges(repo).combined(f"{base}..{head}")
+    assert one.parent == base and one.ref == head
+    assert "first: adds a bad line" in one.message and "Adr-Exception: ADR-1" in one.message
+    added = [ln.text for f in one.files for ln in f.added]
+    assert added == ["good = 1"]  # bad = import_db() was added then removed: not part of what merges

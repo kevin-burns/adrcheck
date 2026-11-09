@@ -39,6 +39,17 @@ the diff is explicit. A sentence about how the team works rather than what the c
 ADR is reviewed by two people", compiles to a `process` obligation, which is listed and never judged. If you mean MUST, write MUST. If you genuinely mean a preference, say so, and expect
 UNCLEAR rather than CONFLICT when code goes the other way.
 
+## Filenames and numbers
+
+Every `.md` file in the ADR directory is a record, except the directory's own `README`, `index` and
+`template`. The number is read from the title first, in any of `# 1. Title`, `# ADR-001: Title`,
+`# ADR 001 Title`, `# [ADR-001] Title` or `# 001 - Title`, and otherwise from the filename:
+`0001-title.md`, `ADR-001-title.md`, `adr_001_title.md` and `001.md` all give 1. A leading date such as
+`20220819-title.md` or `2026-01-10-title.md` is not a number; put the number in the title for those. Leading
+zeros never matter, and `ADR-001`, `ADR 1` and `adr1` in text all refer to record 1. A record with no number
+anywhere is still read and gets a `missing-number` lint finding, because nothing can supersede, depend on
+or waive it. ADR-12 records this.
+
 ## The header lines adrcheck reads
 
 ```markdown

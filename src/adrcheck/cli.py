@@ -68,6 +68,11 @@ def _parser() -> argparse.ArgumentParser:
         help="free: no model, no key; forbidden patterns on added lines from the cached compile, lint, stale "
         "sweep. judge: the model. Default free with --staged, else judge",
     )
+    c.add_argument(
+        "--as-one",
+        action="store_true",
+        help="judge --range as the one change it merges: net diff, every commit message, one judge call (ADR-13)",
+    )
     c.add_argument("--format", choices=("json", "md"), default="md")
     c.add_argument("--fail-on", choices=("conflict",), help="exit 2 when any CONFLICT is reported")
     c.add_argument(
@@ -273,6 +278,8 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         if not changes[0].files:
             print("nothing staged", file=sys.stderr)
             return EXIT_OK
+    elif args.as_one and args.range:
+        changes = [git.combined(args.range)]
     else:
         changes = git.changes(args.range or f"{args.commit}~1..{args.commit}")
     baseline_path = repo / args.baseline

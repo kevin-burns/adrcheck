@@ -53,6 +53,9 @@ def lint(adrs: list[Adr], link_exists: LinkExists | None = None) -> tuple[Hygien
                 seen_numbers[adr.number] = adr
         if adr.status is Status.UNKNOWN:
             issues.append(HygieneIssue("missing-status", adr.number, "no recognisable Status"))
+        if adr.number is None:
+            detail = "no number in the title or the filename; nothing can supersede, depend on or waive it"
+            issues.append(HygieneIssue("missing-number", None, detail))
         if adr.status is Status.ACCEPTED and not (adr.section("decision") or adr.section("consequences")).strip():
             issues.append(
                 HygieneIssue(

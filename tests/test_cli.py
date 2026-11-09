@@ -391,3 +391,32 @@ def test_check_staged_defaults_to_the_free_tier_which_needs_no_model_and_no_comp
     assert code == 2 and out["changes"][0]["judge_calls"] == 0
     assert [f["verdict"] for f in out["findings"]] == ["CONFLICT"]
     assert out["findings"][0]["line_text"] == 'more = row["url"]'
+
+
+def test_check_range_as_one_reports_a_single_change_for_the_whole_range(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    base = git(repo, "rev-parse", "HEAD").strip()
+    (repo / "src" / "a.py").write_text('key = row["url"]\nmore = 1\n')
+    git(repo, "commit", "-q", "-am", "one")
+    (repo / "src" / "a.py").write_text('key = row["url"]\nmore = 2\n')
+    git(repo, "commit", "-q", "-am", "two")
+    code = main(
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--range",
+            f"{base}..HEAD",
+            "--as-one",
+            "--tier",
+            "judge",
+            "--format",
+            "json",
+        ],
+        judge=FakeJudge(),
+    )
+    out = json.loads(capsys.readouterr().out)
+    assert code == 0 and len(out["changes"]) == 1
+    assert out["changes"][0]["subject"].startswith("one") or "one" in out["changes"][0]["subject"]

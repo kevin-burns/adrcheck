@@ -113,3 +113,25 @@ def test_a_depends_on_header_records_the_dependencies_and_relative_links_are_kep
     assert adr.depends_on == (2, 3)
     # relative file links only: an absolute URL and a same-page anchor are not local files to resolve
     assert adr.links == ("../design.md", "0002-keys.md")
+
+
+def test_title_shapes_with_the_number_in_brackets_or_before_a_dash_give_a_clean_number_and_title():
+    body = "\n\nStatus: Accepted\n\n## Decision\n\nWe do X.\n"
+    a = parse_adr("# [ADR-001] Use Postgres" + body, source="x.md")
+    assert (a.number, a.title) == (1, "Use Postgres")
+    a = parse_adr("# 001 - Use Postgres" + body, source="x.md")
+    assert (a.number, a.title) == (1, "Use Postgres")
+    a = parse_adr("# ADR 001 Use Postgres" + body, source="x.md")
+    assert (a.number, a.title) == (1, "Use Postgres")
+    a = parse_adr("# ADR-0007: Use Postgres" + body, source="x.md")
+    assert (a.number, a.title) == (7, "Use Postgres")
+
+
+def test_a_date_prefixed_filename_is_not_a_number_but_an_adr_prefixed_one_is():
+    body = "# Use Postgres\n\nStatus: Accepted\n\n## Decision\n\nWe do X.\n"
+    assert parse_adr(body, source="docs/adr/20220819-use-postgres.md").number is None
+    assert parse_adr(body, source="docs/adr/2026-01-10-use-postgres.md").number is None
+    assert parse_adr(body, source="docs/adr/ADR-0012-use-postgres.md").number == 12
+    assert parse_adr(body, source="docs/adr/adr_12_use_postgres.md").number == 12
+    assert parse_adr(body, source="docs/adr/0012-use-postgres.md").number == 12
+    assert parse_adr(body, source="docs/adr/12.md").number == 12

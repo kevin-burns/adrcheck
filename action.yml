@@ -1,8 +1,9 @@
-# adrcheck as a GitHub Action: judge the pull request's commits against the repository's ADRs and post one
-# comment, updated in place on every run. Exit 2 (a verified CONFLICT) fails the step; exit 3 (the checker
-# could not evaluate: no key, provider down) is reported as a warning and does not fail the step, because an
-# unreachable model is not a finding (ADR-3). Secrets arrive as the calling step's env: the Anthropic key, or the
-# base URL and key of an OpenAI-compatible endpoint when inputs.model starts with openai: (docs/providers.md).
+# adrcheck as a GitHub Action: judge the pull request as the one change it merges (ADR-13) against the
+# repository's ADRs and post one comment, updated in place on every run. Exit 2 (a verified CONFLICT) fails
+# the step; exit 3 (the checker could not evaluate: no key, provider down) is reported as a warning and does
+# not fail the step, because an unreachable model is not a finding (ADR-3). Secrets arrive as the calling
+# step's env: the Anthropic key, or the base URL and key of an OpenAI-compatible endpoint when inputs.model
+# starts with openai: (docs/providers.md).
 name: adrcheck
 description: Check a pull request's code changes against the architecture decision records in the repository
 author: KevinB
@@ -79,7 +80,7 @@ runs:
         report="${RUNNER_TEMP}/adrcheck-report.md"
         cap=()
         if [ -n "${MAX_CALLS}" ]; then cap=(--max-calls "${MAX_CALLS}"); fi
-        adrcheck check --adr-dir "${ADR_DIR}" --range "origin/${BASE}..HEAD" --model "${MODEL}" "${cap[@]}" \
+        adrcheck check --adr-dir "${ADR_DIR}" --range "origin/${BASE}..HEAD" --as-one --model "${MODEL}" "${cap[@]}" \
           --format md --fail-on conflict > "${report}" 2> "${RUNNER_TEMP}/adrcheck.err"
         code=$?
         set -e

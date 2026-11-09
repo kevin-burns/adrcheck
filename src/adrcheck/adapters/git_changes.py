@@ -163,6 +163,18 @@ class GitChanges(GitRepo):
         message = msg_file.read_text() if msg_file.exists() else ""
         return Change(ref=STAGED, parent=head, message=message.strip("\n"), files=parse_patch(patch))
 
+    def combined(self, spec: str) -> Change:
+        """A range as the one change it merges (ADR-13): parent is the merge base, files are the net diff, and the
+        message carries every commit's message so an Adr-Exception trailer on any of them counts. A line added
+        in one commit and removed in a later one is not part of the change at all."""
+        base_spec, _, head_spec = spec.partition("..")
+        head = self._git("rev-parse", head_spec or "HEAD").stdout.strip()
+        base = self._git("merge-base", base_spec, head).stdout.strip()
+        patch = self._git("diff", "--no-color", "--find-renames", "--patch", base, head).stdout
+        messages = self._git("log", "--reverse", "--no-merges", f"--format=%B{_SEP}", f"{base}..{head}").stdout
+        message = "\n\n".join(m.strip("\n") for m in messages.split(_SEP) if m.strip())
+        return Change(ref=head, parent=base, message=message, files=parse_patch(patch))
+
     def _change(self, rev: str) -> Change:
         meta = self._git("show", "-s", f"--format=%P{_SEP}%B", rev).stdout
         parents, _, message = meta.partition(_SEP)

@@ -1,0 +1,121 @@
+[
+ {
+  "id": "ADR-12/1",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "MarkdownAdrSource and adrs_at() must read every .md file in the ADR directory, excluding only the directory's own README, index and template files, as decided by is_record().",
+  "quote": "read every `.md` file in the ADR directory except the directory's own `README`, `index` and `template`, decided by `is_record()`",
+  "checkability": "structural",
+  "mandates": [
+   "is_record",
+   "MarkdownAdrSource",
+   "adrs_at"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/2",
+  "adr_number": 12,
+  "kind": "MUST_NOT",
+  "text": "The source adapter must not filter ADR files by requiring the filename to begin with a digit, which silently skipped names like ADR-001-title.md.",
+  "quote": "A misnamed file is a lint finding, not a silent gap.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": [
+   "name[0].isdigit()",
+   "name[0].isdigit",
+   "[0-9]*.md"
+  ]
+ },
+ {
+  "id": "ADR-12/3",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "parse_adr() must take the ADR number from the title first, recognizing the shapes `# 1. Title`, `# ADR-001: Title`, `# ADR 001 Title`, `# [ADR-001] Title` and `# 001 - Title`.",
+  "quote": "`parse_adr()` in `src/adrcheck/adapters/markdown_adr.py` takes the number from the title first, in any of the shapes `# 1. Title`, `# ADR-001: Title`, `# ADR 001 Title`, `# [ADR-001] Title` and `# 001 - Title`",
+  "checkability": "intent",
+  "mandates": [
+   "parse_adr",
+   "src/adrcheck/adapters/markdown_adr.py"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/4",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "When the title yields no number, parse_adr() must fall back to the filename via filename_number().",
+  "quote": "otherwise from the filename through `filename_number()`",
+  "checkability": "structural",
+  "mandates": [
+   "filename_number"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/5",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "filename_number() must accept a leading number with or without an ADR prefix.",
+  "quote": "which accepts a leading number with or without an `ADR` prefix",
+  "checkability": "intent",
+  "mandates": [
+   "filename_number"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/6",
+  "adr_number": 12,
+  "kind": "MUST_NOT",
+  "text": "filename_number() must treat a leading date (eight digits or yyyy-mm-dd) as not a number, so a date slug never becomes an ADR number such as 20220819.",
+  "quote": "treats a leading date, eight digits or `yyyy-mm-dd`, as not a number",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/7",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "A record with no number from either the title or the filename must be kept with number None rather than dropped, and lint must report it as `missing-number`.",
+  "quote": "A record with no number from either source is kept with `number` None, and `lint` reports it as `missing-number`",
+  "checkability": "intent",
+  "mandates": [
+   "missing-number"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/8",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "Leading zeros must not matter: ADR-001, 0001 and 1 resolve to the same record, and references in text resolve the same way.",
+  "quote": "Leading zeros do not matter: `ADR-001`, `0001` and `1` are the same record, and references in text resolve the same way.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/9",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "Two files that resolve to the same number must still be reported by lint as `duplicate-number`.",
+  "quote": "Two files that resolve to one number are still `duplicate-number`.",
+  "checkability": "intent",
+  "mandates": [
+   "duplicate-number"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-12/10",
+  "adr_number": 12,
+  "kind": "MUST",
+  "text": "When a title number and a filename number both exist and differ, the title number must win.",
+  "quote": "a title number wins over a filename number when both exist and differ",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ }
+]
