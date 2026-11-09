@@ -164,6 +164,8 @@ adrcheck check --range "origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}..HEAD" --a
   --format md --fail-on conflict --codequality gl-code-quality-report.json
 ```
 
+Both platforms side by side, with the full workflow for each: [docs/ci.md](docs/ci.md).
+
 ### Measuring a change to the prompts or the rules
 
 Labelled cases live under `evals/cases/`, one JSON file per corpus: commit, ADR, the verbatim binding
