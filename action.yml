@@ -75,6 +75,9 @@ runs:
         set -e
         cat "${report}"
         cat "${RUNNER_TEMP}/adrcheck.err" >&2
+        # the job summary shows the report in the Actions tab even when the comment step cannot run (no
+        # pull-requests permission, a push event, a fork); same cap as the comment
+        { echo "# adrcheck"; head -c 60000 "${report}"; echo; } >> "${GITHUB_STEP_SUMMARY}"
         echo "code=${code}" >> "${GITHUB_OUTPUT}"
         echo "report=${report}" >> "${GITHUB_OUTPUT}"
         if [ "${code}" = "3" ]; then echo "::warning title=adrcheck::could not evaluate; see the report"; fi

@@ -152,7 +152,8 @@ times the API route's for the same prompts, so compare token counts within one r
 ## In the GitHub Action
 
 The Action passes `inputs.model` straight to `--model` and inherits the environment of the step that
-calls it, so any provider works. For OpenRouter:
+calls it, so any provider works. The report also goes to the job's step summary, so it is visible in the
+Actions tab when the comment cannot be posted. For OpenRouter:
 
 ```yaml
 - uses: kevin-burns/adrcheck@main
