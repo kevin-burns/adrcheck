@@ -26,10 +26,10 @@ class FakePost:
 
 def test_the_runner_posts_system_and_user_messages_and_maps_the_reply():
     post = FakePost()
-    runner = OpenAICompatRunner(model="qwen3:8b", base_url="http://kb-macm-2026:11434/v1/", post=post)
+    runner = OpenAICompatRunner(model="qwen3:8b", base_url="http://ollama.example.invalid:11434/v1/", post=post)
     reply = runner.run(REQ)
     url, headers, body = post.calls[0]
-    assert url == "http://kb-macm-2026:11434/v1/chat/completions"
+    assert url == "http://ollama.example.invalid:11434/v1/chat/completions"
     assert "Authorization" not in headers and headers["Content-Type"] == "application/json"
     assert body["model"] == "qwen3:8b" and body["messages"] == [
         {"role": "system", "content": "be brief"},
@@ -66,10 +66,10 @@ def test_provider_specs_wire_openai_and_ollama_from_the_environment(monkeypatch)
 
     monkeypatch.setenv("OPENAI_BASE_URL", "https://openrouter.example/api/v1")
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
-    monkeypatch.setenv("OLLAMA_HOST", "http://kb-macm-2026:11434")
+    monkeypatch.setenv("OLLAMA_HOST", "http://ollama.example.invalid:11434")
     r = runner_for("openai:some/model")
     assert (r.base_url, r.api_key) == ("https://openrouter.example/api/v1", "sk-test")
-    assert runner_for("ollama:tev1").base_url == "http://kb-macm-2026:11434/v1"
+    assert runner_for("ollama:tev1").base_url == "http://ollama.example.invalid:11434/v1"
 
 
 def test_an_http_error_surfaces_the_endpoints_own_message_not_a_traceback(monkeypatch):
