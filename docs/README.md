@@ -11,6 +11,7 @@ Start with the first two if adrcheck is new to you. The rest are reference.
 | [Use cases](use-cases.md) | you joined a team with ADRs, or you have ADRs and want them enforced, or you want the check in every pull request |
 | [Writing ADRs that compile](writing-adrs.md) | you are writing or amending a record and want the judge to be able to hold code to it |
 | [An ADR template that compiles](adr-template.md) | you want a record to copy, with each part's effect on the checker |
+| [Command reference](cli.md) | you want every subcommand, flag, default and exit code on one page |
 | [Providers](providers.md) | choosing a model, running on OpenRouter or Ollama, bounding the bill |
 | [Troubleshooting](troubleshooting.md) | a message on stderr, or a report line that looks wrong |
 | [Design](design.md) | how adrcheck is built and which design rules it follows or bends |
