@@ -81,6 +81,17 @@ paths = ["services/billing/**", "libs/money/**"]
 
 The header wins where both exist, and lint reports the disagreement.
 
+**Ask one decision where it stands.**
+
+```sh
+adrcheck explain --adr 7
+```
+
+No judge call. For each obligation of ADR-7, every anchor it mandates with the files that hold it and how
+often it is used, every pattern it forbids with the files where it appears, and a STALE mark on any
+obligation whose anchors are all gone. This is the question "is this decision still true" answered in a
+second, per decision, before you run anything over history.
+
 **Run a sweep over history and read the stale list.**
 
 ```sh

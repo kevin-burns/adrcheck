@@ -143,6 +143,16 @@ evaluate. The full table per command is on the [verdicts page](verdicts.md#exit-
 Action, 3 is reported as a warning and does not fail the step; in a shell or a pre-commit hook it is a
 non-zero exit like any other, so decide there whether an unreachable model should block you.
 
+## One more command
+
+```sh
+adrcheck explain --adr 7
+```
+
+Takes one ADR and prints each obligation with where its anchors live in the code right now, and marks the
+obligations whose anchors are all gone. No judge call. The [use cases page](use-cases.md) shows it in the
+architect's sequence.
+
 ## Where to next
 
 - [What the verdicts mean](verdicts.md), including the ones that are not verdicts.

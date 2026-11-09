@@ -63,7 +63,8 @@ HTML, images and lock files, and for Python it blanks comments and docstrings be
   that only a config file still mentions, the row will not appear until the config changes.
 
 The other direction is rarer: an anchor mentioned in a `.txt` or `.md` file only is reported missing. Name
-code, not documents, in the Decision section.
+code, not documents, in the Decision section. Files under `.adrcheck/` are never read as code, so the
+committed obligation cache cannot satisfy its own anchors.
 
 **`uncovered files` is high.** The count is changed files none of the judged ADRs' globs matched. On a big
 refactor it is often most of the diff and means nothing. On an ordinary change it means your `Applies to`

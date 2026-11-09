@@ -36,6 +36,9 @@ adrcheck lint --adr-dir docs/adr
 # compile ADRs into obligations once; cached under .adrcheck/obligations, safe to commit
 adrcheck compile --adr-dir docs/adr
 
+# one decision: its obligations, where each anchor lives in the code, which are stale; no judge
+adrcheck explain --adr-dir docs/adr --adr 7
+
 # judge the commits on a branch; exit 2 on a verified CONFLICT, 3 when nothing could be evaluated
 adrcheck check --adr-dir docs/adr --range origin/main..HEAD --format md --fail-on conflict
 ```

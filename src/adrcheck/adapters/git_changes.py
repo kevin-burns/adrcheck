@@ -52,7 +52,7 @@ def strip_python_prose(source: str) -> str:
 class GitRepo:
     def __init__(self, root: Path):
         self.root = Path(root)
-        self._code_cache: dict[str, str] = {}
+        self._code_cache: dict[str, dict[str, str]] = {}
 
     def _git(self, *args: str, check: bool = True) -> subprocess.CompletedProcess:
         # errors="replace": a binary blob in the tree (an icon, a font, a parquet file) must not end the run.
@@ -74,8 +74,9 @@ class GitRepo:
         # STAGED is the index: `git show :path`. Everything else is a commit-ish.
         return self._git("show", f"{'' if ref == STAGED else ref}:{path}").stdout
 
-    def _code_text(self, ref: str) -> str | None:
-        """All code at `ref` as one string, with prose files, comments and docstrings removed. Cached per ref."""
+    def _code_files(self, ref: str) -> dict[str, str] | None:
+        """Path -> code text at `ref`, prose files skipped, Python comments and docstrings blanked. Cached per ref.
+        Every path in the tree is a key, prose files with empty text, so a path anchor is found by name."""
         key = f"{self.root}@{ref}"
         if key in self._code_cache:
             return self._code_cache[key]
@@ -86,12 +87,34 @@ class GitRepo:
         )
         if listing.returncode != 0:
             return None
-        parts: list[str] = [listing.stdout]  # file paths count as presence too: an ADR may name a module
-        wanted = [p for p in listing.stdout.split("\n") if p and not p.lower().endswith(_PROSE)]
+        # .adrcheck/ holds the compiled obligations, which name every anchor: reading it as code would make the
+        # stale sweep blind to the very ADRs it checks on a repository that commits the cache.
+        paths = [p for p in listing.stdout.split("\n") if p and not p.startswith(".adrcheck/")]
+        files: dict[str, str] = dict.fromkeys(paths, "")
+        wanted = [p for p in paths if not p.lower().endswith(_PROSE)]
         for path, text in self._blobs(ref, wanted).items():
-            parts.append(strip_python_prose(text) if path.endswith(".py") else text)
-        self._code_cache[key] = joined = "\n".join(parts)
-        return joined
+            files[path] = strip_python_prose(text) if path.endswith(".py") else text
+        self._code_cache[key] = files
+        return files
+
+    def _code_text(self, ref: str) -> str | None:
+        """All code at `ref` as one string; file paths are in it too, so an ADR may name a module."""
+        files = self._code_files(ref)
+        if files is None:
+            return None
+        return "\n".join(["\n".join(files), *files.values()])
+
+    def locate(self, ref: str, needle: str) -> list[str] | None:
+        files = self._code_files(ref)
+        if files is None:
+            return None
+        pattern = re.compile(rf"(?<![\w.]){re.escape(needle)}(?!\w)") if needle.isidentifier() else None
+        hit = [
+            p
+            for p, text in files.items()
+            if p == needle or needle in p or (pattern.search(text) if pattern else needle in text)
+        ]
+        return sorted(hit)
 
     def _blobs(self, ref: str, paths: list[str]) -> dict[str, str]:
         """Every blob in one `git cat-file --batch` process; one `git show` per file cost 17 ms a file (bead zsj)."""

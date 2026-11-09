@@ -175,3 +175,32 @@ def test_adrs_at_reads_the_adr_directory_as_it_stood_at_a_ref(tmp_path: Path):
     [adr] = adrs_at(GitRepo(repo), frozen, "docs/adr")
     assert adr.number == 1 and adr.status.value == "accepted" and adr.section("decision") == "Old text."
     assert adrs_at(GitRepo(repo), frozen, "no/such/dir") == []
+
+
+def test_locate_names_the_code_files_that_hold_an_anchor_and_a_path_locates_itself(tmp_path: Path):
+    repo = make_repo(tmp_path)
+    (repo / "lib.py").write_text("def import_rows(rows):\n    return rows\n\ndef fetch(): pass\n")
+    (repo / "b.py").write_text("from lib import fetch\nfetch()\n# import_rows mentioned in a comment only\n")
+    (repo / "notes.md").write_text("fetch is described here\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "third")
+    r = GitRepo(repo)
+    assert r.locate("HEAD", "fetch") == ["b.py", "lib.py"]  # prose file skipped, sorted
+    assert r.locate("HEAD", "import_rows") == ["lib.py"]  # the comment in b.py is stripped
+    assert r.locate("HEAD", "lib.py") == ["lib.py"]  # a path anchor locates itself
+    assert r.locate("HEAD", "nothing_here") == []
+    assert r.locate("no-such-ref", "fetch") is None
+
+
+def test_the_committed_obligation_cache_is_not_code_so_an_anchor_named_only_there_is_missing(tmp_path: Path):
+    """A repository that commits .adrcheck/obligations/ holds every anchor string in those files. Counting them as
+    code would make the stale sweep blind to its own ADRs; seen on adrcheck itself via `explain`."""
+    repo = make_repo(tmp_path)
+    (repo / ".adrcheck" / "obligations").mkdir(parents=True)
+    (repo / ".adrcheck" / "obligations" / "abc.json").write_text('[{"mandates": ["import_rows"]}]\n')
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "cache")
+    r = GitRepo(repo)
+    assert r.contains("HEAD", "import_rows") is False
+    assert r.locate("HEAD", "import_rows") == []
+    assert r.occurrences("HEAD", "import_rows") == 0

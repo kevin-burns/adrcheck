@@ -331,3 +331,13 @@ def test_check_max_calls_caps_the_judge_and_says_which_commits_were_not_judged(t
     assert [c["judge_calls"] for c in out["changes"]] == [1, 0]
     assert out["changes"][1]["problems"] == ["judge call budget of 1 reached; 1 ADR not judged for this change"]
     assert "1 change(s) not judged: --max-calls 1 reached" in captured.err
+
+
+def test_explain_prints_one_adr_with_where_each_anchor_lives(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)  # HEAD has key = row["url"]; row_key is gone
+    code = main(["explain", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--adr", "1"], judge=FakeJudge())
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "ADR-1" in out and "ADR-1/1" in out
+    assert "row_key" in out and "missing" in out
+    assert "stale" in out.lower()

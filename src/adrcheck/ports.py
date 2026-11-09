@@ -73,6 +73,11 @@ class RepoReader(Protocol):
         so a count of one means nothing used it. None when the probe cannot run."""
         ...
 
+    def locate(self, ref: str, needle: str) -> list[str] | None:
+        """Sorted paths of code files at `ref` whose text holds `needle`; a path anchor locates itself. None when
+        the ref cannot be read."""
+        ...
+
 
 class ObligationCompiler(Protocol):
     def compile(self, adr: Adr) -> tuple[Obligation, ...]: ...

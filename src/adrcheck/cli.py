@@ -22,6 +22,7 @@ from adrcheck.domain.scope import scope
 from adrcheck.domain.verdict import Verdict
 from adrcheck.usecases.check import check
 from adrcheck.usecases.evaluate import score
+from adrcheck.usecases.explain import explain
 
 EXIT_OK, EXIT_ISSUES, EXIT_CONFLICT, EXIT_UNEVALUATED = 0, 1, 2, 3
 
@@ -80,6 +81,11 @@ def _parser() -> argparse.ArgumentParser:
         help="record this run's stale list to --baseline; a deliberate act, review the diff like source",
     )
 
+    x = sub.add_parser("explain", help="one ADR's obligations and where each anchor lives in the code; no judge")
+    common(x)
+    x.add_argument("--adr", type=int, required=True, metavar="N", help="the ADR number")
+    x.add_argument("--at", default="HEAD", metavar="REF", help="the revision to look in (default %(default)s)")
+
     k = sub.add_parser("compile", help="compile ADRs into obligations and print them")
     common(k)
     k.add_argument("--prune", action="store_true", help="delete cache entries no current ADR produces")
@@ -136,6 +142,42 @@ def _run_corpus(cases_path: Path, judge, model: str, compile_model: str | None):
     compiler = CachedCompiler(compile_seat, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
     changes = [git.changes(f"{c}~1..{c}")[0] for c in commits]
     return check(changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git)
+
+
+def _explain(args, adrs, compiler, git) -> int:
+    matching = [a for a in adrs if a.number == args.adr]
+    if not matching:
+        print(f"no ADR-{args.adr} under the ADR directory", file=sys.stderr)
+        return EXIT_ISSUES
+    adr = matching[0]
+    print(f"ADR-{adr.number}: {adr.title} [{adr.status.value}] at {args.at}")
+    if adr.applies_to:
+        print(f"  applies to: {', '.join(adr.applies_to)}")
+    try:
+        statuses = explain(adr, compiler, git, args.at)
+    except Exception as exc:
+        print(f"could not compile ADR-{adr.number}: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return EXIT_UNEVALUATED
+    stale = 0
+    for s in statuses:
+        o = s.obligation
+        flag = " STALE: every mandated anchor is gone" if s.stale else ""
+        stale += bool(s.stale)
+        print(f"  {o.id} [{o.kind}, {o.checkability.value}] {o.text}{flag}")
+        for a in s.anchors:
+            if a.files is None:
+                where = "unknown (ref not readable)"
+            elif not a.files:
+                where = "absent" if a.forbidden else "missing"
+            else:
+                shown = ", ".join(a.files[:5]) + (f" and {len(a.files) - 5} more" if len(a.files) > 5 else "")
+                uses = f", {a.count} occurrence{'s' if a.count != 1 else ''}" if a.count is not None else ""
+                where = f"{'present' if a.forbidden else 'in'} {shown}{uses}"
+            label = "forbids" if a.forbidden else "mandates"
+            print(f"      {label} {a.name}: {where}")
+    if stale:
+        print(f"  {stale} obligation{'s' if stale != 1 else ''} stale at {args.at}")
+    return EXIT_OK
 
 
 def main(argv: list[str] | None = None, judge=None) -> int:
@@ -207,6 +249,8 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         return EXIT_OK
 
     git = GitChanges(repo)
+    if args.command == "explain":
+        return _explain(args, adrs, compiler, git)
     if args.staged:
         changes = [git.staged()]
         if not changes[0].files:
