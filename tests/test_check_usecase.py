@@ -652,3 +652,11 @@ def test_an_empty_range_still_runs_the_stale_sweep_when_given_the_ref_to_sweep()
     [report] = reports
     assert report.ref == "HEAD" and report.findings == () and report.judge_calls == 0
     assert [(s.adr_number, s.obligation_id, s.missing) for s in report.stale] == [(2, "ADR-2/1", ("row_key",))]
+
+
+def test_a_finding_carries_the_line_number_of_the_cited_added_line():
+    """The diff knows where the cited line landed; a surface that points at files (GitLab's Code Quality)
+    should point at the line, not at line 1."""
+    report, _ = run(JudgeResponse(findings=(raw(),)))
+    [f] = report.findings
+    assert f.line_number == 11

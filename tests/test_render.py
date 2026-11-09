@@ -195,7 +195,7 @@ def test_codequality_renders_findings_in_the_code_climate_shape_gitlab_reads():
     assert row["check_name"] == "adrcheck/ADR-2" and row["severity"] == "major"
     assert row["location"] == {"path": "enrich/store.py", "lines": {"begin": 1}}
     assert "keyed by store.row_key" in row["description"] and "keys by url" in row["description"]
-    assert len(row["fingerprint"]) == 64  # sha256 of commit, ADR, obligation, path and line: stable across runs
+    assert len(row["fingerprint"]) == 64  # sha256 of ADR, obligation, path and line: stable across runs and pushes
     assert row["type"] == "issue" and row["categories"] == ["Style"]
 
 
@@ -213,3 +213,27 @@ def test_codequality_maps_the_other_verdicts_to_lower_severities_and_skips_compl
     )
     rows = json.loads(to_codequality([report]))
     assert [(r["check_name"], r["severity"]) for r in rows] == [("adrcheck/ADR-2", "minor"), ("adrcheck/ADR-3", "info")]
+
+
+def test_codequality_fingerprint_does_not_change_with_the_commit():
+    """GitLab diffs a merge request's report against the target branch's by fingerprint, and shows the same
+    issue once across pushes. Both need the fingerprint to name the finding, not the commit it was seen on."""
+    from dataclasses import replace
+
+    from adrcheck.adapters.render import to_codequality
+
+    first = json.loads(to_codequality([REPORT]))
+    second = json.loads(to_codequality([replace(REPORT, ref="fffffff")]))
+    assert first[0]["fingerprint"] == second[0]["fingerprint"]
+
+
+def test_codequality_location_uses_the_finding_line_number_when_known():
+    from adrcheck.adapters.render import to_codequality
+
+    report = ChangeReport(
+        ref="abc1234",
+        message="m",
+        findings=(_finding(line_text="x = 1", line_number=7), _finding(obligation_id="ADR-2/2", line_text="y = 2")),
+    )
+    rows = json.loads(to_codequality([report]))
+    assert [r["location"]["lines"]["begin"] for r in rows] == [7, 1]
