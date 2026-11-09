@@ -548,3 +548,31 @@ def test_disagreement_on_different_lines_is_not_a_contradiction():
         repo=repo,
     )
     assert sorted(f.verdict.value for f in reports[0].findings) == ["COMPLIANT", "CONFLICT"]
+
+
+def test_an_unclear_about_a_removed_anchor_that_nothing_called_is_overtaken_too():
+    """planted b90ba4c: the judge said UNCLEAR, 'I can't tell whether this removes dead code'. The parent count
+    can tell. A removal nothing referenced is dead code whatever the judge's confidence; one that was still
+    used stays the judge's UNCLEAR, for a person to read."""
+    f = removal_run({("c0", "import_rows"): 1}, judged=Verdict.UNCLEAR)
+    assert f.verdict is Verdict.ADR_OVERTAKEN and "removed anchor import_rows had no callers at parent" in f.note
+    used = removal_run({("c0", "import_rows"): 3}, judged=Verdict.UNCLEAR)
+    assert used.verdict is Verdict.UNCLEAR
+
+
+def test_a_judge_call_budget_leaves_later_changes_unjudged_and_says_so():
+    """--max-calls: a forty-commit range on a hosted key must not be forty calls by surprise. Changes past the
+    budget are not judged, their selected ADRs read UNCLEAR with the reason, and the report carries a problem
+    line; nothing is silently green."""
+    judge = FakeJudge(JudgeResponse(findings=()))
+    repo = FakeRepo({("c0", "row_key"): True, ("c0", 'key = row["url"]'): False})
+    changes = [change(message=f"commit {i}") for i in range(3)]
+    reports = check(
+        changes=changes, adrs=[ADR], compiler=FakeCompiler({2: (OBLIGATION,)}), judge=judge, repo=repo, max_calls=2
+    )
+    assert len(judge.calls) == 2
+    assert [r.judge_calls for r in reports] == [1, 1, 0]
+    third = reports[2]
+    assert third.problems == ("judge call budget of 2 reached; 1 ADR not judged for this change",)
+    [f] = third.findings
+    assert f.verdict is Verdict.UNCLEAR and f.note == "not judged: call budget of 2 reached"

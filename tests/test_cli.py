@@ -303,3 +303,31 @@ def test_eval_run_reads_the_adrs_at_the_frozen_ref_when_the_corpus_says_so(tmp_p
     assert (
         code == 0 and "1/1 hits" in capsys.readouterr().err
     )  # the working tree says deprecated; the ref says accepted
+
+
+def test_check_max_calls_caps_the_judge_and_says_which_commits_were_not_judged(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    (repo / "src" / "a.py").write_text('key = row["url"]\nmore = 2\n')
+    git(repo, "commit", "-q", "-am", "more")
+    code = main(
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--range",
+            "HEAD~2..HEAD",
+            "--max-calls",
+            "1",
+            "--format",
+            "json",
+        ],
+        judge=FakeJudge(),
+    )
+    captured = capsys.readouterr()
+    out = json.loads(captured.out)
+    assert code == 0
+    assert [c["judge_calls"] for c in out["changes"]] == [1, 0]
+    assert out["changes"][1]["problems"] == ["judge call budget of 1 reached; 1 ADR not judged for this change"]
+    assert "1 change(s) not judged: --max-calls 1 reached" in captured.err

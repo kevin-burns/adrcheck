@@ -174,8 +174,13 @@ def check(
     judge: ChangeJudge,
     repo: RepoReader,
     baseline: Baseline = EMPTY,
+    max_calls: int | None = None,
 ) -> list[ChangeReport]:
+    """`max_calls` caps judge calls for the run. A change past the budget is not judged: its selected ADRs read
+    UNCLEAR with the reason and the report carries a problem line, so a capped run is visibly partial, never a
+    green nobody earned."""
     reports: list[ChangeReport] = []
+    total_calls = 0
     for change in changes:
         waived, problems = parse_exceptions(change.message)
         waived_by_number = {w.adr_number: w.reason for w in waived}
@@ -208,10 +213,29 @@ def check(
             checkable = tuple(o for o in obligations if o.checkability is not Checkability.PROCESS)
             cases.append((Selection(adr, sel.signals or frozenset({"model"})), JudgeCase(adr, checkable)))
 
+        if cases and max_calls is not None and total_calls >= max_calls:
+            n = len(cases)
+            problems += (
+                f"judge call budget of {max_calls} reached; {n} ADR{'s' if n != 1 else ''} not judged for this change",
+            )
+            for sel, case in cases:
+                judged.append(sel)
+                findings.append(
+                    Finding(
+                        case.adr.number,
+                        None,
+                        Verdict.UNCLEAR,
+                        sel.signals,
+                        note=f"not judged: call budget of {max_calls} reached",
+                    )
+                )
+            cases = []
+
         if cases:
             context = _context(repo, change)
             response = judge.judge(change, tuple(case for _, case in cases), context)
             calls += 1
+            total_calls += 1
             judge_failed = bool(response.error)
             tokens_in += response.tokens_in
             tokens_out += response.tokens_out

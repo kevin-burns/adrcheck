@@ -117,8 +117,9 @@ latency comparison, not a quality one. Run files for these rows are in
 
 ## Keeping the bill bounded
 
-- One judge call per commit in the range. A pull request with forty commits is forty calls. Squash, or
-  check `origin/main..HEAD` as one range rather than per commit.
+- One judge call per commit in the range. A pull request with forty commits is forty calls. `--max-calls N`
+  (Action input `max-calls`) judges the first N and reports the rest as not judged, with a problem line per
+  skipped commit, so a capped run is visibly partial rather than quietly green.
 - A commit that touches nothing an ADR governs costs no call at all. Tight `Applies to` globs or a
   `.adrcheck/map.toml` are the cheapest cost control there is.
 - An OpenRouter key carries an optional credit limit, set when the key is created. Once it is spent,

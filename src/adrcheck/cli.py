@@ -68,6 +68,13 @@ def _parser() -> argparse.ArgumentParser:
         help="reviewed stale rows, relative to --repo; rows named here are counted, not listed (default %(default)s)",
     )
     c.add_argument(
+        "--max-calls",
+        type=int,
+        default=None,
+        metavar="N",
+        help="judge at most N commits this run; later commits are reported as not judged, never silently green",
+    )
+    c.add_argument(
         "--write-baseline",
         action="store_true",
         help="record this run's stale list to --baseline; a deliberate act, review the diff like source",
@@ -210,12 +217,21 @@ def main(argv: list[str] | None = None, judge=None) -> int:
     baseline_path = repo / args.baseline
     try:
         reports = check(
-            changes=changes, adrs=adrs, compiler=compiler, judge=judge, repo=git, baseline=load_baseline(baseline_path)
+            changes=changes,
+            adrs=adrs,
+            compiler=compiler,
+            judge=judge,
+            repo=git,
+            baseline=load_baseline(baseline_path),
+            max_calls=args.max_calls,
         )
     except Exception as exc:
         print(f"could not evaluate: {type(exc).__name__}: {exc}", file=sys.stderr)
         return EXIT_UNEVALUATED
     print(to_json(reports) if args.format == "json" else to_markdown(reports))
+    capped = sum(1 for r in reports if any(p.startswith("judge call budget") for p in r.problems))
+    if capped:
+        print(f"{capped} change(s) not judged: --max-calls {args.max_calls} reached", file=sys.stderr)
     if args.write_baseline:
         stale = [s for r in reports for s in r.stale]
         write_baseline(baseline_path, stale)

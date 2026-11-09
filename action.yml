@@ -23,6 +23,9 @@ inputs:
   fail-on-conflict:
     description: Fail the step when a verified CONFLICT is reported
     default: "true"
+  max-calls:
+    description: Judge at most this many commits per run; later commits are reported as not judged. Empty means no cap
+    default: ""
   github-token:
     description: Token used to post the comment (pull-requests write)
     default: ${{ github.token }}
@@ -60,10 +63,13 @@ runs:
         BASE: ${{ inputs.base }}
         ADR_DIR: ${{ inputs.adr-dir }}
         MODEL: ${{ inputs.model }}
+        MAX_CALLS: ${{ inputs.max-calls }}
       run: |
         set +e
         report="${RUNNER_TEMP}/adrcheck-report.md"
-        adrcheck check --adr-dir "${ADR_DIR}" --range "origin/${BASE}..HEAD" --model "${MODEL}" \
+        cap=()
+        if [ -n "${MAX_CALLS}" ]; then cap=(--max-calls "${MAX_CALLS}"); fi
+        adrcheck check --adr-dir "${ADR_DIR}" --range "origin/${BASE}..HEAD" --model "${MODEL}" "${cap[@]}" \
           --format md --fail-on conflict > "${report}" 2> "${RUNNER_TEMP}/adrcheck.err"
         code=$?
         set -e

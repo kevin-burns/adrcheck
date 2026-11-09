@@ -118,6 +118,8 @@ Add the Action. The README shows the workflow. The Action does not discover the 
 - **Which judge.** The cheapest judge measured so far was Haiku 5.5 through OpenRouter, at about a cent per
   commit. It asserted the same COMPLIANT rows Sonnet did; its behaviour on conflicts is not yet measured.
   See [providers](providers.md).
+- **A call cap.** `max-calls: 10` judges the first ten commits of a pull request and reports the rest as not
+  judged. The comment says so; nothing is silently green.
 - **Whether CONFLICT fails the step.** It is on by default. A team adopting on history may want it off for
   the first weeks, reading the comment instead, until the baseline settles.
 - **Who can waive.** The `Adr-Exception` trailer is in the commit message, so the reviewer sees it. Decide
