@@ -12,22 +12,23 @@ record stale. `evals/cases/planted-large.json` holds 25 labelled rows, written b
 
 ## The first run changed two rules and one label
 
-Haiku 5.5 through OpenRouter scored 19/25. Reading the six misses:
+Haiku 5.5 through OpenRouter scored 19/25. The six misses were three rows lost to rules of ours, one to a
+label of mine, and two to the judge:
 
-- **Two were rules of ours.** The precedent probe (ADR-7's second question, "did this line already exist at
+- **Three rows were rules of ours.** The precedent probe (ADR-7's second question, "did this line already exist at
   the parent?") used a substring match, so `import requests` was found inside `import requests as http` and
   inside a log message that said "import requests is not allowed here", and a planted CONFLICT became
   ADR-OVERTAKEN. `RepoReader.has_line()` now matches a whole line. And the self-contradiction rule turned a
   verified CONFLICT into UNCLEAR whenever another obligation of the same ADR passed the same line. On
   `fetch(u, timeout=None)` the call routes through `fetch()` (one obligation kept) and passes `timeout=None`
-  (another broken); both verdicts are right. The CONFLICT now stands and its note names the sibling.
+  (another broken); both verdicts are right. The CONFLICT now stands and its note names the sibling. That
+  rule had hidden two planted CONFLICTs, the `/health` route and `timeout=None`; the precedent bug hid one.
 - **One was my label.** The fixture's init commit holds an old domain module that imports the database, a
   deliberate pre-existing sin for a later trap. The commit that adds a second such import therefore repeats
   a line already on the base, and by ADR-7 that is ADR-OVERTAKEN, not CONFLICT. Relabelled, with the reason
   in the row's note.
-- **Three were the judge's.** An honest UNCLEAR on a compliant domain refund; a body moved to a reader
-  module read as a second entry point; and two CONFLICTs that the contradiction rule had hidden, which the
-  rule fix restored.
+- **Two were the judge's.** An honest UNCLEAR on a compliant domain refund, and a body moved to a reader
+  module read as a second entry point. Those two remain after the fixes, which is the 23/25.
 
 A separate flaw surfaced in the same run: `occurrences()` counted the file-path listing as code, so a
 function living in a module named after it (`retry` in `retry.py`) always had two occurrences and could
