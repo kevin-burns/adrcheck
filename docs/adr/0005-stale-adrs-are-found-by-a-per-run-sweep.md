@@ -18,7 +18,8 @@ of the range, over every accepted ADR: an obligation whose named anchors are all
 code at that ref is reported as stale, with no model call. Presence is tested against code only:
 `strip_python_prose()` blanks comments and docstrings before the search, and files with
 extensions in `_PROSE` are skipped, so a mention in a docstring or a markdown file never counts
-as the code still existing.
+as the code still existing. Files under `.adrcheck/` are skipped too: the compiled obligations name
+every anchor, and a committed cache must not satisfy its own sweep.
 
 ## Consequences
 
