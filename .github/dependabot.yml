@@ -1,0 +1,66 @@
+# Dependabot: keep the three manifests current so a stale pin is a pull request, not a surprise.
+#
+# Weekly, staggered across days so the ecosystems never land on one morning, grouped so a routine week is
+# one PR per ecosystem. Majors are excluded from every group and arrive alone: a major is a decision, not
+# a chore. The open-PR cap is low on purpose; an unreviewed Dependabot backlog trains you to ignore the
+# tab where the real CVEs appear. Security updates ignore the cap, which is the behaviour we want.
+#
+# Actions in .github/workflows and action.yml are pinned to commit SHAs with the version in a trailing
+# comment; Dependabot updates both together. A tag can be moved, a SHA cannot.
+#
+# Commit prefixes satisfy the Conventional Commits hook. Same shape as rxt-code-accelerator's file.
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "ci(deps)"
+
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 5
+    groups:
+      # ruff gates every commit and a minor changes what lint flags; it always arrives on its own.
+      python-minor-and-patch:
+        patterns: ["*"]
+        exclude-patterns: ["ruff"]
+        update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 3
+    groups:
+      pre-commit-hooks:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: "chore(prek)"

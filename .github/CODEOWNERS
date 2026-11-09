@@ -1,0 +1,12 @@
+# Review is requested from the owners below on every pull request that touches a matching path.
+# One owner today. Append handles here as maintainers join; GitHub usernames or @org/team.
+
+*                                   @kevin-burns
+
+# The judgement core and the decisions behind it: changes here need the owner even when a second
+# maintainer exists.
+/src/adrcheck/domain/               @kevin-burns
+/src/adrcheck/usecases/             @kevin-burns
+/docs/adr/                          @kevin-burns
+/action.yml                         @kevin-burns
+/.github/                           @kevin-burns
