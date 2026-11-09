@@ -1,4 +1,4 @@
-# adrcheck in 58 seconds on the small planted repository, both directions, free tier (no model, no key).
+# adrcheck in 66 seconds on the small planted repository, both directions, free tier (no model, no key).
 # Render: ADRCHECK_DEMO_REPO=/path/to/planted vhs docs/demo/adrcheck.tape, from the repository root; the planted
 # repository comes from: uv run python evals/planted/build.py /path/to/planted, then adrcheck compile there once.
 Output "docs/img/demo.gif"
@@ -12,7 +12,7 @@ Set TypingSpeed 35ms
 Set Theme "Catppuccin Mocha"
 
 Hide
-Type "cd "$ADRCHECK_DEMO_REPO" && export PATH=$HOME/.local/bin:$PATH && export PROMPT='%F{green}❯%f ' && setopt interactivecomments && clear"
+Type `cd "$ADRCHECK_DEMO_REPO" && export PATH=$HOME/.local/bin:$PATH && export PROMPT='%F{green}❯%f ' && setopt interactivecomments && clear`
 Enter
 Sleep 500ms
 Show
@@ -43,6 +43,9 @@ Sleep 6s
 Type "adrcheck explain --adr 4 | head -5"
 Enter
 Sleep 6s
-Type "# Free tier: no model, no key. The judge tier adds a model's reason to every finding."
+Type "# That was the free tier: no model call, no key. Patterns from the compiled obligations, and the stale sweep."
+Enter
+Sleep 3500ms
+Type "# Add a model with --model and your API key: the judge reads the diff and writes why, on every finding."
 Enter
 Sleep 5s

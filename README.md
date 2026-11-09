@@ -22,8 +22,10 @@ the decisions adrcheck holds itself to (it checks its own pull requests against 
 
 ![adrcheck on a planted repository: a CONFLICT with the ADR sentence and the changed line, then a record whose anchors the code no longer carries](docs/img/demo.gif)
 
-The free tier, no model and no key: a forbidden import caught against the sentence that forbids it, then
-a deleted module leaving a record stale. The judge tier adds a model's reason to every finding.
+That is the free tier: no model call and no API key at check time, only the patterns from the compiled
+obligations and the stale sweep. A forbidden import is caught against the sentence that forbids it, then a
+deleted module leaves a record stale. Add a model with `--model` and your API key, and the judge reads the
+diff and writes why, on every finding.
 
 ## Quickstart
 
