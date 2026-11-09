@@ -46,7 +46,8 @@ A commit that touches nothing an ADR governs costs no model call. A commit that 
 about 100k input tokens; measured runs are in `docs/spikes/`. `--compile-model` puts the compile seat on
 a different provider, for example a local model for the once-per-ADR compile and Sonnet for the judge.
 The obligation cache is keyed by ADR text and prompt version, not by model: delete `.adrcheck/obligations`
-to recompile after changing the compile model.
+to recompile after changing the compile model. Provider setup, measured judge costs, and how to bound the bill
+are in [docs/providers.md](docs/providers.md).
 
 Waive an ADR for one commit with a trailer that carries a reason:
 

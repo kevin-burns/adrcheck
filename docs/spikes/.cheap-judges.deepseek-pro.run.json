@@ -1,0 +1,222 @@
+{
+ "changes": [
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "subject": "build: add pre-commit gate (ruff, bandit, markdownlint, yamllint, gitleaks)",
+   "uncovered": 33,
+   "judge_calls": 1,
+   "tokens_in": 40819,
+   "tokens_out": 7446,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 11,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 7,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-top-level-module",
+     "detail": "scripts/"
+    }
+   ]
+  }
+ ],
+ "findings": [
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 1,
+   "obligation": "ADR-1/7",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/domain/adr.py",
+   "line_text": "from collections.abc import Mapping",
+   "quote": "Modules under `src/adrcheck/domain/` import only the standard library and each other.",
+   "reason": "Changed import from typing to collections.abc, both standard library modules; still compliant.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 1,
+   "obligation": "ADR-1/13",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "src/adrcheck/ports.py",
+   "line_text": "def judge(",
+   "quote": "`ChangeJudge`",
+   "reason": "The judge method signature was reformatted but still defines the ChangeJudge Protocol.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 1,
+   "obligation": "ADR-1/14",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "tests/test_boundaries.py",
+   "line_text": "offenders = [(p.name, mod) for p in DOMAIN.glob(\"*.py\") for mod in imports_of(p) if mod.startswith(FORBIDDEN)]",
+   "quote": "The boundary is enforced by tests/test_boundaries.py, which fails on the first offending import.",
+   "reason": "Reformatted list comprehension but still tests domain imports against forbidden packages; boundary enforcement unchanged.",
+   "verify_failed": [
+    "quote-not-in-adr"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 8,
+   "obligation": "ADR-8/1",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob"
+   ],
+   "path": "src/adrcheck/ports.py",
+   "line_text": "def judge(",
+   "quote": "`ChangeJudge.judge()` in `src/adrcheck/ports.py` takes a `Change`, every `JudgeCase` selected for it and one `Context`, and returns one `JudgeResponse` for all of them.",
+   "reason": "Signature reformatted but still accepts the required parameters and returns a JudgeResponse.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 8,
+   "obligation": "ADR-8/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "src/adrcheck/adapters/claude_judge.py",
+   "line_text": "proc = subprocess.run(  # nosec B603 B607 - argv list, no shell; claude resolved from PATH by design",
+   "quote": "`ClaudeJudge` in `src/adrcheck/adapters/claude_judge.py` makes one.",
+   "reason": "The claude_judge adapter still makes a single subprocess call; the change adds nosec comments without altering the call count.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "659695cbf5c7f0de4c801c4df7ab90637b5d80af",
+   "adr": 8,
+   "obligation": "ADR-8/9",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "src/adrcheck/usecases/check.py",
+   "line_text": "        text = _post_image(repo, change.ref, f.path)",
+   "quote": "The diff and the post-images are sent once per change.",
+   "reason": "Post-image retrieval refactored into a helper but still provided once per change; no change in frequency.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  }
+ ],
+ "stale": [
+  {
+   "adr": 7,
+   "obligation": "ADR-7/7",
+   "missing": [
+    "occurrences"
+   ],
+   "known": false
+  },
+  {
+   "adr": 8,
+   "obligation": "ADR-8/5",
+   "missing": [
+    "not_relevant"
+   ],
+   "known": false
+  },
+  {
+   "adr": 9,
+   "obligation": "ADR-9/4",
+   "missing": [
+    "ChatRunner",
+    "ChatRequest",
+    "ChatReply"
+   ],
+   "known": false
+  },
+  {
+   "adr": 9,
+   "obligation": "ADR-9/6",
+   "missing": [
+    "providers.py"
+   ],
+   "known": false
+  },
+  {
+   "adr": 10,
+   "obligation": "ADR-10/1",
+   "missing": [
+    "--write-baseline",
+    ".adrcheck/baseline.json"
+   ],
+   "known": false
+  },
+  {
+   "adr": 11,
+   "obligation": "ADR-11/5",
+   "missing": [
+    "scope-disagreement"
+   ],
+   "known": false
+  },
+  {
+   "adr": 11,
+   "obligation": "ADR-11/6",
+   "missing": [
+    "map-unknown-adr"
+   ],
+   "known": false
+  }
+ ]
+}
