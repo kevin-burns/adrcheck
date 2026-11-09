@@ -12,6 +12,7 @@ version of anything.
 | `banner.png` | 2752×1536 | blog posts and anything that will not take WebP |
 | `social-preview.png` | 1280×640 | GitHub repository social preview: Settings, General, Social preview |
 | `og-image.png` | 1200×630 | Open Graph and Twitter cards |
+| `demo.gif` | 1180×640, 58 s | README and LinkedIn: both directions on the planted repository, free tier. Rendered by vhs from `docs/demo/adrcheck.tape`; the MP4 twin is not committed (over the 500 KB gate) and is rendered beside it |
 
 PNG exists because WebP does not work for social cards: Open Graph scrapers and several platforms fail on
 WebP silently, and a failed card renders as a blank rectangle rather than an error. GitHub wants 1280×640,

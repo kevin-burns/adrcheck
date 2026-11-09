@@ -12,3 +12,4 @@ dist/
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+docs/demo/*.mp4

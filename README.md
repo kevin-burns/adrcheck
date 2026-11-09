@@ -18,6 +18,13 @@ Status: pre-release. Measured on two repositories so far; the numbers and the la
 `docs/spikes/` and `evals/cases/`. See `docs/design.md` for the module boundaries and `docs/adr/` for
 the decisions adrcheck holds itself to (it checks its own pull requests against them).
 
+## In one minute
+
+![adrcheck on a planted repository: a CONFLICT with the ADR sentence and the changed line, then a record whose anchors the code no longer carries](docs/img/demo.gif)
+
+The free tier, no model and no key: a forbidden import caught against the sentence that forbids it, then
+a deleted module leaving a record stale. The judge tier adds a model's reason to every finding.
+
 ## Quickstart
 
 The full documentation is under [docs/](docs/README.md): getting started, what the verdicts mean, the flow
