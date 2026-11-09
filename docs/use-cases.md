@@ -150,10 +150,12 @@ than missing.
 
 The same check, a different surface. `.gitlab-ci.yml` at the root of this repository is the template: a job
 on `merge_request_event` that fetches the target branch, judges the merge request as one change, prints the
-markdown to the job log and writes the findings as a Code Quality report with `--codequality`. GitLab's
-merge-request widget reads that artifact inline; no token, no comment API. CONFLICT is `major`, UNCLEAR
-`minor`, ADR-OVERTAKEN `info`, COMPLIANT is not listed. Set `OPENAI_BASE_URL` and `OPENAI_API_KEY` as masked
-CI/CD variables. Exit 3 is allowed to fail as a warning; exit 2 fails the job.
+markdown to the job log and writes the findings as a Code Quality report with `--codequality`. The merge
+request's Reports tab reads that artifact; no token, no comment API. CONFLICT is `major`, UNCLEAR `minor`,
+ADR-OVERTAKEN `info`, COMPLIANT is not listed. The job also runs on each push to the default branch, judging
+the commit that landed, because GitLab shows a merge request's findings as a diff against the target
+branch's latest pipeline and has nothing to say without one. Set `OPENAI_BASE_URL` and `OPENAI_API_KEY` as
+masked CI/CD variables. Exit 3 is allowed to fail as a warning; exit 2 fails the job.
 
 ## You want to know when a decision was left behind
 

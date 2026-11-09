@@ -145,21 +145,24 @@ and a repository variable for the base URL:
           max-calls: "10"
 ```
 
+The action posts one comment with the report and updates it on every push. A verified CONFLICT fails
+the step. "Could not evaluate" (no key, provider down) is a warning, not a failure: an unreachable
+model is not a finding.
+
 ### In a GitLab merge request
 
-`.gitlab-ci.yml` in this repository is the template: one job on `merge_request_event` that judges the merge
-request as one change and writes the findings as a Code Quality report, which the merge-request widget
-shows inline with no token and no API call. Two masked CI/CD variables, `OPENAI_BASE_URL` and
-`OPENAI_API_KEY`; exit 3 is allowed to fail as a warning, exit 2 fails the job.
+`.gitlab-ci.yml` in this repository is the template: one job that judges a merge request as one change and
+writes the findings as a Code Quality report, which the merge request's Reports tab shows with no token and
+no API call. The same job runs on every push to the default branch, judging only the commit that landed:
+GitLab reports a merge request's findings as a diff against the latest pipeline on the target branch, and
+without that baseline the tab says "Code Quality hasn't changed" whatever the artifact holds. Two masked
+CI/CD variables, `OPENAI_BASE_URL` and `OPENAI_API_KEY`; exit 3 is allowed to fail as a warning, exit 2
+fails the job.
 
 ```sh
 adrcheck check --range "origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}..HEAD" --as-one \
   --format md --fail-on conflict --codequality gl-code-quality-report.json
 ```
-
-The action posts one comment with the report and updates it on every push. A verified CONFLICT fails
-the step. "Could not evaluate" (no key, provider down) is a warning, not a failure: an unreachable
-model is not a finding.
 
 ### Measuring a change to the prompts or the rules
 
