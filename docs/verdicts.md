@@ -16,7 +16,9 @@ verified the claim before showing it to you. Verified means three things checked
 cited line is in the diff, the quote is in the ADR verbatim, and the quote comes from a binding section.
 A judge claim that fails any of those is shown as UNCLEAR with the failure named, never as a CONFLICT.
 
-CONFLICT is the only verdict that can fail a build, and only when you ask with `--fail-on conflict`.
+CONFLICT is the only verdict that can fail a build, and only when you ask with `--fail-on conflict`. When
+another obligation of the same ADR passes the same line, the CONFLICT stands and its note names that
+obligation: one line can route through the right function and still pass the forbidden argument.
 
 What to do: one of three things, and the report should make clear which. Fix the code. Change the
 decision, by superseding the ADR. Or declare the exception in the commit message:
@@ -36,7 +38,7 @@ waiver's reason as its note, so an exception is visible in the report and in git
 
 ### UNCLEAR
 
-The diff does not settle the question, and the reason says why. Four sources:
+The diff does not settle the question, and the reason says why. Three sources:
 
 - The judge said so. Often an `intent` obligation, where the behaviour the ADR cares about is not visible
   in a diff.
@@ -45,8 +47,6 @@ The diff does not settle the question, and the reason says why. Four sources:
   id the ADR does not have.
 - The judge call failed for that commit. One UNCLEAR per selected ADR, note `judge error: ...`, so a
   provider fault is visible per commit and is never a CONFLICT or a silent pass.
-- The judge contradicted itself: two obligations of the same ADR gave CONFLICT and COMPLIANT on the same
-  line. Both become UNCLEAR and the note names the pair.
 
 UNCLEAR never fails a build. Read it as a review comment, not a result.
 
@@ -64,6 +64,10 @@ attention. Three probes against the parent commit establish this:
 The note says which. ADR-OVERTAKEN never fails a build. The first two probes apply only to a CONFLICT. The
 third also settles an UNCLEAR about a removed line, because a judge that sees only the diff cannot know
 whether a deleted name had callers and the count can. A COMPLIANT verdict is never changed by a probe.
+
+In the GitLab Code Quality output (`--format codequality` or `--codequality PATH`) the same verdicts become
+severities: CONFLICT `major`, UNCLEAR `minor`, ADR-OVERTAKEN `info`; COMPLIANT is not an issue and is not
+listed.
 
 ## Lines that are not verdicts
 
@@ -124,12 +128,19 @@ file is `.adrcheck/baseline.json` and you edit it like source.
 
 ## Exit codes
 
-| Code | `check` | `lint` | `compile` | `eval` |
-|---|---|---|---|---|
-| 0 | no CONFLICT, or none with `--fail-on` | clean | compiled | every case hit |
-| 1 | no ADR directory found | issues found, or no ADR directory | no ADR directory found | at least one miss |
-| 2 | a verified CONFLICT with `--fail-on conflict` | | | |
-| 3 | could not evaluate | | model unreachable | could not run |
+| Code | `check` | `lint` | `compile` | `explain` | `eval` |
+|---|---|---|---|---|---|
+| 0 | no CONFLICT, or none with `--fail-on`; also `nothing staged` | clean | compiled | printed | every case hit |
+| 1 | no ADR directory found | issues found, or no ADR directory | no ADR directory found | no such ADR, or no ADR directory | at least one miss |
+| 2 | a verified CONFLICT with `--fail-on conflict`; also a usage error from the parser | | | | |
+| 3 | could not evaluate | | model unreachable | compile failed | could not run |
+
+Three details of `check` worth knowing. A sweep over a range skips merge commits. With `--staged`, the commit
+message is read from `.git/COMMIT_EDITMSG` only when that file is newer than HEAD, because the pre-commit
+hook runs before git writes the new message and the file otherwise holds the previous commit's text; so an
+`Adr-Exception` trailer for a staged check needs a prepare-commit-msg hook or the judge tier on the commit
+itself. `lint` prints one tab-separated line per finding, `code`, `ADR-n`, detail, with `ADR-?` for a record
+that has no number.
 
 Could not evaluate means no key, the provider down, or every judge call failing. It is printed with its
 reason on stderr. The GitHub Action reports it as a warning and does not fail the step, because an

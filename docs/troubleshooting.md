@@ -5,8 +5,7 @@ go to stderr; the report goes to stdout.
 
 ## Messages
 
-**`no ADR directory found; pass --adr-dir`** (exit 1). adrcheck tried `docs/adr`, `docs/decisions`,
-`docs/architecture/decisions`, `doc/adr`, `adr` and `decisions` under `--repo` and found none. Pass
+**`no ADR directory found; pass --adr-dir`** (exit 1). adrcheck tried `docs/adr`, `docs/decisions`, `docs/architecture/decisions`, `doc/adr`, `doc/architecture/decisions`, `adr`, `adrs`, `decisions` under `--repo` and found none. Pass
 `--adr-dir`. In the Action, the `adr-dir` input defaults to `docs/adr` and nothing is discovered.
 
 **`could not evaluate: ...`** (exit 3). The run could not produce verdicts. The text after the colon is the
@@ -74,9 +73,9 @@ globs are narrower than the code the decisions actually govern.
 nothing says it does not apply, and it is sent on every commit. Add the header or a `.adrcheck/map.toml`
 row; see the [writing ADRs page](writing-adrs.md#the-header-lines-adrcheck-reads).
 
-**Two obligations of one ADR disagree about one line.** Both become UNCLEAR and the note names the pair. The
-ADR probably says the same thing twice in slightly different words; compile output shows the two
-obligations. Tighten the record.
+**A CONFLICT whose note says another obligation found the line compliant.** Not a contradiction: one line
+can keep to one obligation of an ADR and break another. The CONFLICT is the finding; the note tells you
+which part of the record the line does satisfy.
 
 ## Costs that surprised you
 

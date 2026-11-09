@@ -77,6 +77,9 @@ class FakeRepo:
     def occurrences(self, ref, needle):
         return self.counts.get((ref, needle))
 
+    def has_line(self, ref, text):
+        return self.present.get((ref, text))
+
     def read(self, ref, path):
         return ""
 
@@ -521,7 +524,10 @@ SIBLING = Obligation(
 )
 
 
-def test_two_obligations_of_one_adr_that_disagree_on_one_line_become_unclear_with_the_contradiction_named():
+def test_a_verified_conflict_stands_when_a_sibling_obligation_passes_the_same_line_and_the_note_names_it():
+    """planted-large 20ce96e: fetch(u, timeout=None) routes through fetch() (ADR-8/1 compliant) and passes
+    timeout=None (ADR-8/3 conflict). Two obligations, one line, both right. The earlier rule turned both UNCLEAR
+    and erased a verified CONFLICT; now the CONFLICT stands and its note names the sibling that passed."""
     agree = RawFinding("ADR-2/7", Verdict.COMPLIANT, "enrich/store.py", '    key = row["url"]', SIBLING.quote, "fine")
     repo = FakeRepo({("c0", "row_key"): True, ("c0", 'key = row["url"]'): False})
     reports = check(
@@ -532,9 +538,9 @@ def test_two_obligations_of_one_adr_that_disagree_on_one_line_become_unclear_wit
         repo=repo,
     )
     pair = sorted((f.obligation_id, f.verdict) for f in reports[0].findings)
-    assert pair == [("ADR-2/1", Verdict.UNCLEAR), ("ADR-2/7", Verdict.UNCLEAR)]
-    notes = {f.note for f in reports[0].findings}
-    assert notes == {"judge contradicts itself on this line: ADR-2/1 CONFLICT, ADR-2/7 COMPLIANT"}
+    assert pair == [("ADR-2/1", Verdict.CONFLICT), ("ADR-2/7", Verdict.COMPLIANT)]
+    [conflict] = [f for f in reports[0].findings if f.verdict is Verdict.CONFLICT]
+    assert conflict.note == "ADR-2/7 found this line compliant"
 
 
 def test_disagreement_on_different_lines_is_not_a_contradiction():
@@ -629,3 +635,20 @@ def test_the_free_tier_never_compiles_and_says_which_adrs_are_not_compiled():
     assert report.findings == () and report.judge_calls == 0
     assert report.problems == ("ADR-2 not compiled; run adrcheck compile",)
     assert any(e.adr_number == 2 and e.reason == "not compiled" for e in report.excluded)
+
+
+def test_an_empty_range_still_runs_the_stale_sweep_when_given_the_ref_to_sweep():
+    """`check --range origin/main..HEAD` on main is empty; the baseline must not be written from nothing and the
+    stale list must still appear. The caller names the ref to sweep."""
+    repo = FakeRepo({("HEAD", "row_key"): False, ("HEAD", 'key = row["url"]'): True})
+    reports = check(
+        changes=[],
+        adrs=[ADR],
+        compiler=FakeCompiler({2: (OBLIGATION,)}),
+        judge=FakeJudge(JudgeResponse()),
+        repo=repo,
+        sweep_ref="HEAD",
+    )
+    [report] = reports
+    assert report.ref == "HEAD" and report.findings == () and report.judge_calls == 0
+    assert [(s.adr_number, s.obligation_id, s.missing) for s in report.stale] == [(2, "ADR-2/1", ("row_key",))]

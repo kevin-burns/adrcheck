@@ -112,7 +112,7 @@ def _precedent(repo: RepoReader, change: Change, path: str, line_text: str) -> b
         text = text[1:].strip()
     if change.parent is None or len(text) < 8 or not change.touched(path, text, kinds=("+",)):
         return None
-    return repo.contains(change.parent, text)
+    return repo.has_line(change.parent, text)
 
 
 _IDENTIFIER = re.compile(r"^\w+$")
@@ -181,6 +181,7 @@ def check(
     baseline: Baseline = EMPTY,
     max_calls: int | None = None,
     tier: str = "judge",
+    sweep_ref: str | None = None,
 ) -> list[ChangeReport]:
     """`max_calls` caps judge calls for the run. A change past the budget is not judged: its selected ADRs read
     UNCLEAR with the reason and the report carries a problem line, so a capped run is visibly partial, never a
@@ -192,6 +193,10 @@ def check(
     free = tier == "free"
     if free:
         judge = MechanicalJudge()
+    if not changes and sweep_ref:
+        # an empty range (main..main) still has a repository state worth sweeping; the baseline must come from it
+        empty = ChangeReport(ref=sweep_ref, message="no commits in range")
+        return [replace(empty, stale=stale_sweep(adrs, compiler, repo, sweep_ref, baseline))]
     reports: list[ChangeReport] = []
     total_calls = 0
     for change in changes:
@@ -320,20 +325,21 @@ _OBLIGATION_ID = re.compile(r"ADR-(\d+)/")
 
 
 def _reconcile(group: list[Finding]) -> list[Finding]:
-    """One ADR, one line, two obligations, opposite verdicts: the judge has contradicted itself and neither
-    answer is reported as settled (bead rnr). Both become UNCLEAR with the pair named."""
+    """One ADR, one line, one obligation broken and another kept: both can be right (planted-large 20ce96e:
+    the call routes through fetch() and passes timeout=None). A verified CONFLICT stands; its note names the
+    sibling obligations that passed the same line, so a reader sees the split without the verdict being erased."""
     by_line: dict[tuple[str, str], list[int]] = {}
     for i, f in enumerate(group):
         if f.line_text:
             by_line.setdefault((f.path, f.line_text), []).append(i)
     for idxs in by_line.values():
-        verdicts = {group[i].verdict for i in idxs}
-        if Verdict.CONFLICT in verdicts and Verdict.COMPLIANT in verdicts:
-            named = ", ".join(f"{group[i].obligation_id} {group[i].verdict.value}" for i in idxs)
-            for i in idxs:
-                group[i] = replace(
-                    group[i], verdict=Verdict.UNCLEAR, note=f"judge contradicts itself on this line: {named}"
-                )
+        passed = [group[i].obligation_id for i in idxs if group[i].verdict is Verdict.COMPLIANT]
+        if not passed:
+            continue
+        for i in idxs:
+            if group[i].verdict is Verdict.CONFLICT:
+                why = f"{', '.join(p for p in passed if p)} found this line compliant"
+                group[i] = replace(group[i], note=f"{group[i].note}; {why}" if group[i].note else why)
     return group
 
 

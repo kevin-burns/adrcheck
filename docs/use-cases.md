@@ -131,18 +131,29 @@ Add the Action. The README shows the workflow. The Action does not discover the 
 `adr-dir` input defaults to `docs/adr`, so set it if yours differs. Three things worth deciding up front:
 
 - **Which judge.** The cheapest judge measured so far was Haiku 5.5 through OpenRouter, at about a cent per
-  commit. It asserted the same COMPLIANT rows Sonnet did; its behaviour on conflicts is not yet measured.
+  commit. On the planted corpus it found every planted CONFLICT and the ADR-OVERTAKEN, 9/9, as did Sonnet.
   See [providers](providers.md).
-- **A call cap.** `max-calls: 10` judges the first ten commits of a pull request and reports the rest as not
-  judged. The comment says so; nothing is silently green.
+- **A call cap.** The Action judges a pull request as one change, so it makes one judge call however many
+  commits it has (ADR-13). `max-calls` matters for per-commit sweeps from the CLI, where it judges the first N
+  commits and reports the rest as not judged; nothing is silently green.
 - **Whether CONFLICT fails the step.** It is on by default. A team adopting on history may want it off for
   the first weeks, reading the comment instead, until the baseline settles.
 - **Who can waive.** The `Adr-Exception` trailer is in the commit message, so the reviewer sees it. Decide
   whether a waiver needs a second approver.
 
-What appears: one comment per pull request, replaced on every push, with the findings grouped by commit
+What appears: one comment per pull request, replaced on every push, with the pull request judged as one
+change, its findings grouped by ADR,
 and the stale list under them. A comment is posted even when no ADR applied, so a quiet run is visible rather
 than missing.
+
+## You are on GitLab
+
+The same check, a different surface. `.gitlab-ci.yml` at the root of this repository is the template: a job
+on `merge_request_event` that fetches the target branch, judges the merge request as one change, prints the
+markdown to the job log and writes the findings as a Code Quality report with `--codequality`. GitLab's
+merge-request widget reads that artifact inline; no token, no comment API. CONFLICT is `major`, UNCLEAR
+`minor`, ADR-OVERTAKEN `info`, COMPLIANT is not listed. Set `OPENAI_BASE_URL` and `OPENAI_API_KEY` as masked
+CI/CD variables. Exit 3 is allowed to fail as a warning; exit 2 fails the job.
 
 ## You want to know when a decision was left behind
 

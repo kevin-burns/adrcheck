@@ -23,6 +23,6 @@ every anchor, and a committed cache must not satisfy its own sweep.
 
 ## Consequences
 
-Stale detection is free and deterministic. An ADR that names no anchors cannot be swept and is
-reported as such. The sweep reads the whole tree at one ref; its cost on large repositories is
+Stale detection is free and deterministic. An ADR that names no anchors cannot be swept; the sweep lists
+nothing for it, and `adrcheck explain` shows the obligation with no anchors. The sweep reads the whole tree at one ref; its cost on large repositories is
 tracked in bead adrcheck-zsj.

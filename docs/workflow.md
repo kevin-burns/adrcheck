@@ -19,7 +19,7 @@ flowchart TD
     J --> V[verify, no model:<br/>line in diff? quote in ADR?<br/>quote from Decision or Consequences?]
     V -- a CONFLICT fails --> U[UNCLEAR, failure named]
     V -- otherwise --> P[parent probes, no model:<br/>anchor already absent?<br/>line already elsewhere?<br/>removed name had no callers?]
-    P -- a CONFLICT and yes --> T[ADR-OVERTAKEN]
+    P -- yes, for a CONFLICT or an UNCLEAR about a removal --> T[ADR-OVERTAKEN]
     P -- otherwise --> R[verdict stands:<br/>CONFLICT, COMPLIANT, UNCLEAR]
     O --> W[stale sweep, no model:<br/>every anchor of every accepted ADR,<br/>at the end of the range]
     W --> B{in baseline?}
@@ -40,7 +40,8 @@ adrcheck's compile prompt does. The judge seat runs once per commit that touches
 selects an ADR with no `Applies to`. A commit that touches nothing an ADR governs never reaches it.
 
 The order after the judge matters. Verification runs before any verdict is shown, so a CONFLICT you read
-has a real line and a real quote behind it. The parent probes run after, and only on CONFLICTs, so they can
+has a real line and a real quote behind it. The parent probes run after, on CONFLICTs and on an UNCLEAR about a
+removed line, never on a COMPLIANT, so they can
 turn blame into "the ADR is stale" but never turn a compliant change into anything else.
 
 ## Around the run
@@ -56,9 +57,9 @@ flowchart TD
     end
     subgraph change [Changing code]
         direction LR
-        CO[commits on a branch] --> PC["pre-commit: adrcheck check --staged<br/>optional, needs a provider"]
+        CO[commits on a branch] --> PC["pre-commit: adrcheck check --staged<br/>free tier by default: no model, no key"]
         PC --> PR[pull request]
-        PR --> GA["Action: adrcheck check origin/base..HEAD<br/>one comment, updated in place"]
+        PR --> GA["Action: adrcheck check origin/base..HEAD --as-one<br/>one comment, updated in place"]
     end
     write --> change
     GA --> V{verdict}
@@ -119,9 +120,12 @@ first run. Review them once. For each, either supersede the ADR, fix the ADR's a
 and record it:
 
 ```sh
-adrcheck check --range origin/main..HEAD --write-baseline
+adrcheck check --range origin/main..HEAD --tier free --write-baseline
 git add .adrcheck/baseline.json
 ```
+
+On `main` itself that range is empty; the stale sweep still runs at the range's end, so the baseline is
+written from the real state. `--tier free` keeps the step from spending judge calls on the commits.
 
 From then on those rows are counted, not listed, and only new rows demand attention. Edit the baseline like
 source: a row you remove reappears in the next report.

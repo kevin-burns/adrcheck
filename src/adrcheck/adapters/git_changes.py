@@ -65,6 +65,9 @@ class GitRepo:
             errors="replace",
         )
 
+    def rev_parse(self, spec: str) -> str:
+        return self._git("rev-parse", "--verify", f"{spec}^{{commit}}").stdout.strip()
+
     def ls(self, ref: str, directory: str) -> list[str]:
         """Paths under `directory` at `ref`; empty when the directory or the ref does not exist."""
         out = self._git("ls-tree", "-r", "--name-only", ref, "--", directory.rstrip("/") + "/", check=False)
@@ -103,6 +106,13 @@ class GitRepo:
         if files is None:
             return None
         return "\n".join(["\n".join(files), *files.values()])
+
+    def has_line(self, ref: str, text: str) -> bool | None:
+        files = self._code_files(ref)
+        if files is None:
+            return None
+        pattern = re.compile(rf"^[ \t]*{re.escape(text.strip())}[ \t]*$", re.MULTILINE)
+        return any(pattern.search(body) for body in files.values())
 
     def locate(self, ref: str, needle: str) -> list[str] | None:
         files = self._code_files(ref)
@@ -144,10 +154,13 @@ class GitRepo:
         return None if code is None else needle in code
 
     def occurrences(self, ref: str, needle: str) -> int | None:
-        code = self._code_text(ref)
-        if code is None:
+        """Whole-identifier count over file contents only. The path listing is in `_code_text` for `contains()`,
+        so an ADR may name a module, but a module named after its function is not a call of that function."""
+        files = self._code_files(ref)
+        if files is None:
             return None
-        return len(re.findall(rf"(?<![\w.]){re.escape(needle)}(?!\w)", code))
+        pattern = re.compile(rf"(?<![\w.]){re.escape(needle)}(?!\w)")
+        return sum(len(pattern.findall(text)) for text in files.values())
 
 
 class GitChanges(GitRepo):
@@ -159,8 +172,15 @@ class GitChanges(GitRepo):
         """The index as one Change: what a pre-commit hook is about to commit, with HEAD as the parent."""
         head = self._git("rev-parse", "--verify", "-q", "HEAD", check=False).stdout.strip() or None
         patch = self._git("diff", "--cached", "--no-color", "--find-renames", "--patch").stdout
+        # pre-commit runs before git writes the new message, so COMMIT_EDITMSG usually still holds the previous
+        # commit's text; reading it would carry a waiver forward (ADR-6: per commit). Only a file newer than HEAD
+        # counts.
         msg_file = self.root / ".git" / "COMMIT_EDITMSG"
-        message = msg_file.read_text() if msg_file.exists() else ""
+        message = ""
+        if msg_file.exists() and head:
+            head_time = int(self._git("log", "-1", "--format=%ct", head).stdout.strip() or 0)
+            if msg_file.stat().st_mtime > head_time:
+                message = msg_file.read_text()
         return Change(ref=STAGED, parent=head, message=message.strip("\n"), files=parse_patch(patch))
 
     def combined(self, spec: str) -> Change:

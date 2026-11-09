@@ -26,8 +26,7 @@ adrcheck lint
 
 Or run it once without installing: `uvx --from git+https://github.com/kevin-burns/adrcheck adrcheck lint`.
 
-adrcheck looks for ADRs in the first of `docs/adr`, `docs/decisions`, `docs/architecture/decisions`,
-`doc/adr`, `adr`, `decisions` that exists. Pass `--adr-dir` if yours live elsewhere.
+adrcheck looks for ADRs in the first of `docs/adr`, `docs/decisions`, `docs/architecture/decisions`, `doc/adr`, `doc/architecture/decisions`, `adr`, `adrs`, `decisions` that exists. Pass `--adr-dir` if yours live elsewhere.
 
 What you should see on a healthy set:
 
@@ -85,6 +84,9 @@ If an obligation surprises you, the ADR is ambiguous, not the compiler. Edit the
 ```sh
 adrcheck check --range origin/main..HEAD --format md --fail-on conflict
 ```
+
+No provider yet? `adrcheck check --staged` and `--tier free` on any range run without one: forbidden patterns
+from the cached compile and the stale sweep, no model. The judged run below needs a provider.
 
 One judge call per commit in the range, carrying every accepted ADR whose `Applies to` paths the commit
 touches or whose number the commit mentions, plus every accepted ADR that has no `Applies to` at all, since

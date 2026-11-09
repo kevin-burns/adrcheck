@@ -10,7 +10,7 @@
   entry: adrcheck lint
   language: python
   pass_filenames: false
-  files: ^docs/(adr|decisions|architecture/decisions)/.*\.md$
+  files: ^(docs/(adr|decisions|architecture/decisions)|doc/(adr|architecture/decisions)|adrs?|decisions)/.*\.md$
 - id: adrcheck-staged
   name: adrcheck check --staged, free tier (no model, no key)
   entry: adrcheck check --staged --tier free --format md --fail-on conflict

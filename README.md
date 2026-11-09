@@ -8,8 +8,8 @@ and publishes its own false-alarm rate.
 - A commit that breaks an accepted ADR is reported as CONFLICT, with the changed line, the
   ADR quote it contradicts, and a one-sentence reason. Every quote is verified against the
   ADR, every line against the diff, before you see it.
-- An ADR the code has already moved past is reported as ADR-OVERTAKEN, with a draft
-  superseding ADR, instead of flagging the code.
+- An ADR the code has already moved past is reported as ADR-OVERTAKEN instead of flagging the code,
+  and the stale list at the end of every run names the records whose anchors are gone.
 - Anything the evidence does not settle is UNCLEAR. Abstaining is a verdict, not a miss.
 
 Advisory by default. Structured JSON out, so a caller can gate if it wants to.
@@ -53,8 +53,9 @@ API and needs `ANTHROPIC_API_KEY` in the environment; `claude-cli:sonnet` uses a
 install and needs no key. `openai:<model>` posts to any OpenAI-compatible endpoint, `OPENAI_BASE_URL`
 and `OPENAI_API_KEY` from the environment; `ollama:<model>` is the same against `OLLAMA_HOST`, default
 `http://localhost:11434`. Those two report a cost of zero because no price table fits every endpoint.
-A commit that touches nothing an ADR governs costs no model call. A commit that does costs one call,
-about 100k input tokens; measured runs are in `docs/spikes/`. `--compile-model` puts the compile seat on
+A commit that touches nothing an ADR governs costs no model call. A commit that does costs one call; input tokens run about 1,500 to 60,000 through the API depending on
+the diff, and far more through the Claude CLI, which adds its own system prompt (`docs/providers.md`).
+Measured runs are in `docs/spikes/`. `--compile-model` puts the compile seat on
 a different provider, for example a local model for the once-per-ADR compile and Sonnet for the judge.
 The obligation cache is keyed by ADR text and prompt version, not by model: delete `.adrcheck/obligations`
 to recompile after changing the compile model. Provider setup, measured judge costs, and how to bound the bill
@@ -101,8 +102,9 @@ The header wins where both exist, and `adrcheck lint` reports the disagreement.
     - id: adrcheck-staged-judge  # opt-in: the model judges the index on the developer's own provider
 ```
 
-The free tier is the default for `--staged`. It never compiles and never calls a model: an ADR with no cached
-obligations is reported as not compiled, an ADR with no forbidden pattern as not judged, and only a forbidden
+The free tier is the default for `--staged`. Run `adrcheck compile` once and commit `.adrcheck/obligations/`
+first, or the hook reports every ADR as not compiled and passes. It never compiles and never calls a model: an
+ADR with no cached obligations is reported as not compiled, an ADR with no forbidden pattern as not judged, and only a forbidden
 pattern on an added line is a CONFLICT, which goes through the same verification and parent probes as a
 model's claim.
 
@@ -143,6 +145,18 @@ and a repository variable for the base URL:
           max-calls: "10"
 ```
 
+### In a GitLab merge request
+
+`.gitlab-ci.yml` in this repository is the template: one job on `merge_request_event` that judges the merge
+request as one change and writes the findings as a Code Quality report, which the merge-request widget
+shows inline with no token and no API call. Two masked CI/CD variables, `OPENAI_BASE_URL` and
+`OPENAI_API_KEY`; exit 3 is allowed to fail as a warning, exit 2 fails the job.
+
+```sh
+adrcheck check --range "origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}..HEAD" --as-one \
+  --format md --fail-on conflict --codequality gl-code-quality-report.json
+```
+
 The action posts one comment with the report and updates it on every push. A verified CONFLICT fails
 the step. "Could not evaluate" (no key, provider down) is a warning, not a failure: an unreachable
 model is not a finding.
@@ -166,7 +180,7 @@ ADR revision it was labelled against; the repository itself is never bundled.
 | CONFLICT | a changed line contradicts a quoted sentence of the ADR's decision; both verified | 2 with `--fail-on conflict` |
 | COMPLIANT | the change touches the ADR's ground and keeps to it | 0 |
 | UNCLEAR | the diff does not settle it; the reason is shown | 0 |
-| ADR-OVERTAKEN | the contradiction already existed at the parent commit; the ADR, not the change, is stale | 0 |
+| ADR-OVERTAKEN | the contradiction was already there at the parent commit: an anchor already gone, the same line already elsewhere, or a removed name nothing called; the ADR, not the change, is stale | 0 |
 
 ## Prior art and credit
 
