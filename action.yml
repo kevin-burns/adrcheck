@@ -41,7 +41,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: astral-sh/setup-uv@v10.3.3
+    - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
       with:
         enable-cache: true
         python-version: "3.13"
@@ -93,7 +93,10 @@ runs:
         if [ "${code}" = "3" ]; then echo "::warning title=adrcheck::could not evaluate; see the report"; fi
 
     - name: Post or update the PR comment
-      if: inputs.comment == 'true' && github.event_name == 'pull_request'
+      # a fork's pull request has a read-only token; the step summary carries the report there instead
+      if: >-
+        inputs.comment == 'true' && github.event_name == 'pull_request'
+        && github.event.pull_request.head.repo.full_name == github.repository
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github-token }}

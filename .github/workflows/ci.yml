@@ -17,10 +17,10 @@ jobs:
     name: pre-commit gate (all files)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v10.3.3
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           enable-cache: true
           python-version: "3.15"
@@ -35,10 +35,10 @@ jobs:
       matrix:
         python: ["3.13", "3.14", "3.15"]
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v10.3.3
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           enable-cache: true
           python-version: ${{ matrix.python }}
@@ -46,3 +46,22 @@ jobs:
         run: uv sync --locked
       - name: Test
         run: uv run pytest -q
+
+  pr-hygiene:
+    # the template's AI-assistance section: exactly one box ticked, so every change says how it was made
+    name: pull request says how it was written
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Exactly one AI-assistance box is ticked
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          ticked=$(printf '%s\n' "${BODY}" | grep -c -E '^- \[[xX]\] (None|Assisted|Generated):' || true)
+          if [ "${ticked}" != "1" ]; then
+            msg="tick exactly one box under 'AI assistance' in the pull request description (found ${ticked})"
+            echo "::error title=adrcheck::${msg}"
+            exit 1
+          fi
