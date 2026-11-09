@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2752" height="1536" viewBox="0 0 2752 1536">
+  <!-- adrcheck social banner. Source of truth; the PNGs are rendered from this (see README.md beside it).
+       House style shared with the claude-skills banners: dark window on white, Menlo for anything the tool
+       prints, Helvetica for prose. Every line of report text is real output from the planted corpus
+       (evals/planted/build.py, commit 36f6b01, Haiku 5.5 via OpenRouter, 2026-11-09). No version pins. -->
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="26" flood-color="#0b0d12" flood-opacity="0.22"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1 L 11 6 L 1 11 z" fill="#4F92C6"/>
+    </marker>
+    <marker id="arrowg" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1 L 11 6 L 1 11 z" fill="#8A8B92"/>
+    </marker>
+  </defs>
+
+  <rect width="2752" height="1536" fill="#FFFFFF"/>
+
+  <!-- window -->
+  <rect x="196" y="72" width="2360" height="1392" rx="36" fill="#12151D" filter="url(#shadow)"/>
+  <circle cx="256" cy="140" r="16" fill="#FF6159"/>
+  <circle cx="324" cy="140" r="16" fill="#FEB93F"/>
+  <circle cx="392" cy="140" r="16" fill="#3EC252"/>
+  <text x="1376" y="152" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="38" font-weight="600" fill="#8A8B92">adrcheck — a change, a decision, a verdict</text>
+
+  <!-- ============ left: the idea ============ -->
+  <!-- the decision -->
+  <g transform="translate(300, 330)">
+    <rect width="760" height="330" rx="18" fill="#1A2028" stroke="#262B34" stroke-width="3"/>
+    <text x="32" y="46" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#4F92C6">ADR-1 · Billing reads the ledger through its API</text>
+    <line x1="0" y1="78" x2="760" y2="78" stroke="#262B34" stroke-width="3"/>
+    <text x="32" y="130" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#8A8B92">Status: Accepted</text>
+    <text x="32" y="186" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#D4D8DD">## Decision</text>
+    <text x="32" y="240" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#D4D8DD">Code under services/billing/ reads the ledger</text>
+    <text x="32" y="282" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#D4D8DD">only through Ledger. <tspan fill="#FEB93F">It never imports ledger.db.</tspan></text>
+  </g>
+
+  <!-- the change -->
+  <g transform="translate(300, 880)">
+    <rect width="760" height="300" rx="18" fill="#1A2028" stroke="#262B34" stroke-width="3"/>
+    <text x="32" y="46" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" font-weight="700" fill="#4F92C6">services/billing/invoices.py</text>
+    <line x1="0" y1="78" x2="760" y2="78" stroke="#262B34" stroke-width="3"/>
+    <text x="32" y="134" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#8A8B92">  from ledger.api import Ledger</text>
+    <rect x="18" y="156" width="724" height="52" rx="8" fill="#3A1F22"/>
+    <text x="32" y="192" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#FF6159">+ from ledger.db import connection</text>
+    <text x="32" y="250" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#8A8B92">  def outstanding_fast(account):</text>
+  </g>
+
+  <!-- the two directions -->
+  <path d="M 820 690 C 820 740, 820 790, 820 850" stroke="#4F92C6" stroke-width="7" fill="none" marker-end="url(#arrow)"/>
+  <text x="850" y="760" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#4F92C6">does the change keep to it?</text>
+  <path d="M 560 850 C 560 790, 560 740, 560 690" stroke="#8A8B92" stroke-width="7" fill="none" marker-end="url(#arrowg)"/>
+  <text x="530" y="785" text-anchor="end" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#8A8B92">is the decision</text>
+  <text x="530" y="822" text-anchor="end" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#8A8B92">still true?</text>
+
+  <!-- verdict chips -->
+  <g transform="translate(300, 1230)" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="28" font-weight="700">
+    <rect x="0" y="0" width="186" height="56" rx="28" fill="#3A1F22" stroke="#FF6159" stroke-width="3"/>
+    <text x="93" y="38" text-anchor="middle" fill="#FF6159">CONFLICT</text>
+    <rect x="206" y="0" width="208" height="56" rx="28" fill="#1C2E23" stroke="#71BD86" stroke-width="3"/>
+    <text x="310" y="38" text-anchor="middle" fill="#71BD86">COMPLIANT</text>
+    <rect x="434" y="0" width="176" height="56" rx="28" fill="#33291A" stroke="#FEB93F" stroke-width="3"/>
+    <text x="522" y="38" text-anchor="middle" fill="#FEB93F">UNCLEAR</text>
+    <rect x="630" y="0" width="292" height="56" rx="28" fill="#1A2533" stroke="#4F92C6" stroke-width="3"/>
+    <text x="776" y="38" text-anchor="middle" fill="#4F92C6">ADR-OVERTAKEN</text>
+  </g>
+  <text x="1060" y="1320" text-anchor="end" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" fill="#8A8B92">a CONFLICT is verified first: the line is in the diff, the quote is in the ADR</text>
+
+  <!-- ============ right: the tool ============ -->
+  <text x="1400" y="440" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="150" font-weight="700" fill="#4F92C6">adr<tspan fill="#FFFFFF">check</tspan></text>
+  <text x="1400" y="512" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" fill="#8A8B92">judges code changes against your architecture decision records,</text>
+  <text x="1400" y="558" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" fill="#8A8B92">and finds the records your code has quietly overtaken</text>
+
+  <text x="1400" y="680" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="34" fill="#71BD86">$ <tspan fill="#D4D8DD">adrcheck check --range origin/main..HEAD --as-one</tspan></text>
+
+  <!-- report panel: real output, planted corpus commit 36f6b01 -->
+  <g transform="translate(1400, 730)">
+    <rect width="1080" height="560" rx="18" fill="#1A2028" stroke="#262B34" stroke-width="3"/>
+    <text x="36" y="66" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#8A8B92">## 36f6b01 fix(billing): fast path reads the balance</text>
+    <line x1="0" y1="96" x2="1080" y2="96" stroke="#262B34" stroke-width="3"/>
+
+    <text x="36" y="160" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="32" font-weight="700" fill="#FF6159">CONFLICT <tspan fill="#D4D8DD" font-weight="400">ADR-1</tspan></text>
+    <text x="80" y="212" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#D4D8DD">invoices.py: <tspan fill="#FF6159">from ledger.db import connection</tspan></text>
+    <text x="80" y="262" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#FEB93F">> It never imports ledger.db.</text>
+    <text x="80" y="312" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#8A8B92">The added import brings ledger.db directly into services/billing code.</text>
+
+    <line x1="0" y1="350" x2="1080" y2="350" stroke="#262B34" stroke-width="3"/>
+    <text x="36" y="410" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="32" font-weight="700" fill="#71BD86">COMPLIANT <tspan fill="#D4D8DD" font-weight="400">ADR-3</tspan></text>
+    <text x="80" y="460" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#D4D8DD">return Money(sum_minor_units(connection(), account))</text>
+
+    <line x1="0" y1="498" x2="1080" y2="498" stroke="#262B34" stroke-width="3"/>
+    <text x="36" y="540" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="30" fill="#8A8B92">- proposed, not enforced, touches its paths: ADR-5</text>
+  </g>
+
+  <text x="1400" y="1370" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="27" fill="#8A8B92">one PR comment, updated in place · a free pre-commit tier, no model, no key · any provider</text>
+</svg>

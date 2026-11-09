@@ -1,5 +1,7 @@
 # adrcheck
 
+![adrcheck: a change, a decision, a verdict](docs/img/banner.webp)
+
 Checks code changes against a team's architecture decision records (ADRs), in both directions,
 and publishes its own false-alarm rate.
 
