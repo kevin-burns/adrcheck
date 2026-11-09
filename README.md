@@ -104,6 +104,21 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         with:
           adr-dir: docs/adr
+          max-calls: "10"
+```
+
+Or, for the cheaper judge measured in `docs/providers.md`, a repository secret holding an OpenRouter key
+and a repository variable for the base URL:
+
+```yaml
+      - uses: kevin-burns/adrcheck@main
+        env:
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}   # https://openrouter.ai/api/v1
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          adr-dir: docs/adr
+          model: openai:anthropic/claude-haiku-5.5
+          max-calls: "10"
 ```
 
 The action posts one comment with the report and updates it on every push. A verified CONFLICT fails
