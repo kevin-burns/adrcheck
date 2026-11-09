@@ -43,30 +43,33 @@ turn blame into "the ADR is stale" but never turn a compliant change into anythi
 ## Around the run
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph write [Deciding]
+        direction LR
         D[write or amend an ADR<br/>Status, Applies to, Decision] --> LN[adrcheck lint]
         LN --> CP[adrcheck compile<br/>read the obligations]
         CP -- obligation surprises you --> D
         CP --> CM[commit the ADR and<br/>.adrcheck/obligations/]
     end
     subgraph change [Changing code]
+        direction LR
         CO[commits on a branch] --> PC["pre-commit: adrcheck check --staged<br/>optional, needs a provider"]
         PC --> PR[pull request]
-        PR --> GA["Action: adrcheck check<br/>origin/base..HEAD<br/>one comment, updated in place"]
+        PR --> GA["Action: adrcheck check origin/base..HEAD<br/>one comment, updated in place"]
     end
-    CM --> CO
+    write --> change
     GA --> V{verdict}
-    V -- CONFLICT --> F1[fix the code]
-    V -- CONFLICT --> F2[Adr-Exception trailer<br/>with a reason]
-    V -- CONFLICT --> F3[supersede the ADR]
+    GA --> ST[stale list]
+    V -- CONFLICT --> Q[code wrong, decision wrong,<br/>or both right this once?]
+    Q --> F1[fix the code]
+    Q --> F2[Adr-Exception trailer<br/>with a reason]
+    Q --> F3[supersede the ADR]
     V -- ADR-OVERTAKEN --> F3
     V -- UNCLEAR --> F4[read it as a review comment]
-    V -- COMPLIANT --> F5[nothing]
-    GA --> ST[stale list]
-    ST -- first run on history --> BL["review once,<br/>--write-baseline,<br/>commit the baseline"]
+    V -- COMPLIANT --> F5[nothing to do]
+    ST -- first run on history --> BL["review once, --write-baseline,<br/>commit the baseline"]
     ST -- new row later --> F3
-    F3 --> D
+    F3 -.-> D
 ```
 
 Three places a decision can be enforced, and they are the same check with a different range:
