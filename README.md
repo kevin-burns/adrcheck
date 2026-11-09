@@ -20,12 +20,12 @@ the decisions adrcheck holds itself to (it checks its own pull requests against 
 
 ## In one minute
 
-![adrcheck on a planted repository: a CONFLICT with the ADR sentence and the changed line, then a record whose anchors the code no longer carries](docs/img/demo.gif)
+![adrcheck on a planted repository: the judge finds a CONFLICT and says why, quoting the ADR sentence and the changed line; then a deleted module leaves a record overtaken; then the free tier catches the same line with no model](docs/img/demo.gif)
 
-That is the free tier: no model call and no API key at check time, only the patterns from the compiled
-obligations and the stale sweep. A forbidden import is caught against the sentence that forbids it, then a
-deleted module leaves a record stale. Add a model with `--model` and your API key, and the judge reads the
-diff and writes why, on every finding.
+First the judge: a model (here `openai:gpt-6-luna`, any provider in [docs/providers.md](docs/providers.md)
+works) reads the diff against the record and writes why, on every finding. Then direction two: a deleted
+module leaves a record overtaken by its own code. Last the free tier: no model call and no API key, the
+same line caught by the patterns from the compiled obligations, instantly.
 
 ## Quickstart
 

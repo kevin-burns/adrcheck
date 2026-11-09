@@ -1,13 +1,15 @@
-# adrcheck in 66 seconds on the small planted repository, both directions, free tier (no model, no key).
-# Render: ADRCHECK_DEMO_REPO=/path/to/planted vhs docs/demo/adrcheck.tape, from the repository root; the planted
-# repository comes from: uv run python evals/planted/build.py /path/to/planted, then adrcheck compile there once.
+# adrcheck in about ninety seconds on the small planted repository: the judge first, then the free tier.
+# Render from the repository root with a judge key in the environment (the tape uses openai:gpt-6-luna):
+#   ADRCHECK_DEMO_REPO=/path/to/planted vhs docs/demo/adrcheck.tape
+# The planted repository: uv run python evals/planted/build.py /path/to/planted, then adrcheck compile there once.
 Output "docs/img/demo.gif"
 Output "docs/demo/adrcheck.mp4"
 Set Shell zsh
-Set FontSize 16
+Set FontSize 15
 Set Width 1180
-Set Height 640
-Set Padding 18
+Set Height 720
+Set Padding 16
+Set Framerate 20
 Set TypingSpeed 35ms
 Set Theme "Catppuccin Mocha"
 
@@ -26,9 +28,12 @@ Sleep 3500ms
 Type "git show --format='%h %s' --stat 36f6b01 | head -4 && git show 36f6b01 | grep '^+from'"
 Enter
 Sleep 3500ms
-Type "adrcheck check --commit 36f6b01 --tier free --format md"
+Type "# The judge: a model reads the diff against the record and says why."
 Enter
-Sleep 7s
+Sleep 2000ms
+Type "adrcheck check --commit 36f6b01 --model openai:gpt-6-luna --format md"
+Enter
+Sleep 24s
 Type "clear"
 Enter
 Type "# Direction two: the code moved on, the record did not."
@@ -37,15 +42,17 @@ Sleep 2500ms
 Type "git show --format='%h %s' --stat b90ba4c | head -3"
 Enter
 Sleep 2500ms
-Type "adrcheck check --commit b90ba4c --tier free --format md"
+Type "adrcheck check --commit b90ba4c --model openai:gpt-6-luna --format md"
+Enter
+Sleep 16s
+Type "clear"
+Enter
+Type "# No key? The free tier matches the compiled obligations' patterns. No model call."
+Enter
+Sleep 2500ms
+Type "adrcheck check --commit 36f6b01 --tier free --format md"
 Enter
 Sleep 6s
-Type "adrcheck explain --adr 4 | head -5"
-Enter
-Sleep 6s
-Type "# That was the free tier: no model call, no key. Patterns from the compiled obligations, and the stale sweep."
-Enter
-Sleep 3500ms
-Type "# Add a model with --model and your API key: the judge reads the diff and writes why, on every finding."
+Type "# Same record, same line. The judge adds the reason; the free tier is instant and free."
 Enter
 Sleep 5s

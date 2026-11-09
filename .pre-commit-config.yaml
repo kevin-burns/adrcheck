@@ -18,6 +18,7 @@ repos:
     hooks:
       - id: check-added-large-files
         args: [--maxkb=500]
+        exclude: ^docs/img/demo\.gif$  # the README recording, about 1 MB, rendered from docs/demo/adrcheck.tape
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: check-toml
