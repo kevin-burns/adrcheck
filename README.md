@@ -136,8 +136,12 @@ ADR revision it was labelled against; the repository itself is never bundled.
 - Michael Nygard, "Documenting Architecture Decisions" (2011), the ADR format.
 - Neal Ford, Rebecca Parsons and Patrick Kua, *Building Evolutionary Architectures*
   (O'Reilly, 2017), architectural fitness functions.
-- The trigger was a LinkedIn discussion started by David Boyne on 2026-11-05 about checking code
-  against the ADRs kept in EventCatalog ([the post](https://lnkd.in/p/eH_ZRsYz); written up on the
+- The first trigger was practical: a project the author worked on kept its decisions as ADRs while
+  coding agents wrote much of the code, and nothing checked that what the agents produced still
+  matched what the records said. That project and the people on it are under NDA and are not named
+  here; adrcheck carries none of its material.
+- The second trigger was a LinkedIn discussion started by David Boyne on 2026-11-05 about checking
+  code against the ADRs kept in EventCatalog ([the post](https://lnkd.in/p/eH_ZRsYz); written up on the
   EventCatalog blog as "Turn your ADRs into automated checks"). The comment thread named the two hard problems
   adrcheck is built around: decisions about intent cannot be read off a diff, and an ADR the code has
   quietly overtaken produces the false alarms. EventCatalog's checks serve catalogues of domains,
