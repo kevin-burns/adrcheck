@@ -6,6 +6,7 @@ import pytest
 
 from adrcheck.adapters.anthropic_api import AnthropicRunner, estimate_cost
 from adrcheck.adapters.claude_cli import ClaudeCliRunner
+from adrcheck.adapters.codex_cli import CodexCliRunner
 from adrcheck.adapters.providers import runner_for
 from adrcheck.chatmodel import ChatRequest
 
@@ -38,6 +39,53 @@ def test_claude_cli_runner_maps_the_json_envelope_and_sends_system_plus_user_as_
         0.02,
         300,
     )
+
+
+# codex exec --json as codex-cli 0.166.0 printed it on 2026-11-10: the answer is the last agent_message item, the
+# usage sits on turn.completed, and there is no cost field anywhere
+CODEX_JSONL = "\n".join(
+    [
+        '{"type":"thread.started","thread_id":"01a1c2a3-4c4a-7e53-92cb-9298d0cb2640"}',
+        '{"type":"item.completed","item":{"id":"item_0","type":"error","message":"Model metadata not found."}}',
+        '{"type":"turn.started"}',
+        '{"type":"item.completed","item":{"id":"item_1","type":"reasoning","text":"They want JSON."}}',
+        '{"type":"item.completed","item":{"id":"item_2","type":"agent_message","text":"{\\"ok\\": true}"}}',
+        '{"type":"turn.completed","usage":{"input_tokens":4966,"cached_input_tokens":100,'
+        '"cache_write_input_tokens":20,"output_tokens":73,"reasoning_output_tokens":0}}',
+        "",
+    ]
+)
+
+
+def test_codex_cli_runner_takes_the_last_agent_message_and_the_turn_usage_and_reports_no_cost():
+    seen = {}
+
+    def fake_run(prompt, model):
+        seen["prompt"], seen["model"] = prompt, model
+        return CODEX_JSONL
+
+    reply = CodexCliRunner(model="gpt-5.5", run=fake_run).run(REQ)
+    assert seen["model"] == "gpt-5.5" and seen["prompt"].startswith("be brief") and seen["prompt"].endswith("hello")
+    assert (reply.text, reply.tokens_in, reply.tokens_out, reply.cost_usd) == ('{"ok": true}', 5086, 73, 0.0)
+    assert reply.latency_ms >= 0
+
+
+def test_codex_cli_runner_raises_on_a_failed_turn_or_a_turn_with_no_message():
+    failed = (
+        '{"type":"turn.started"}\n{"type":"turn.failed","error":{"message":"unexpected status 401 Unauthorized"}}\n'
+    )
+    with pytest.raises(RuntimeError, match="401 Unauthorized"):
+        CodexCliRunner(model="gpt-5.5", run=lambda p, m: failed).run(REQ)
+    with pytest.raises(RuntimeError, match="no agent_message"):
+        CodexCliRunner(model="gpt-5.5", run=lambda p, m: '{"type":"turn.completed","usage":{}}\n').run(REQ)
+
+
+def test_codex_cli_spec_picks_the_runner_and_an_empty_model_leaves_the_choice_to_codex():
+    assert (
+        isinstance(runner_for("codex-cli:gpt-5.5"), CodexCliRunner)
+        and runner_for("codex-cli:gpt-5.5").model == "gpt-5.5"
+    )
+    assert runner_for("codex-cli:").model == ""
 
 
 class FakeMessages:

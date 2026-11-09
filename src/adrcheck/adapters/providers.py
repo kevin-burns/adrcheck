@@ -7,20 +7,23 @@ import os
 
 from adrcheck.adapters.anthropic_api import AnthropicRunner
 from adrcheck.adapters.claude_cli import ClaudeCliRunner
+from adrcheck.adapters.codex_cli import CodexCliRunner
 from adrcheck.adapters.openai_compat import OpenAICompatRunner
 from adrcheck.chatmodel import ChatRunner
 
-PROVIDERS = ("claude-cli", "anthropic", "openai", "ollama")
+PROVIDERS = ("claude-cli", "codex-cli", "anthropic", "openai", "ollama")
 
 
 def runner_for(spec: str, **kwargs) -> ChatRunner:
-    """'anthropic:claude-sonnet-5-5', 'claude-cli:sonnet', 'openai:gpt-x', 'ollama:qwen3:8b', or a bare model
-    name, which means the claude CLI. The model keeps everything after the first colon."""
+    """'anthropic:claude-sonnet-5-5', 'claude-cli:sonnet', 'codex-cli:gpt-5.5', 'openai:gpt-x', 'ollama:qwen3:8b',
+    or a bare model name, which means the claude CLI. The model keeps everything after the first colon."""
     provider, sep, model = spec.partition(":")
     if not sep:
         provider, model = "claude-cli", spec
     if provider == "claude-cli":
         return ClaudeCliRunner(model=model or "sonnet")
+    if provider == "codex-cli":
+        return CodexCliRunner(model=model)
     if provider == "anthropic":
         return AnthropicRunner(model=model or "claude-sonnet-5-5", **kwargs)
     if provider == "openai":

@@ -61,7 +61,8 @@ def _parser() -> argparse.ArgumentParser:
         sp.add_argument(
             "--model",
             default=None,
-            help="provider:model for compiler and judge, e.g. anthropic:claude-sonnet-5-5 or claude-cli:sonnet "
+            help="provider:model for compiler and judge, e.g. anthropic:claude-sonnet-5-5, claude-cli:sonnet or "
+            "codex-cli:gpt-5.5 "
             "(default: anthropic:claude-sonnet-5-5 when the Anthropic key variable is set, else claude-cli:sonnet)",
         )
 
