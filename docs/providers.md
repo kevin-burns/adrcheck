@@ -137,6 +137,26 @@ breaches outright. Details in [the planted spike](spikes/2026-11-09-planted-corp
 [the large-corpus spike](spikes/2026-11-09-planted-large.md). The CLI route's input tokens are about thirty
 times the API route's for the same prompts, so compare token counts within one route only.
 
+### OpenAI models, directly
+
+Measured 2026-11-09 against `api.openai.com` with the `openai:` provider and no base URL, the same cached
+Sonnet compile as above. The adapter reports no cost for this route, so the table carries tokens only.
+
+| Judge | planted | adrcheck | planted-large | Tokens in / out, large | Wall, large |
+|---|---|---|---|---|---|
+| gpt-6-luna | 9/9 | 11/11 | 20/25 | 34,699 / 24,896 | 4 min 52 s |
+| gpt-5.5 | 9/9 | 10/11 | 21/25 | 34,699 / 23,875 | 5 min 0 s |
+| gpt-5.4-mini | 8/9 | 10/11 | not run | | |
+
+Reading: both current models are clean on the small corpora and lose rows on the large one in the same
+place, ADR-2's forbidden `requests` imports under `orders/api/`. They answer UNCLEAR with the reason that
+the diff does not establish the module is a request handler, which is a literal reading of the record's
+"handlers under `orders/api/`" where Haiku and Sonnet took the path as enough. That is an abstention, not a
+false alarm, and it is a fair complaint about the record's wording. gpt-5.5 raised one false CONFLICT on
+the adrcheck corpus; gpt-6-luna raised none. Run files are not committed; the numbers are from one run
+each. Pick `openai:gpt-6-luna` or `openai:gpt-5.5` for an OpenAI key; the tape in `docs/demo/` uses the
+former.
+
 ## Keeping the bill bounded
 
 - One judge call per commit in the range, or one call for the whole range with `--as-one`, which the Action
