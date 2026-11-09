@@ -33,7 +33,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     sub = p.add_subparsers(dest="command", required=True)
 
-    def common(sp):
+    def paths(sp):
         sp.add_argument(
             "--adr-dir",
             default=None,
@@ -42,7 +42,15 @@ def _parser() -> argparse.ArgumentParser:
             + " that exists)",
         )
         sp.add_argument("--repo", default=".", help="git repository root (default .)")
-        sp.add_argument("--map", default=".adrcheck/map.toml", help="repo-side scope map, relative to --repo")
+        sp.add_argument(
+            "--map",
+            default=".adrcheck/map.toml",
+            help="repo-side scope map, relative to --repo: which paths each ADR applies to, for records that "
+            "carry no Applies-to line (default .adrcheck/map.toml)",
+        )
+
+    def common(sp):
+        paths(sp)
         sp.add_argument(
             "--compile-model",
             default=None,
@@ -124,9 +132,7 @@ def _parser() -> argparse.ArgumentParser:
     lint_p = sub.add_parser(
         "lint", help="hygiene of the ADR set: dangling refs, cycles, status mismatch, missing status"
     )
-    lint_p.add_argument("--adr-dir", default=None)
-    lint_p.add_argument("--repo", default=".")
-    lint_p.add_argument("--map", default=".adrcheck/map.toml")
+    paths(lint_p)
     return p
 
 

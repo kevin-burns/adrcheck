@@ -483,3 +483,14 @@ def test_check_writes_the_code_quality_artifact_beside_whatever_format_it_prints
     assert code == 0 and printed.startswith("## ")
     rows = json.loads(out_path.read_text())
     assert rows and rows[0]["check_name"] == "adrcheck/ADR-1" and rows[0]["location"]["path"] == "src/a.py"
+
+
+def test_lint_help_explains_its_flags(capsys):
+    """lint shares --adr-dir, --repo and --map with the other subcommands and must say what they are."""
+    import pytest
+
+    with pytest.raises(SystemExit):
+        main(["lint", "--help"])
+    out = capsys.readouterr().out
+    assert "directory of ADR markdown files" in out
+    assert "scope map" in out
