@@ -5,17 +5,26 @@ It answers two questions. Does this change break a decision we wrote down? And h
 a decision we never updated? This page gets you from nothing to a first report and tells you what each
 line of it means.
 
-You need: a git repository with ADRs as numbered markdown files, Python 3.12 or later with `uv`, and one
+Two words recur. The **compiler** is the model call that turns one ADR into obligations, once. The
+**judge** is the model call that reads one commit against the obligations of every ADR that applies to it.
+Everything else adrcheck does is deterministic.
+
+You need: a git repository with ADRs as numbered markdown files, Python 3.13 or later with `uv`, and one
 model provider. The default provider is the Anthropic API when `ANTHROPIC_API_KEY` is set, else a logged-in
 Claude Code install. Other providers, including cheaper ones, are on the [providers page](providers.md).
+No provider at all is fine for step 1; steps 2 and 3 print `could not evaluate` with the reason and exit 3
+when none is reachable.
 
 ## Step 1: run it without a model
 
-Two commands cost nothing and tell you whether your ADRs are in a shape adrcheck can read.
+One command costs nothing and tells you whether your ADRs are in a shape adrcheck can read.
 
 ```sh
-uvx --from git+https://github.com/kevin-burns/adrcheck adrcheck lint
+uv tool install git+https://github.com/kevin-burns/adrcheck
+adrcheck lint
 ```
+
+Or run it once without installing: `uvx --from git+https://github.com/kevin-burns/adrcheck adrcheck lint`.
 
 adrcheck looks for ADRs in the first of `docs/adr`, `docs/decisions`, `docs/architecture/decisions`,
 `doc/adr`, `adr`, `decisions` that exists. Pass `--adr-dir` if yours live elsewhere.
@@ -44,7 +53,6 @@ compiled twice. Commit that directory. Your colleagues and CI then pay nothing f
 What you should see, from adrcheck's own ADR-1:
 
 ```text
-model cost this run: $0.0000 (cached ADRs cost nothing)
 ADR-1: The domain imports no adapters, use cases, CLI or I/O libraries [accepted]
   ADR-1/1 [MUST_NOT, mechanical] Modules under src/adrcheck/domain/ must not import adrcheck.adapters.
       quote: 'They never import `adrcheck.adapters`, `adrcheck.usecases`, `adrcheck.cli`, `subprocess`, `requests` or `httpx`.'
@@ -55,15 +63,19 @@ ADR-1: The domain imports no adapters, use cases, CLI or I/O libraries [accepted
       mandates=['src/adrcheck/ports.py', 'Protocol'] forbids=[]
 ```
 
+The last line, on stderr, is `model cost this run: $0.0000 (cached ADRs cost nothing)` when every ADR was
+already compiled.
+
 Read this output. It is the contract the judge will hold your code to. Each obligation has:
 
 - a kind, `MUST` or `MUST_NOT`;
 - a checkability: `mechanical` (an import, a path, visible in a diff), `structural` (a boundary or dependency
-  direction, needs module context) or `intent` (behavioural; the judge will lean to UNCLEAR unless the diff
-  is explicit);
+  direction, needs module context), `intent` (behavioural; the judge will lean to UNCLEAR unless the diff
+  is explicit) or `process` (a team practice, listed and never judged);
 - the quote it was compiled from, which must come from the Decision or Consequences section;
-- anchors: names and paths it mandates or forbids. These are what the stale sweep and the parent-commit
-  probes look for in the code.
+- anchors: the names and paths it mandates. Two checks that need no model look for these in the code: the
+  stale sweep described in step 3, and the parent-commit probes behind the ADR-OVERTAKEN verdict on the
+  [verdicts page](verdicts.md#adr-overtaken).
 
 If an obligation surprises you, the ADR is ambiguous, not the compiler. Edit the ADR and compile again. The
 [writing ADRs page](writing-adrs.md) shows what compiles well.
@@ -74,8 +86,10 @@ If an obligation surprises you, the ADR is ambiguous, not the compiler. Edit the
 adrcheck check --range origin/main..HEAD --format md --fail-on conflict
 ```
 
-One judge call per commit in the range, carrying every accepted ADR whose paths the commit touches or
-whose number the commit mentions. Commits that touch nothing any ADR governs cost no call.
+One judge call per commit in the range, carrying every accepted ADR whose `Applies to` paths the commit
+touches or whose number the commit mentions, plus every accepted ADR that has no `Applies to` at all, since
+nothing says it does not apply. Commits that touch nothing any ADR governs cost no call, which is why the
+header matters.
 
 What you should see. This is adrcheck's report on one of its own commits, judged by Haiku 5.5 through
 OpenRouter on 2026-11-09:
@@ -104,9 +118,9 @@ is about; the sentence of the ADR it is held against, as a quote; and the judge'
 UNCLEAR above is a real one. The judge noticed that the lookbehind excludes attribute access and said the
 diff does not settle whether that was intended. That is the kind of comment a good reviewer leaves.
 
-The two trailing lines: ADRs the judge was shown and set aside, and the count of changed files no ADR
-governs. A high uncovered count on a large change is a hint that your ADRs' `Applies to` globs are
-narrower than your code.
+The two trailing lines: ADRs the judge was shown and set aside, and the count of changed files that none of
+the judged ADRs' `Applies to` globs matched. A high uncovered count on a large change is a hint that your
+globs are narrower than your code.
 
 A second section appears when something is stale:
 
@@ -116,22 +130,18 @@ A second section appears when something is stale:
 - ADR-9 ADR-9/4: missing 'ChatRunner', 'ChatRequest', 'ChatReply'
 ```
 
-This is not about the commits you checked. Once per run, at the end of the range, adrcheck looks for every
-anchor every accepted ADR names. An obligation whose anchors are all gone from the code is listed here.
-Either the code moved on and the ADR needs superseding, or the ADR named something it should not have.
-On a repository with history this list is long the first time. The [use cases page](use-cases.md) covers
+This is the stale sweep. It is not about the commits you checked: once per run, at the end of the range,
+adrcheck looks for every anchor every accepted ADR mandates, and an obligation whose anchors are all gone
+from the code is listed. On a repository with history this list is long the first time. The
+[verdicts page](verdicts.md#the-stale-list) defines it and the [use cases page](use-cases.md) covers
 reviewing it once and keeping it as a baseline.
 
 ## Exit codes
 
-| Code | Meaning | When |
-|---|---|---|
-| 0 | nothing to act on | no CONFLICT, or CONFLICTs without `--fail-on conflict` |
-| 1 | issues | `lint` found hygiene issues; `eval` scored below full marks |
-| 2 | a verified CONFLICT | only with `--fail-on conflict` |
-| 3 | could not evaluate | no key, provider unreachable, every judge call failed |
-
-Exit 3 is a warning, never a red build. An unreachable model is not a finding about your code.
+0 is nothing to act on, 2 is a verified CONFLICT and only with `--fail-on conflict`, 3 is could not
+evaluate. The full table per command is on the [verdicts page](verdicts.md#exit-codes). In the GitHub
+Action, 3 is reported as a warning and does not fail the step; in a shell or a pre-commit hook it is a
+non-zero exit like any other, so decide there whether an unreachable model should block you.
 
 ## Where to next
 

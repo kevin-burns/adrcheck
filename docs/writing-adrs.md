@@ -35,7 +35,8 @@ survives verification. adrcheck's own ADR-1 reads this way, and its compiled for
 
 The compiler produces two kinds and nothing in between. "Should", "prefer" and "where practical" do not
 disappear, but they compile to `intent` obligations, and an intent obligation defaults to UNCLEAR unless
-the diff is explicit. If you mean MUST, write MUST. If you genuinely mean a preference, say so, and expect
+the diff is explicit. A sentence about how the team works rather than what the code does, such as "every
+ADR is reviewed by two people", compiles to a `process` obligation, which is listed and never judged. If you mean MUST, write MUST. If you genuinely mean a preference, say so, and expect
 UNCLEAR rather than CONFLICT when code goes the other way.
 
 ## The header lines adrcheck reads

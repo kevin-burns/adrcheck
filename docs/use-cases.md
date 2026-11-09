@@ -1,6 +1,6 @@
 # Use cases
 
-Four situations, by who you are and what the repository already has. Each ends with the commands and
+Five situations, by who you are and what the repository already has. Each ends with the commands and
 what to expect from them.
 
 ## You joined a team that keeps ADRs
@@ -14,11 +14,14 @@ Make your change. Before committing, run it against the index:
 adrcheck check --staged --format md
 ```
 
+Check that `.adrcheck/obligations/` is in the repository first. If it is, the ADRs are already compiled
+and the run costs one judge call; if not, your first run compiles every ADR that applies, on your key.
+
 Three things the report tells you that the ADRs alone do not:
 
-- **Which decisions govern the files you touched.** Only ADRs whose `Applies to` matches your paths, or whose
-  number your commit message mentions, reach the judge. The rest are not shown. The report is your reading
-  list.
+- **Which decisions govern the files you touched.** ADRs whose `Applies to` matches your paths, or whose
+  number your commit message mentions, reach the judge, along with any ADR that has no `Applies to` and so
+  might apply anywhere. The rest are not shown. The report is your reading list.
 - **What the decision actually requires.** Each finding quotes the sentence of the ADR it is held against. You
   can read the one sentence that matters instead of the whole record.
 - **Whether your change keeps to it.** COMPLIANT with a reason is a free review. CONFLICT with a quote is a
@@ -32,8 +35,8 @@ Adr-Exception: ADR-12 the batch endpoint needs the raw rows; discuss superseding
 
 The waiver is visible in the report and in history, which is how a decision gets reopened honestly.
 
-If the repository has the pre-commit hooks installed, the lint hook runs on every commit for free and the
-staged check runs if the team enabled it. Nothing you do on your machine spends the team's key; `--staged`
+If the repository has the pre-commit hooks installed, the lint hook runs for free whenever an ADR file changes
+and the staged check runs if the team enabled it. Nothing you do on your machine spends the team's key; `--staged`
 uses whatever provider your own environment names.
 
 ## You are an architect with ADRs and no enforcement
@@ -84,6 +87,10 @@ The header wins where both exist, and lint reports the disagreement.
 adrcheck check --adr-dir docs/adr --range v2.0..HEAD --format md > first-run.md
 ```
 
+Every commit in the range that touches a governed path is one judge call, so pick a range you can count.
+Fifty commits on Haiku is about half a dollar; on Sonnet it is many times that. The stale list is computed
+at the end of the range whatever its length, so a short range still gives you the full stale picture.
+
 The findings tell you how recent commits did against the decisions. The stale list at the end tells you
 which decisions the code has left behind entirely. Expect it to be long. For each row: supersede the ADR if
 the decision is dead, fix the anchors if the ADR named the wrong thing, or accept the row. Then record what
@@ -105,10 +112,12 @@ decisions are still true".
 
 ## You want ADRs checked in every pull request
 
-Add the Action. The README shows the workflow. Three things worth deciding up front:
+Add the Action. The README shows the workflow. The Action does not discover the ADR directory; its
+`adr-dir` input defaults to `docs/adr`, so set it if yours differs. Three things worth deciding up front:
 
-- **Which judge.** The cheapest judge measured so far that behaved like Sonnet was Haiku 5.5 through
-  OpenRouter, at about a cent per commit. See [providers](providers.md).
+- **Which judge.** The cheapest judge measured so far was Haiku 5.5 through OpenRouter, at about a cent per
+  commit. It asserted the same COMPLIANT rows Sonnet did; its behaviour on conflicts is not yet measured.
+  See [providers](providers.md).
 - **Whether CONFLICT fails the step.** It is on by default. A team adopting on history may want it off for
   the first weeks, reading the comment instead, until the baseline settles.
 - **Who can waive.** The `Adr-Exception` trailer is in the commit message, so the reviewer sees it. Decide
@@ -129,9 +138,10 @@ adrcheck check --range v1.4..v1.8 --format json > sweep.json
 
 The commit that removed the importer shows CONFLICT against that ADR if the importer was still in use, or
 ADR-OVERTAKEN with the note "removed anchor had no callers at parent" if the importer had already become
-dead code. Any later commit the judge flags against that ADR shows ADR-OVERTAKEN, because the anchor was already gone at
-its parent. The change in verdict is the commit you are looking for. Whether it carried an `Adr-Exception` trailer tells
-you whether it was deliberate.
+dead code. Any later commit the judge flags against that ADR shows ADR-OVERTAKEN, because the anchor was
+already gone at its parent, and the stale list at the end of the report names the ADR too. The change in
+verdict is the commit you are looking for. Whether it carried an `Adr-Exception` trailer tells you whether
+it was deliberate.
 
 ## You are changing the prompts or the rules
 

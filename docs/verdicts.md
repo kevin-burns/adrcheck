@@ -34,12 +34,15 @@ waiver's reason as its note, so an exception is visible in the report and in git
 
 ### UNCLEAR
 
-The diff does not settle the question, and the reason says why. Three sources:
+The diff does not settle the question, and the reason says why. Four sources:
 
 - The judge said so. Often an `intent` obligation, where the behaviour the ADR cares about is not visible
   in a diff.
 - A CONFLICT claim failed verification. The note names the failure: `line-not-in-change`,
-  `quote-not-in-adr` or `quote-outside-decision`.
+  `quote-not-in-adr`, `quote-outside-decision`, or `unknown-obligation` when the judge cited an obligation
+  id the ADR does not have.
+- The judge call failed for that commit. One UNCLEAR per selected ADR, note `judge error: ...`, so a
+  provider fault is visible per commit and is never a CONFLICT or a silent pass.
 - The judge contradicted itself: two obligations of the same ADR gave CONFLICT and COMPLIANT on the same
   line. Both become UNCLEAR and the note names the pair.
 
@@ -65,7 +68,7 @@ COMPLIANT or UNCLEAR verdict stands as the judge gave it.
 |---|---|
 | `judged, not relevant: ADR-2, ADR-5` | these ADRs were shown to the judge because the change touched their paths or mentioned their number, and the judge set them aside |
 | `proposed, not enforced, touches its paths: ADR-12` | a Proposed ADR governs a path this change touched; nothing is enforced until it is Accepted, but you should know |
-| `uncovered files: 4` | changed files no ADR's `Applies to` matched; a large number on a large change means your globs are narrower than your code |
+| `uncovered files: 4` | changed files that none of the judged ADRs' `Applies to` globs matched; a large number on a large change means your globs are narrower than your code |
 | `problem: ...` | something the judge or the commit message got wrong, for example an exception trailer with no reason |
 | `_No ADR applied to this change._` | nothing in this commit touched an accepted ADR's ground; no model call was made |
 
@@ -114,9 +117,11 @@ file is `.adrcheck/baseline.json` and you edit it like source.
 | Code | `check` | `lint` | `compile` | `eval` |
 |---|---|---|---|---|
 | 0 | no CONFLICT, or none with `--fail-on` | clean | compiled | every case hit |
-| 1 | not used | issues found | not used | at least one miss |
+| 1 | no ADR directory found | issues found, or no ADR directory | no ADR directory found | at least one miss |
 | 2 | a verified CONFLICT with `--fail-on conflict` | | | |
 | 3 | could not evaluate | | model unreachable | could not run |
 
 Could not evaluate means no key, the provider down, or every judge call failing. It is printed with its
-reason on stderr and is never a red build, because an unreachable model is not a finding about your code.
+reason on stderr. The GitHub Action reports it as a warning and does not fail the step, because an
+unreachable model is not a finding about your code. In a shell or a pre-commit hook it is an ordinary
+non-zero exit, and the hook configuration decides whether that blocks the commit.
