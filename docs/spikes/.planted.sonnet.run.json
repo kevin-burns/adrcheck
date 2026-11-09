@@ -1,0 +1,590 @@
+{
+ "changes": [
+  {
+   "commit": "ca1e0baf8482275cd0ab00d7e6e45e3e1e873feb",
+   "subject": "feat(billing): credit notes",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 51450,
+   "tokens_out": 504,
+   "cost_usd": 0.0102,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "36f6b01e32327d58f7908f2ea52f2040a6296eca",
+   "subject": "fix(billing): fast path reads the balance in one query",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 51542,
+   "tokens_out": 622,
+   "cost_usd": 0.0114,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "0b62162d7a31397e13598b5308ad3664c700031b",
+   "subject": "feat(api): release shipping when an invoice is paid",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 51888,
+   "tokens_out": 647,
+   "cost_usd": 0.0117,
+   "excluded": [
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-dependency",
+     "detail": "requests"
+    },
+    {
+     "kind": "new-external-host",
+     "detail": "shipping.internal"
+    }
+   ]
+  },
+  {
+   "commit": "c722fe92efec0ba1d66de63c4cc4ac3800ae4653",
+   "subject": "chore(billing): one-off backfill of the 2025 opening balances",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 51123,
+   "tokens_out": 19,
+   "cost_usd": 0.0053,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "d6923b03bf4bbd626f255c6ea77ed935cd7f6678",
+   "subject": "docs: describe the deploy",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "b90ba4c408184ccce7572bdfe93144f9c89de2e6",
+   "subject": "refactor(ingest): drop the importer nothing calls",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 50937,
+   "tokens_out": 469,
+   "cost_usd": 0.0098,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "ad418e0f6c687e8fcf28c206f5602bff3034cad7",
+   "subject": "feat(billing): late fee as a percentage",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 51548,
+   "tokens_out": 485,
+   "cost_usd": 0.01,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "c802e32f7d5d0b2270695e5c8b68f43080369d35",
+   "subject": "feat(billing): draft invoice numbering",
+   "uncovered": 1,
+   "judge_calls": 1,
+   "tokens_in": 51363,
+   "tokens_out": 105,
+   "cost_usd": 0.0062,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 1,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 3,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  }
+ ],
+ "findings": [
+  {
+   "commit": "ca1e0baf8482275cd0ab00d7e6e45e3e1e873feb",
+   "adr": 1,
+   "obligation": "ADR-1/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "    ledger.post(account, -amount.minor_units, f\"credit: {memo}\")",
+   "quote": "Code under `services/billing/` reads and writes ledger entries only through `Ledger` in `ledger/api.py`.",
+   "reason": "The credit note writes its ledger entry through the `Ledger` instance's `post` method, not through any other path.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ca1e0baf8482275cd0ab00d7e6e45e3e1e873feb",
+   "adr": 3,
+   "obligation": "ADR-3/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "def credit_note(ledger: Ledger, account: str, amount: Money, memo: str) -> None:",
+   "quote": "Amounts are instances of `Money` from `libs/money/money.py`, which holds minor units as an integer.",
+   "reason": "The `amount` parameter is typed as `Money`, so the credit amount is represented as a Money instance.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ca1e0baf8482275cd0ab00d7e6e45e3e1e873feb",
+   "adr": 3,
+   "obligation": "ADR-3/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "    ledger.post(account, -amount.minor_units, f\"credit: {memo}\")",
+   "quote": "No amount is stored or passed as a `float`.",
+   "reason": "The negated value passed to `ledger.post` is `-amount.minor_units`, an integer of minor units, not a float.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "36f6b01e32327d58f7908f2ea52f2040a6296eca",
+   "adr": 1,
+   "obligation": "ADR-1/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "from ledger.db import connection, sum_minor_units",
+   "quote": "It never imports `ledger.db`.",
+   "reason": "The added import line pulls `connection` and `sum_minor_units` from `ledger.db` inside services/billing/, which the ADR forbids outright.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "36f6b01e32327d58f7908f2ea52f2040a6296eca",
+   "adr": 1,
+   "obligation": "ADR-1/1",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "    return Money(sum_minor_units(connection(), account))",
+   "quote": "Code under `services/billing/` reads and writes ledger entries only through `Ledger` in `ledger/api.py`.",
+   "reason": "`outstanding_fast` reads the ledger balance via `ledger.db` helpers directly instead of through the `Ledger` class.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "36f6b01e32327d58f7908f2ea52f2040a6296eca",
+   "adr": 1,
+   "obligation": "ADR-1/3",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "    # skips the Ledger object: one query, no instance",
+   "quote": "Billing cannot tune a query by hand.",
+   "reason": "The comment states the function deliberately bypasses the Ledger object to run its own single query, which is the hand-tuned access the ADR rules out.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "36f6b01e32327d58f7908f2ea52f2040a6296eca",
+   "adr": 3,
+   "obligation": "ADR-3/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "    return Money(sum_minor_units(connection(), account))",
+   "quote": "Amounts are instances of `Money` from `libs/money/money.py`, which holds minor units as an integer.",
+   "reason": "The function returns a `Money` instance built from a minor-unit sum, consistent with representing amounts as Money.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "0b62162d7a31397e13598b5308ad3664c700031b",
+   "adr": 1,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "0b62162d7a31397e13598b5308ad3664c700031b",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/api/handlers.py",
+   "line_text": "import requests",
+   "quote": "They never import `requests`",
+   "reason": "The added `import requests` in a services/billing/api/ handler directly violates the ban on HTTP handlers importing requests.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "0b62162d7a31397e13598b5308ad3664c700031b",
+   "adr": 2,
+   "obligation": "ADR-2/3",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/api/handlers.py",
+   "line_text": "    requests.post(SHIPPING, json={\"invoice\": request[\"invoice\"]}, timeout=5)",
+   "quote": "or call another service's HTTP endpoint from a request handler",
+   "reason": "The added requests.post inside the invoice_paid handler calls the shipping service's HTTP endpoint from a request handler.",
+   "verify_failed": [],
+   "note": "judge contradicts itself on this line: ADR-2/3 CONFLICT, ADR-2/1 COMPLIANT, ADR-2/4 CONFLICT",
+   "label": ""
+  },
+  {
+   "commit": "0b62162d7a31397e13598b5308ad3664c700031b",
+   "adr": 2,
+   "obligation": "ADR-2/1",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/api/handlers.py",
+   "line_text": "    requests.post(SHIPPING, json={\"invoice\": request[\"invoice\"]}, timeout=5)",
+   "quote": "HTTP handlers under `services/*/api/` publish domain events with `publish()` from `events/outbox.py`.",
+   "reason": "The handler still publishes invoice.paid via publish() (unchanged context), but the added direct HTTP call is a separate violation under ADR-2/2 and ADR-2/3.",
+   "verify_failed": [],
+   "note": "judge contradicts itself on this line: ADR-2/3 CONFLICT, ADR-2/1 COMPLIANT, ADR-2/4 CONFLICT",
+   "label": ""
+  },
+  {
+   "commit": "0b62162d7a31397e13598b5308ad3664c700031b",
+   "adr": 2,
+   "obligation": "ADR-2/4",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/api/handlers.py",
+   "line_text": "    requests.post(SHIPPING, json={\"invoice\": request[\"invoice\"]}, timeout=5)",
+   "quote": "A handler cannot wait for another service's answer.",
+   "reason": "The synchronous requests.post with a 5-second timeout makes the handler block on and depend on the shipping service's response instead of relying on the event.",
+   "verify_failed": [],
+   "note": "judge contradicts itself on this line: ADR-2/3 CONFLICT, ADR-2/1 COMPLIANT, ADR-2/4 CONFLICT",
+   "label": ""
+  },
+  {
+   "commit": "c722fe92efec0ba1d66de63c4cc4ac3800ae4653",
+   "adr": 1,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "waived: the backfill reads the table once at import time; the file is deleted after the March release",
+   "label": ""
+  },
+  {
+   "commit": "b90ba4c408184ccce7572bdfe93144f9c89de2e6",
+   "adr": 4,
+   "obligation": "ADR-4/1",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "ingest/importer.py",
+   "line_text": "def import_rows(path: Path) -> list[dict]:",
+   "quote": "`import_rows()` in `ingest/importer.py` is the only entry point for CSV ingestion.",
+   "reason": "The commit removes `import_rows()`, the sole entry point the ADR designates, so no function in `ingest/importer.py` remains to carry CSV ingestion.",
+   "verify_failed": [],
+   "note": "removed anchor import_rows had no callers at parent",
+   "label": ""
+  },
+  {
+   "commit": "b90ba4c408184ccce7572bdfe93144f9c89de2e6",
+   "adr": 4,
+   "obligation": "ADR-4/2",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "ingest/importer.py",
+   "line_text": "def import_rows(path: Path) -> list[dict]:",
+   "quote": "Every CSV read goes through it.",
+   "reason": "The commit message says nothing calls the importer, but the diff shows no callers and no post-change files, so I can't tell whether any CSV read still happens elsewhere without it.",
+   "verify_failed": [],
+   "note": "removed anchor import_rows had no callers at parent",
+   "label": ""
+  },
+  {
+   "commit": "b90ba4c408184ccce7572bdfe93144f9c89de2e6",
+   "adr": 4,
+   "obligation": "ADR-4/4",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob",
+    "ref"
+   ],
+   "path": "ingest/importer.py",
+   "line_text": "    with path.open(newline=\"\") as fh:",
+   "quote": "The importer is the place to add validation.",
+   "reason": "Removing the importer removes the designated place for validation, but the diff adds no validation elsewhere, so no obligation is visibly broken.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ad418e0f6c687e8fcf28c206f5602bff3034cad7",
+   "adr": 1,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ad418e0f6c687e8fcf28c206f5602bff3034cad7",
+   "adr": 3,
+   "obligation": "ADR-3/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "def late_fee(amount: Money, rate: float = 0.015) -> float:",
+   "quote": "No amount is stored or passed as a `float`.",
+   "reason": "late_fee returns the fee amount as a `float` and takes the percentage as a `float` parameter, so a monetary amount is passed as a float.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ad418e0f6c687e8fcf28c206f5602bff3034cad7",
+   "adr": 3,
+   "obligation": "ADR-3/3",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "    return amount.minor_units * rate / 100",
+   "quote": "Percentages are applied by `Money.scaled()`, which rounds once, half-even, and is tested.",
+   "reason": "The percentage is applied with hand-written float arithmetic on `minor_units` instead of `Money.scaled()`, so there is no half-even rounding.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "ad418e0f6c687e8fcf28c206f5602bff3034cad7",
+   "adr": 3,
+   "obligation": "ADR-3/1",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "services/billing/invoices.py",
+   "line_text": "def late_fee(amount: Money, rate: float = 0.015) -> float:",
+   "quote": "Amounts are instances of `Money` from `libs/money/money.py`, which holds minor units as an integer.",
+   "reason": "The late fee amount is returned as a bare `float` rather than a `Money` instance.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  }
+ ],
+ "stale": [
+  {
+   "adr": 4,
+   "obligation": "ADR-4/1",
+   "missing": [
+    "import_rows",
+    "ingest/importer.py"
+   ],
+   "known": false
+  },
+  {
+   "adr": 4,
+   "obligation": "ADR-4/2",
+   "missing": [
+    "import_rows"
+   ],
+   "known": false
+  },
+  {
+   "adr": 4,
+   "obligation": "ADR-4/4",
+   "missing": [
+    "ingest/importer.py"
+   ],
+   "known": false
+  }
+ ]
+}

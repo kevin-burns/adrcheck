@@ -156,4 +156,5 @@ adrcheck eval --cases evals/cases/adrcheck.json --run --report /tmp/after.json
 
 Exit 0 when every row hits. Compare input tokens across runs, not dollars, when the judge runs through the
 Claude CLI; its cache state makes per-run cost noisy. A corpus of only COMPLIANT rows cannot tell a careful
-judge from a silent one, so a corpus worth trusting has CONFLICT and UNCLEAR rows in it.
+judge from a silent one. The planted corpus has the CONFLICT rows: build it with `evals/planted/build.py`,
+export `ADRCHECK_EVAL_PLANTED_REPO`, and run `evals/cases/planted.json` the same way.

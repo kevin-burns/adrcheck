@@ -91,6 +91,9 @@ Three things to look for:
   headings are not being recognised. Run `lint`, then check the heading names against the common templates.
 - An obligation with no anchors. It will never be found stale and the parent probes cannot help it. Add a
   name.
+- An anchor that lives in prose. The stale sweep searches code only, and strips comments and docstrings
+  from Python before it looks. For other languages a comment counts as code, and a JSON, YAML or TOML
+  mention counts too. Name a function, a class or a path, not a phrase.
 - Six obligations from one sentence that lists six things, as adrcheck's ADR-1 does. That is correct and
   useful. Each is checked on its own.
 

@@ -109,11 +109,22 @@ under half a minute. DeepSeek pro said almost nothing. DeepSeek flash was slow a
 numbers Haiku through OpenRouter is the judge to put in CI, and Sonnet stays the reference the eval set
 was labelled with.
 
-What is not yet measured: how the cheaper judges do on rows labelled CONFLICT and UNCLEAR. The only corpus
-with those rows is private, and sending its diffs to a third-party endpoint is a decision its owner has
-not taken. Until a public corpus with planted conflicts exists, treat the table above as a cost and
-latency comparison, not a quality one. Run files for these rows are in
-[the cheap-judges spike](spikes/2026-11-09-cheap-judges.md).
+Run files for these rows are in [the cheap-judges spike](spikes/2026-11-09-cheap-judges.md).
+
+The planted corpus (`evals/planted/build.py`, nine rows with three CONFLICTs, one ADR-OVERTAKEN and a
+waiver, labels true by construction) is the recall side. All four judges scored 9/9 on it:
+
+| Judge | Route | Tokens in / out, 7 calls | Cost | Wall |
+|---|---|---|---|---|
+| claude-sonnet-5-5 | claude-cli | 359,851 / 2,851 | $0.065 reported | 58 s |
+| anthropic/claude-haiku-5.5 | OpenRouter | 10,593 / 6,015 | about $0.004 | 33 s |
+| deepseek/deepseek-v4-flash | OpenRouter | 7,312 / 7,833 | about $0.002 | 1 min 3 s |
+| deepseek/deepseek-v4-pro | OpenRouter | 7,549 / 17,729 | about $0.04 | 14 min 7 s |
+
+The planted breaches are the obvious kind, an import and a float, so this shows the cheap judges can read a
+diff against a quoted sentence, not that they catch a subtle breach. Details and limits in
+[the planted spike](spikes/2026-11-09-planted-corpus.md). The CLI route's input tokens are about thirty
+times the API route's for the same prompts, so compare token counts within one route only.
 
 ## Keeping the bill bounded
 
