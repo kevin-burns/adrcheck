@@ -1,0 +1,109 @@
+# The flow
+
+Two diagrams. The first is what happens inside one `adrcheck check` run. The second is what a team does
+around it: where the ADR is written, where the report lands, and what each verdict asks someone to do.
+
+## Inside one run
+
+```mermaid
+flowchart TD
+    A[ADR files] --> L[lint: hygiene, no model]
+    A --> S[select: which accepted ADRs<br/>touch this commit's paths<br/>or are named in it]
+    C[commits in the range] --> S
+    A --> K{obligation cache<br/>hit by ADR text?}
+    K -- yes --> O[obligations]
+    K -- no --> M1[compile seat: one model call per ADR] --> O
+    S --> J[judge seat: one model call per commit,<br/>every selected ADR and its obligations]
+    O --> J
+    J --> V[verify, no model:<br/>line in diff? quote in ADR?<br/>quote from Decision or Consequences?]
+    V -- fails --> U[UNCLEAR, failure named]
+    V -- passes --> P[parent probes, no model:<br/>anchor already absent?<br/>line already elsewhere?<br/>removed name had no callers?]
+    P -- a CONFLICT and yes --> T[ADR-OVERTAKEN]
+    P -- otherwise --> R[verdict stands:<br/>CONFLICT, COMPLIANT, UNCLEAR]
+    O --> W[stale sweep, no model:<br/>every anchor of every accepted ADR,<br/>at the end of the range]
+    W --> B{in baseline?}
+    B -- yes --> Bc[counted]
+    B -- no --> Bl[listed]
+    U --> X[report: markdown or JSON, exit code]
+    T --> X
+    R --> X
+    Bc --> X
+    Bl --> X
+```
+
+Two seats cost money and everything else is deterministic. The compile seat runs once per ADR and its
+output is cached by the ADR's text, so a repository that commits `.adrcheck/obligations/` pays for compile
+once, ever, until an ADR changes. The judge seat runs once per commit that touches governed paths. A commit
+that touches nothing an ADR governs never reaches it.
+
+The order after the judge matters. Verification runs before any verdict is shown, so a CONFLICT you read
+has a real line and a real quote behind it. The parent probes run after, and only on CONFLICTs, so they can
+turn blame into "the ADR is stale" but never turn a compliant change into anything else.
+
+## Around the run
+
+```mermaid
+flowchart LR
+    subgraph write [Deciding]
+        D[write or amend an ADR<br/>Status, Applies to, Decision] --> LN[adrcheck lint]
+        LN --> CP[adrcheck compile<br/>read the obligations]
+        CP -- obligation surprises you --> D
+        CP --> CM[commit the ADR and<br/>.adrcheck/obligations/]
+    end
+    subgraph change [Changing code]
+        CO[commits on a branch] --> PC["pre-commit: adrcheck check --staged<br/>optional, needs a provider"]
+        PC --> PR[pull request]
+        PR --> GA["Action: adrcheck check<br/>origin/base..HEAD<br/>one comment, updated in place"]
+    end
+    CM --> CO
+    GA --> V{verdict}
+    V -- CONFLICT --> F1[fix the code]
+    V -- CONFLICT --> F2[Adr-Exception trailer<br/>with a reason]
+    V -- CONFLICT --> F3[supersede the ADR]
+    V -- ADR-OVERTAKEN --> F3
+    V -- UNCLEAR --> F4[read it as a review comment]
+    V -- COMPLIANT --> F5[nothing]
+    GA --> ST[stale list]
+    ST -- first run on history --> BL["review once,<br/>--write-baseline,<br/>commit the baseline"]
+    ST -- new row later --> F3
+    F3 --> D
+```
+
+Three places a decision can be enforced, and they are the same check with a different range:
+
+| Where | Range | Who pays | When to use |
+|---|---|---|---|
+| developer's machine | `--staged`, the index | the developer's own key or CLI | before commit, opt-in; the lint hook is free and always on |
+| pull request | `origin/<base>..HEAD` | the repository's CI key | the default; one comment per PR, updated on every push |
+| a sweep over history | `--range v1.0..v2.0` | whoever runs it | adopting on a repository with history; finding when a decision was left behind |
+
+## What a CONFLICT asks of you
+
+The report never decides for you. A verified CONFLICT means the code and the written decision disagree, and
+one of them is wrong.
+
+- The code is wrong: fix it. The next push updates the comment.
+- The decision is wrong: write the superseding ADR, mark the old one Superseded, compile, commit. The
+  CONFLICT disappears because the old ADR is no longer Accepted.
+- Both are right this once: add the trailer to the commit message.
+
+```text
+Adr-Exception: ADR-4 one-off backfill of the November export; the importer returns in the next commit
+```
+
+The waiver is per commit and shows in the report as COMPLIANT with the reason, so nothing is silent.
+
+## What the stale list asks of you
+
+Different question, different answer. A stale row is not about the commits in the range. It says an
+obligation names things that no longer exist anywhere in the code. On a repository adopting adrcheck,
+expect many rows on the first run. Review them once. For each, either supersede the ADR, fix the ADR's
+anchors, or accept the row and record it:
+
+```sh
+adrcheck check --range origin/main..HEAD --write-baseline
+git add .adrcheck/baseline.json
+```
+
+From then on those rows are counted, not listed, and only new rows demand attention. Edit the baseline like
+source: a row you remove reappears in the next report.

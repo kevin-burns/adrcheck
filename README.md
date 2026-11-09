@@ -18,6 +18,9 @@ the decisions adrcheck holds itself to (it checks its own pull requests against 
 
 ## Quickstart
 
+The full documentation is under [docs/](docs/README.md): getting started, what the verdicts mean, the flow
+as diagrams, use cases by role, writing ADRs that compile, and providers.
+
 ADRs live in the repository as numbered markdown files, in any of the common shapes (Nygard, MADR,
 Y-statements, Tyree and Akerman, bold labels, a table). adrcheck binds on the role of a section, not
 its heading: the decision and its consequences bind, the context explains, the considered options
