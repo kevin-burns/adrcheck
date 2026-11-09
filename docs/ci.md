@@ -149,8 +149,8 @@ Reports tab is the surface.
 
 Both surfaces are in use on this repository, not only documented.
 
-- **GitHub.** The self-check workflow above has judged every pull request here since the repository went
-  public. It has raised two verified CONFLICTs, both real: a mechanical judge placed in the domain package
+- **GitHub.** The self-check workflow above has judged every pull request here since it was added, while the
+  repository was still private. It has raised two verified CONFLICTs, both real: a mechanical judge placed in the domain package
   where it imported the ports module (ADR-1), and a probe renamed in code while ADR-7 still named the old
   function. The first was fixed in code, the second by amending the record; the second shape, code right and
   decision log behind, is the common one.
