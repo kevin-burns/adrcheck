@@ -14,10 +14,6 @@ and publishes its own false-alarm rate.
 
 Advisory by default. Structured JSON out, so a caller can gate if it wants to.
 
-Status: pre-release. Measured on two repositories so far; the numbers and the labelled rows are in
-`docs/spikes/` and `evals/cases/`. See `docs/design.md` for the module boundaries and `docs/adr/` for
-the decisions adrcheck holds itself to (it checks its own pull requests against them).
-
 ## In one minute
 
 ![adrcheck on a planted repository: the judge finds a CONFLICT and says why, quoting the ADR sentence and the changed line; then a deleted module leaves a record overtaken; then the free tier catches the same line with no model](docs/img/demo.gif)
@@ -26,6 +22,11 @@ First the judge: a model (here `openai:gpt-6-luna`, any provider in [docs/provid
 works) reads the diff against the record and writes why, on every finding. Then direction two: a deleted
 module leaves a record overtaken by its own code. Last the free tier: no model call and no API key, the
 same line caught by the patterns from the compiled obligations, instantly.
+
+Status: pre-release. Measured on its own history, one public repository and two planted corpora so far; the
+numbers and the labelled rows are in `docs/spikes/` and `evals/cases/`. See `docs/design.md` for the module
+boundaries and `docs/adr/` for the decisions adrcheck holds itself to (it checks its own pull requests against
+them).
 
 ## Quickstart
 
@@ -57,18 +58,20 @@ adrcheck check --adr-dir docs/adr --range origin/main..HEAD --as-one --format md
 adrcheck check --adr-dir docs/adr --range v1.0..v2.0 --format md
 ```
 
-The model is chosen with `--model provider:model`. `anthropic:claude-sonnet-5-5` uses the Anthropic
-API and needs `ANTHROPIC_API_KEY` in the environment; `claude-cli:sonnet` uses a logged-in Claude Code
-install and needs no key. `openai:<model>` posts to any OpenAI-compatible endpoint, `OPENAI_BASE_URL`
-and `OPENAI_API_KEY` from the environment; `ollama:<model>` is the same against `OLLAMA_HOST`, default
+The model is chosen with `--model provider:model`. `anthropic:claude-sonnet-5-5` uses the Anthropic API and
+needs `ANTHROPIC_API_KEY` in the environment; `claude-cli:sonnet` uses a logged-in Claude Code install and
+needs no key. `openai:<model>` posts to any OpenAI-compatible endpoint, with `OPENAI_BASE_URL` and
+`OPENAI_API_KEY` from the environment; `ollama:<model>` is the same against `OLLAMA_HOST`, default
 `http://localhost:11434`. Those two report a cost of zero because no price table fits every endpoint.
-A commit that touches nothing an ADR governs costs no model call. A commit that does costs one call; input tokens run about 1,500 to 60,000 through the API depending on
-the diff, and far more through the Claude CLI, which adds its own system prompt (`docs/providers.md`).
-Measured runs are in `docs/spikes/`. `--compile-model` puts the compile seat on
-a different provider, for example a local model for the once-per-ADR compile and Sonnet for the judge.
-The obligation cache is keyed by ADR text and prompt version, not by model: delete `.adrcheck/obligations`
-to recompile after changing the compile model. Provider setup, measured judge costs, and how to bound the bill
-are in [docs/providers.md](docs/providers.md).
+
+A commit that touches nothing an ADR governs costs no model call. A commit that does costs one call; input
+tokens run about 1,500 to 60,000 through the API depending on the diff, and far more through the Claude CLI,
+which adds its own system prompt. Measured runs are in `docs/spikes/`; provider setup, judge scores and costs,
+and how to bound the bill are in [docs/providers.md](docs/providers.md).
+
+`--compile-model` puts the compile seat on a different provider, for example a local model for the once-per-
+ADR compile and Sonnet for the judge. The obligation cache is keyed by ADR text and prompt version, not by
+model: delete `.adrcheck/obligations` to recompile after changing the compile model.
 
 Waive an ADR for one commit with a trailer that carries a reason:
 
@@ -113,9 +116,9 @@ The header wins where both exist, and `adrcheck lint` reports the disagreement.
 
 The free tier is the default for `--staged`. Run `adrcheck compile` once and commit `.adrcheck/obligations/`
 first, or the hook reports every ADR as not compiled and passes. It never compiles and never calls a model: an
-ADR with no cached obligations is reported as not compiled, an ADR with no forbidden pattern as not judged, and only a forbidden
-pattern on an added line is a CONFLICT, which goes through the same verification and parent probes as a
-model's claim.
+ADR with no cached obligations is reported as not compiled, an ADR with no forbidden pattern as not judged,
+and only a forbidden pattern on an added line is a CONFLICT, which goes through the same verification and
+parent probes as a model's claim.
 
 ### In a pull request
 
