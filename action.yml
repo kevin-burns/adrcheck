@@ -54,7 +54,17 @@ runs:
       shell: bash
       env:
         BASE: ${{ inputs.base }}
-      run: git fetch --no-tags --depth=200 origin "+refs/heads/${BASE}:refs/remotes/origin/${BASE}"
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        # checkout with fetch-depth 0 already has it; otherwise fetch with the token, because a private
+        # repository checked out with persist-credentials false has no credential for a plain git fetch
+        if git rev-parse --verify -q "refs/remotes/origin/${BASE}" > /dev/null; then
+          echo "origin/${BASE} already present"
+          exit 0
+        fi
+        auth="$(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 | tr -d '\n')"
+        git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${auth}" \
+          fetch --no-tags --depth=200 origin "+refs/heads/${BASE}:refs/remotes/origin/${BASE}"
 
     - name: Check the pull request against the ADRs
       id: check
