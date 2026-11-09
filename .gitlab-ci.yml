@@ -17,7 +17,8 @@ stages:
 
 adrcheck:
   stage: check
-  image: ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+  # the non-slim image carries git, which the fetch of the target branch needs; the slim one does not
+  image: ghcr.io/astral-sh/uv:python3.13-bookworm
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
