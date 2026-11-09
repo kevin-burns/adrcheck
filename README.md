@@ -60,9 +60,10 @@ adrcheck check --adr-dir docs/adr --range v1.0..v2.0 --format md
 
 The model is chosen with `--model provider:model`. `anthropic:claude-sonnet-5-5` uses the Anthropic API and
 needs `ANTHROPIC_API_KEY` in the environment; `claude-cli:sonnet` uses a logged-in Claude Code install and
-needs no key. `openai:<model>` posts to any OpenAI-compatible endpoint, with `OPENAI_BASE_URL` and
-`OPENAI_API_KEY` from the environment; `ollama:<model>` is the same against `OLLAMA_HOST`, default
-`http://localhost:11434`. Those two report a cost of zero because no price table fits every endpoint.
+`codex-cli:gpt-5.5` a logged-in Codex CLI install, neither needs a key. `openai:<model>` posts to any
+OpenAI-compatible endpoint, with `OPENAI_BASE_URL` and `OPENAI_API_KEY` from the environment;
+`ollama:<model>` is the same against `OLLAMA_HOST`, default `http://localhost:11434`. Those two report a
+cost of zero because no price table fits every endpoint; so does the Codex CLI, which prints no price.
 
 A commit that touches nothing an ADR governs costs no model call. A commit that does costs one call; input
 tokens run about 1,500 to 60,000 through the API depending on the diff, and far more through the Claude CLI,

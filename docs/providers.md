@@ -8,21 +8,23 @@ about choosing a judge.
 Both seats take a `provider:model` string. `--model` sets both. `--compile-model` moves the compile seat
 somewhere else, for example a local model for the once-per-ADR compile and a hosted one for the judge.
 
-## The four providers
+## The five providers
 
 | Prefix | What it talks to | Environment | Cost reported |
 |---|---|---|---|
 | `anthropic:` | Anthropic API through the SDK | `ANTHROPIC_API_KEY` | from the SDK's usage figures |
 | `claude-cli:` | a logged-in Claude Code install (`claude -p`) | none | the CLI's own figure |
+| `codex-cli:` | a logged-in Codex CLI install (`codex exec`) | none | always 0 |
 | `openai:` | any endpoint that serves `chat/completions` | `OPENAI_BASE_URL`, `OPENAI_API_KEY` | always 0 |
 | `ollama:` | an Ollama server's OpenAI-compatible route | `OLLAMA_HOST` (default `http://localhost:11434`) | always 0 |
 
 Default when `--model` is absent: `anthropic:claude-sonnet-5-5` if the Anthropic key variable is set,
 else `claude-cli:sonnet`.
 
-The `openai:` and `ollama:` runners report zero cost on purpose. No price table fits every endpoint that
-speaks this protocol, and a wrong number is worse than a missing one. Work the cost out from the token
-counts in the JSON report and the provider's own price list.
+The `openai:` and `ollama:` runners report zero cost on purpose ([ADR-14](adr/0014-openai-and-ollama-runners-report-zero-cost.md)).
+No price table fits every endpoint that speaks this protocol, and a wrong number is worse than a missing one.
+Work the cost out from the token counts in the JSON report and the provider's own price list. `codex-cli:`
+reports zero for a plainer reason: Codex prints token counts and no price.
 
 The model part keeps everything after the first colon, so `ollama:qwen3:8b` is model `qwen3:8b`.
 
@@ -49,6 +51,22 @@ Treat it as the zero-setup route for a developer who is logged in, and put CI's 
 
 ```sh
 adrcheck check --range origin/main..HEAD --model claude-cli:sonnet
+```
+
+### Codex CLI
+
+Needs a Codex CLI install that is already logged in, with a ChatGPT account or with an API key stored by
+`codex login`; adrcheck reads no key of its own. Each call is one `codex exec` turn: the prompt on stdin,
+JSONL events out, a read-only sandbox, nothing persisted (`--ephemeral`), and a neutral working directory so
+no project `AGENTS.md` joins the prompt. The reply is the last `agent_message` item and the token counts come
+from `turn.completed`. An empty model, `codex-cli:`, leaves the model to the Codex config.
+
+Measured once on codex-cli 0.166.0 (2026-11-10): Codex's own instructions add about 4,900 input tokens to
+every call, so compare token counts within this route only, as with the Claude CLI. Not yet scored on the
+eval corpora.
+
+```sh
+adrcheck check --range origin/main..HEAD --model codex-cli:gpt-5.5
 ```
 
 ### OpenAI-compatible endpoints, including OpenRouter
