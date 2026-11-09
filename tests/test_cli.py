@@ -187,8 +187,9 @@ def test_check_staged_judges_the_index_against_the_adrs(tmp_path: Path, capsys):
     )
     out = json.loads(capsys.readouterr().out)
     assert code == 0 and out["changes"][0]["commit"] == "STAGED"
-    # HEAD already holds the cited line, so the index did not introduce it: the parent of a staged change is HEAD
-    assert out["findings"][0]["verdict"] == "ADR-OVERTAKEN"
+    # HEAD already holds the cited line, so the index did not touch it: the parent of a staged change is HEAD, the
+    # diff is against HEAD, and a claim about an untouched line fails verification rather than becoming a verdict
+    assert out["findings"][0]["verdict"] == "UNCLEAR" and "line-not-in-change" in out["findings"][0]["note"]
 
 
 def test_write_baseline_records_the_stale_list_and_the_next_run_reports_those_rows_as_known(tmp_path: Path, capsys):
