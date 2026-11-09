@@ -13,6 +13,7 @@ from adrcheck.adapters.eval_cases import load_cases
 from adrcheck.adapters.git_changes import GitChanges
 from adrcheck.adapters.markdown_adr_source import CONVENTIONAL_DIRS, MarkdownAdrSource, adrs_at, discover_adr_dir
 from adrcheck.adapters.obligation_cache import CachedCompiler
+from adrcheck.adapters.progress import Announcing
 from adrcheck.adapters.providers import runner_for
 from adrcheck.adapters.render import to_codequality, to_json, to_markdown
 from adrcheck.adapters.scope_map import load_scope_map
@@ -265,7 +266,10 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         compiler = CachedCompiler(None, repo / ".adrcheck", prompt_version=PROMPT_VERSION).cached_only()
     else:
         if judge is None:
-            compile_seat, judge = _seats(args.model or _default_model(), args.compile_model)
+            model = args.model or _default_model()
+            compile_seat, judge = _seats(model, args.compile_model)
+            if sys.stderr.isatty():
+                judge = Announcing(judge, model, sys.stderr)  # a person is waiting; CI gets nothing extra
         else:
             compile_seat = judge  # a test's fake fills both seats
         compiler = CachedCompiler(compile_seat, repo / ".adrcheck", prompt_version=PROMPT_VERSION)
