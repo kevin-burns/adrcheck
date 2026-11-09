@@ -130,9 +130,11 @@ waiver, labels true by construction) is the recall side. All four judges scored 
 | deepseek/deepseek-v4-flash | OpenRouter | 7,312 / 7,833 | about $0.002 | 1 min 3 s |
 | deepseek/deepseek-v4-pro | OpenRouter | 7,549 / 17,729 | about $0.04 | 14 min 7 s |
 
-The planted breaches are the obvious kind, an import and a float, so this shows the cheap judges can read a
-diff against a quoted sentence, not that they catch a subtle breach. Details and limits in
-[the planted spike](spikes/2026-11-09-planted-corpus.md). The CLI route's input tokens are about thirty
+Those planted breaches are the obvious kind, an import and a float. The large planted corpus
+(`evals/planted/build_large.py`, sixteen ADRs, 25 rows of the breaches a reviewer argues about) separates
+the judges: Haiku 5.5 23/25, Sonnet 5.5 23/25, DeepSeek v4 flash 19/25, with flash missing two planted
+breaches outright. Details in [the planted spike](spikes/2026-11-09-planted-corpus.md) and
+[the large-corpus spike](spikes/2026-11-09-planted-large.md). The CLI route's input tokens are about thirty
 times the API route's for the same prompts, so compare token counts within one route only.
 
 ## Keeping the bill bounded

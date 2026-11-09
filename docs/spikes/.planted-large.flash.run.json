@@ -1,0 +1,2487 @@
+{
+ "changes": [
+  {
+   "commit": "e0d867c580f10db6d0dd9ab17fb1f9b0e07ef886",
+   "subject": "feat(domain): refunds",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1856,
+   "tokens_out": 523,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "1d5fb87fee074d37cf2f4d2e725df300c9e61065",
+   "subject": "feat(api): confirm with the warehouse",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2216,
+   "tokens_out": 556,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-dependency",
+     "detail": "requests"
+    },
+    {
+     "kind": "new-external-host",
+     "detail": "warehouse.internal"
+    }
+   ]
+  },
+  {
+   "commit": "77bb4c3e973dc8819872133f748948f9bfb51e6f",
+   "subject": "feat(domain): stock-aware pricing",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1921,
+   "tokens_out": 372,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "1cefdd7722665c5f83b79edefd5da94b165bc735",
+   "subject": "feat(domain): lookup by legacy id",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1778,
+   "tokens_out": 607,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 14,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "eeb4212ce84dd601e4cee1b4a722d9fecfc97bb3",
+   "subject": "feat(api): fraud score",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2266,
+   "tokens_out": 13948,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-external-host",
+     "detail": "fraud.internal"
+    }
+   ]
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "subject": "fix(api): clearer log line",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2186,
+   "tokens_out": 773,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "0befe412ce130e54ae6839133309a33fbea40596",
+   "subject": "chore(api): note the future work",
+   "uncovered": 1,
+   "judge_calls": 1,
+   "tokens_in": 2327,
+   "tokens_out": 4574,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "f8d5254e9031d6e29b6d6a1f05e3c395932b3755",
+   "subject": "refactor(ingest): split the reader out of the importer",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1351,
+   "tokens_out": 401,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "0977441f03ba23c14d26ecfc44cd742ca974145b",
+   "subject": "refactor(pricing): display takes Money",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1271,
+   "tokens_out": 443,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "b214a07e81beb578da519044f80f0883e454812c",
+   "subject": "fix(export): quote fields with commas",
+   "uncovered": 1,
+   "judge_calls": 1,
+   "tokens_in": 1013,
+   "tokens_out": 19,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "7e9b99592f923f96de9e6c051351c7ccb1780bfe",
+   "subject": "feat(api): ping the pricing service",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2190,
+   "tokens_out": 386,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [
+    "Adr-Exception names ADR-99, which does not exist"
+   ],
+   "decision_signals": [
+    {
+     "kind": "new-external-host",
+     "detail": "pricing.internal"
+    }
+   ]
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "subject": "feat(api): cancel an order",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2216,
+   "tokens_out": 514,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "73bcf9810150975bc07202c343ed3e1a9b862a00",
+   "subject": "feat(infra): sync stock levels",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1754,
+   "tokens_out": 530,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "dd3c71a9c874a872935aa647b993dbf2559e9272",
+   "subject": "feat(api): tax lookup",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2155,
+   "tokens_out": 580,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": [
+    {
+     "kind": "new-external-host",
+     "detail": "tax.internal"
+    }
+   ]
+  },
+  {
+   "commit": "151557bcec94408c092b9482aa0cd0ba853a8c97",
+   "subject": "refactor(infra): drop the unused retry helper",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1722,
+   "tokens_out": 9115,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 8,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "65f3cee65db58dd9b1b015f3353978fefd1696bf",
+   "subject": "feat(api): health route",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2394,
+   "tokens_out": 3810,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "5f02f2072d7381f44943fbd0905d714a7f8aab64",
+   "subject": "fix(db): ensure the audit table exists",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1185,
+   "tokens_out": 380,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "b061ab59aed63e1fc2f8a046d4724bb26f0c6e1d",
+   "subject": "feat(api): region header",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 2154,
+   "tokens_out": 138,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed; this change touches its paths, not enforced"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 2,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 4,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 12,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "20ce96e67efa36abcf247400d596eeabca98b233",
+   "subject": "feat(infra): bulk fetch",
+   "uncovered": 0,
+   "judge_calls": 1,
+   "tokens_in": 1647,
+   "tokens_out": 233,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    },
+    {
+     "adr": 5,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 6,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 10,
+     "reason": "model: not relevant to this change"
+    },
+    {
+     "adr": 11,
+     "reason": "model: not relevant to this change"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  },
+  {
+   "commit": "6121c8c572c4cc52ce4a731fd4dedba0ed2e22fb",
+   "subject": "docs: describe the deploy",
+   "uncovered": 1,
+   "judge_calls": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost_usd": 0.0,
+   "excluded": [
+    {
+     "adr": 1,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 2,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 3,
+     "reason": "status is superseded"
+    },
+    {
+     "adr": 4,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 5,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 6,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 7,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 8,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 9,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 10,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 11,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 12,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 13,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 14,
+     "reason": "globs did not match any changed path"
+    },
+    {
+     "adr": 15,
+     "reason": "status is proposed"
+    },
+    {
+     "adr": 16,
+     "reason": "status is deprecated"
+    }
+   ],
+   "problems": [],
+   "decision_signals": []
+  }
+ ],
+ "findings": [
+  {
+   "commit": "e0d867c580f10db6d0dd9ab17fb1f9b0e07ef886",
+   "adr": 1,
+   "obligation": "ADR-1/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/refunds.py",
+   "line_text": "from orders.domain.errors import OrderError",
+   "quote": "Modules under `orders/domain/` import only the standard library and other modules under `orders/domain/`.",
+   "reason": "The only imports are from orders.domain, which is inside the domain package.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "e0d867c580f10db6d0dd9ab17fb1f9b0e07ef886",
+   "adr": 14,
+   "obligation": "ADR-14/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/refunds.py",
+   "line_text": "from orders.domain.money import Money",
+   "quote": "Amounts are `Money` from `orders/domain/money.py`, integer minor units.",
+   "reason": "The file imports Money from the correct module.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "e0d867c580f10db6d0dd9ab17fb1f9b0e07ef886",
+   "adr": 14,
+   "obligation": "ADR-14/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/refunds.py",
+   "line_text": "return Money(total.minor_units - amount.minor_units)",
+   "quote": "integer minor units",
+   "reason": "The subtraction and construction use minor_units, keeping amount as integer minor units.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "e0d867c580f10db6d0dd9ab17fb1f9b0e07ef886",
+   "adr": 14,
+   "obligation": "ADR-14/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/refunds.py",
+   "line_text": "def refund(total: Money, amount: Money) -> Money:",
+   "quote": "No amount is stored or passed as a `float`.",
+   "reason": "Parameters and return are typed as Money, not float.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "e0d867c580f10db6d0dd9ab17fb1f9b0e07ef886",
+   "adr": 14,
+   "obligation": "ADR-14/4",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/refunds.py",
+   "line_text": "if amount.minor_units > total.minor_units:",
+   "quote": "Percentages are applied by `Money.scaled()`.",
+   "reason": "The diff does not show any percentage calculation; the refund function does not call scaled() nor use percentages, so compliance or conflict is impossible to determine.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1d5fb87fee074d37cf2f4d2e725df300c9e61065",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/warehouse.py",
+   "line_text": "import requests as http",
+   "quote": "They never import `requests` or `httpx`, under any alias or through `importlib`",
+   "reason": "Line 1 of new file orders/api/warehouse.py imports requests using alias http, which violates the ban on importing requests under any alias.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1d5fb87fee074d37cf2f4d2e725df300c9e61065",
+   "adr": 2,
+   "obligation": "ADR-2/3",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/warehouse.py",
+   "line_text": "import requests as http",
+   "quote": "They never import `requests` or `httpx`, under any alias or through `importlib`",
+   "reason": "Line 1 imports requests as http, and the ADR explicitly prohibits importing requests under any alias or through importlib.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1d5fb87fee074d37cf2f4d2e725df300c9e61065",
+   "adr": 2,
+   "obligation": "ADR-2/4",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/warehouse.py",
+   "line_text": "resp = http.post('http://warehouse.internal/confirm', json={'order': order_id}, timeout=5)",
+   "quote": "never call another service's HTTP endpoint from a request handler.",
+   "reason": "Line 8 calls the HTTP endpoint http://warehouse.internal/confirm from a handler module under orders/api/, directly violating the prohibition on calling another service's HTTP endpoint.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1d5fb87fee074d37cf2f4d2e725df300c9e61065",
+   "adr": 2,
+   "obligation": "ADR-2/5",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/warehouse.py",
+   "line_text": "resp = http.post('http://warehouse.internal/confirm', json={'order': order_id}, timeout=5)",
+   "quote": "Anything that needs an answer from another service is a query, not an event.",
+   "reason": "Line 8 waits for a synchronous HTTP response (bool) from another service, modelling a need-for-answer as an HTTP call rather than a query.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1d5fb87fee074d37cf2f4d2e725df300c9e61065",
+   "adr": 5,
+   "obligation": "ADR-5/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/warehouse.py",
+   "line_text": "from orders.infra.log import get_logger",
+   "quote": "logs through `get_logger()` from `orders/infra/log.py`",
+   "reason": "Line 3 imports get_logger from the correct module, complying with the logging requirement.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "77bb4c3e973dc8819872133f748948f9bfb51e6f",
+   "adr": 1,
+   "obligation": "ADR-1/1",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/_stock.py",
+   "line_text": "from orders.db.session import connection",
+   "quote": "They never import `orders.infra`, `orders.db` or `requests`.",
+   "reason": "Line `from orders.db.session import connection` in the domain module orders/domain/_stock.py imports orders.db, which violates ADR-1/1.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "77bb4c3e973dc8819872133f748948f9bfb51e6f",
+   "adr": 1,
+   "obligation": "ADR-1/4",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/_stock.py",
+   "line_text": "from orders.db.session import connection",
+   "quote": "Modules under `orders/domain/` import only the standard library and other modules under `orders/domain/`.",
+   "reason": "Line `from orders.db.session import connection` in orders/domain/_stock.py imports from outside orders/domain/, violating ADR-1/4.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "77bb4c3e973dc8819872133f748948f9bfb51e6f",
+   "adr": 14,
+   "obligation": "ADR-14/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/pricing_rules.py",
+   "line_text": "return amount.scaled(11000) if on_hand(sku) < 5 else amount",
+   "quote": "Percentages are applied by `Money.scaled()`.",
+   "reason": "Line uses amount.scaled(11000) which is the scaled method of Money, complying with ADR-14/4.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1cefdd7722665c5f83b79edefd5da94b165bc735",
+   "adr": 1,
+   "obligation": "ADR-1/1",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/lookup.py",
+   "line_text": "from orders.domain._legacy_bridge import legacy_lookup",
+   "quote": "They never import `orders.infra`, `orders.db` or `requests`.",
+   "reason": "orders/domain/lookup.py imports orders.domain._legacy_bridge, which is not part of orders/domain/ and is likely an infrastructure module, directly violating the prohibition on importing infrastructure modules.",
+   "verify_failed": [],
+   "note": "ADR-1/2, ADR-1/3 found this line compliant",
+   "label": ""
+  },
+  {
+   "commit": "1cefdd7722665c5f83b79edefd5da94b165bc735",
+   "adr": 1,
+   "obligation": "ADR-1/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/lookup.py",
+   "line_text": "from orders.domain._legacy_bridge import legacy_lookup",
+   "quote": "They never import `orders.infra`, `orders.db` or `requests`.",
+   "reason": "The import is not orders.db, so this specific obligation is not violated.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1cefdd7722665c5f83b79edefd5da94b165bc735",
+   "adr": 1,
+   "obligation": "ADR-1/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/lookup.py",
+   "line_text": "from orders.domain._legacy_bridge import legacy_lookup",
+   "quote": "They never import `orders.infra`, `orders.db` or `requests`.",
+   "reason": "The import is not the requests library, so this specific obligation is not violated.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "1cefdd7722665c5f83b79edefd5da94b165bc735",
+   "adr": 1,
+   "obligation": "ADR-1/4",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/lookup.py",
+   "line_text": "from orders.domain._legacy_bridge import legacy_lookup",
+   "quote": "Modules under `orders/domain/` import only the standard library and other modules under `orders/domain/`.",
+   "reason": "orders.domain._legacy_bridge is not under orders/domain/ (the underscore suggests it is a private module likely from an infrastructure layer), and it is not a standard library module, so the import violates the rule that only domain modules or standard library modules may be imported.",
+   "verify_failed": [],
+   "note": "ADR-1/2, ADR-1/3 found this line compliant",
+   "label": ""
+  },
+  {
+   "commit": "1cefdd7722665c5f83b79edefd5da94b165bc735",
+   "adr": 1,
+   "obligation": "ADR-1/5",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/domain/lookup.py",
+   "line_text": "from orders.domain._legacy_bridge import legacy_lookup",
+   "quote": "The domain tests run without a database.",
+   "reason": "The diff does not touch any tests, so it is unclear whether the new import would require a database for tests.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "eeb4212ce84dd601e4cee1b4a722d9fecfc97bb3",
+   "adr": 2,
+   "obligation": "ADR-2/5",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/fraud.py",
+   "line_text": "return client.get('http://fraud.internal/score', params={'order': order_id}, timeout=5).json()['score']",
+   "quote": "Anything that needs an answer from another service is a query, not an event.",
+   "reason": "The line makes an HTTP request to get a fraud score, which models the need for an answer as a query, satisfying ADR-2/5.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "eeb4212ce84dd601e4cee1b4a722d9fecfc97bb3",
+   "adr": 12,
+   "obligation": "ADR-12/1",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/fraud.py",
+   "line_text": "return client.get('http://fraud.internal/score', params={'order': order_id}, timeout=5).json()['score']",
+   "quote": "Failures cross the API boundary as subclasses of OrderError from orders/domain/errors.py.",
+   "reason": "The line may raise non-OrderError exceptions, and it is unclear from the diff whether these will be caught and converted before crossing the API boundary.",
+   "verify_failed": [
+    "quote-not-in-adr"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "adr": 2,
+   "obligation": "ADR-2/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/notify.py",
+   "line_text": "from orders.infra.outbox import publish",
+   "quote": "Handlers under `orders/api/` publish events with `publish()` from `orders/infra/outbox.py`.",
+   "reason": "The handler under orders/api/ imports publish from orders/infra/outbox.py, which satisfies the obligation.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/notify.py",
+   "line_text": "+ from orders.infra.log import get_logger",
+   "quote": "They never import `requests` or `httpx`, under any alias or through `importlib`",
+   "reason": "The changed lines import get_logger, not requests or httpx, so the handler remains compliant.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "adr": 2,
+   "obligation": "ADR-2/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/notify.py",
+   "line_text": "+     log.info('publishing instead of calling shipping directly: import requests is not allowed here')",
+   "quote": "never call another service's HTTP endpoint from a request handler.",
+   "reason": "The changed handler publishes an event instead of calling another service's HTTP endpoint, so it remains compliant.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "adr": 2,
+   "obligation": "ADR-2/5",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/notify.py",
+   "line_text": "+     log.info('publishing instead of calling shipping directly: import requests is not allowed here')",
+   "quote": "Anything that needs an answer from another service is a query, not an event.",
+   "reason": "The handler continues to use an event rather than a query, satisfying the intent obligation.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "adr": 5,
+   "obligation": "ADR-5/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/notify.py",
+   "line_text": "+ from orders.infra.log import get_logger",
+   "quote": "logs through `get_logger()` from `orders/infra/log.py`",
+   "reason": "The handler imports get_logger from orders/infra/log.py, which satisfies the logging obligation.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "adr": 5,
+   "obligation": "ADR-5/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/notify.py",
+   "line_text": "+     log.info('publishing instead of calling shipping directly: import requests is not allowed here')",
+   "quote": "It never calls `print()`.",
+   "reason": "The changed line uses log.info instead of print(), so it is compliant with the prohibition on print().",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "31396f5ef5597a48f7ac20b9acd63e4becc4b95f",
+   "adr": 5,
+   "obligation": "ADR-5/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/notify.py",
+   "line_text": "+     log.info('publishing instead of calling shipping directly: import requests is not allowed here')",
+   "quote": "is the one place that prints",
+   "reason": "The changed line does not call print() outside orders/cli.py, so it is compliant.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f8d5254e9031d6e29b6d6a1f05e3c395932b3755",
+   "adr": 9,
+   "obligation": "ADR-9/1",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/ingest/csv_reader.py",
+   "line_text": "def read_rows(path: Path) -> list[dict]:",
+   "quote": "Every CSV read goes through it.",
+   "reason": "The new file orders/ingest/csv_reader.py defines a function read_rows that directly reads CSV using csv.DictReader, bypassing import_rows, so not all CSV reads go through import_rows.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f8d5254e9031d6e29b6d6a1f05e3c395932b3755",
+   "adr": 9,
+   "obligation": "ADR-9/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/ingest/csv_reader.py",
+   "line_text": "def read_rows(path: Path) -> list[dict]:",
+   "quote": "`import_rows()` in `orders/ingest/importer.py` is the only entry point for CSV ingestion.",
+   "reason": "The new module orders/ingest/csv_reader.py defines its own CSV ingestion entry point read_rows, violating the rule that no other module may define its own entry point.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "f8d5254e9031d6e29b6d6a1f05e3c395932b3755",
+   "adr": 9,
+   "obligation": "ADR-9/3",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/ingest/csv_reader.py",
+   "line_text": "        return [dict(r) for r in csv.DictReader(fh)]",
+   "quote": "A format change is one edit.",
+   "reason": "Bank export format parsing is now split into orders/ingest/csv_reader.py, so a format change would require editing that file as well as possibly importer.py, breaking the 'one edit' consequence.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "0977441f03ba23c14d26ecfc44cd742ca974145b",
+   "adr": 14,
+   "obligation": "ADR-14/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/pricing/display.py",
+   "line_text": "def format_price(amount: Money) -> str:",
+   "quote": "Amounts are `Money` from `orders/domain/money.py`",
+   "reason": "The function now uses the Money type, satisfying the structural obligation.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "0977441f03ba23c14d26ecfc44cd742ca974145b",
+   "adr": 14,
+   "obligation": "ADR-14/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/pricing/display.py",
+   "line_text": "return f'{amount.minor_units // 100}.{amount.minor_units % 100:02d}'",
+   "quote": "integer minor units",
+   "reason": "The line accesses `minor_units` which is an integer count of minor units, holding to the intent.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "0977441f03ba23c14d26ecfc44cd742ca974145b",
+   "adr": 14,
+   "obligation": "ADR-14/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/pricing/display.py",
+   "line_text": "def format_price(amount: Money) -> str:",
+   "quote": "No amount is stored or passed as a `float`.",
+   "reason": "The parameter is typed as Money, not float, and no float usage is introduced.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "0977441f03ba23c14d26ecfc44cd742ca974145b",
+   "adr": 14,
+   "obligation": "ADR-14/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/pricing/display.py",
+   "line_text": "return f'{amount.minor_units // 100}.{amount.minor_units % 100:02d}'",
+   "quote": "Percentages are applied by `Money.scaled()`.",
+   "reason": "The line uses integer arithmetic for formatting, not a percentage calculation, so the obligation about `scaled` is not triggered.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "7e9b99592f923f96de9e6c051351c7ccb1780bfe",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/pricing_client.py",
+   "line_text": "import requests",
+   "quote": "They never import `requests` or `httpx`, under any alias or through `importlib`",
+   "reason": "The new file orders/api/pricing_client.py imports requests, which is under orders/api/ and violates the ADR-2 prohibition on importing requests.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "7e9b99592f923f96de9e6c051351c7ccb1780bfe",
+   "adr": 2,
+   "obligation": "ADR-2/4",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/pricing_client.py",
+   "line_text": "return requests.get('http://pricing.internal/price', params={'sku': sku}, timeout=5).json()['minor']",
+   "quote": "never call another service's HTTP endpoint from a request handler.",
+   "reason": "The line directly calls another service's HTTP endpoint, which is a direct call from a handler module (pricing_client.py under orders/api/), violating ADR-2/4.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "7e9b99592f923f96de9e6c051351c7ccb1780bfe",
+   "adr": 12,
+   "obligation": "ADR-12/2",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/pricing_client.py",
+   "line_text": "",
+   "quote": "Handlers under `orders/api/` never raise a bare `Exception`.",
+   "reason": "The function live_price does not raise any exception itself, but requests.get may raise unrelated exceptions; it is unclear if the code is intended to be a handler or a helper that is never called from a handler, leaving the obligation uncertain.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 2,
+   "obligation": "ADR-2/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/cancel.py",
+   "line_text": "from orders.infra.outbox import publish",
+   "quote": "Handlers under `orders/api/` publish events with `publish()` from `orders/infra/outbox.py`.",
+   "reason": "The file is under orders/api/ and imports publish from orders.infra.outbox.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/cancel.py",
+   "line_text": "from orders.infra.outbox import publish",
+   "quote": "They never import `requests` or `httpx`, under any alias or through `importlib`",
+   "reason": "The file does not import requests or httpx.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 2,
+   "obligation": "ADR-2/4",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/cancel.py",
+   "line_text": "publish('order.cancelled', {'order': order_id})",
+   "quote": "never call another service's HTTP endpoint from a request handler.",
+   "reason": "The handler does not call any HTTP endpoint.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 4,
+   "obligation": "ADR-4/1",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/cancel.py",
+   "line_text": "def cancel_order(request: dict) -> dict:",
+   "quote": "Every handler under orders/api/ that creates or mutates state calls idempotency_key(request) to read the Idempotency-Key header.",
+   "reason": "cancel_order mutates state but does not call idempotency_key(request).",
+   "verify_failed": [
+    "quote-not-in-adr"
+   ],
+   "note": "claim failed verification: quote-not-in-adr",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 5,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 6,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 11,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "23c28cf1f1a653b0e1d5b6ee29ddfa08eb50c2bc",
+   "adr": 12,
+   "obligation": "ADR-12/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/cancel.py",
+   "line_text": "raise Exception('no id')",
+   "quote": "Handlers under `orders/api/` never raise a bare `Exception`.",
+   "reason": "The handler raises a bare Exception, which is prohibited.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "73bcf9810150975bc07202c343ed3e1a9b862a00",
+   "adr": 6,
+   "obligation": "ADR-6/2",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/sync.py",
+   "line_text": "Does not read os.environ.",
+   "quote": "No other module under `orders/` reads `os.environ`.",
+   "reason": "Sync.py does not import or access os.environ; it only uses time, datetime, and fetch.",
+   "verify_failed": [
+    "line-not-in-change"
+   ],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "73bcf9810150975bc07202c343ed3e1a9b862a00",
+   "adr": 8,
+   "obligation": "ADR-8/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/sync.py",
+   "line_text": "from orders.infra.http import fetch",
+   "quote": "All outbound HTTP goes through `fetch()` in `orders/infra/http.py`",
+   "reason": "Sync.py imports and calls fetch(), satisfying ADR-8's structural obligation.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "73bcf9810150975bc07202c343ed3e1a9b862a00",
+   "adr": 8,
+   "obligation": "ADR-8/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/sync.py",
+   "line_text": "return fetch(url)",
+   "quote": "No call site passes `timeout=None`.",
+   "reason": "The fetch(url) call passes no timeout argument, so it does not pass timeout=None.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "73bcf9810150975bc07202c343ed3e1a9b862a00",
+   "adr": 10,
+   "obligation": "ADR-10/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/sync.py",
+   "line_text": "time.sleep(0.5 * attempt)",
+   "quote": "No module under `orders/infra/` writes its own retry loop with `time.sleep`.",
+   "reason": "Sync.py under orders/infra/ writes a manual retry loop containing time.sleep, violating ADR-10/2.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "73bcf9810150975bc07202c343ed3e1a9b862a00",
+   "adr": 11,
+   "obligation": "ADR-11/3",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/sync.py",
+   "line_text": "return datetime.utcnow().isoformat()",
+   "quote": "No module under `orders/` calls `datetime.now()` or `datetime.utcnow()` directly.",
+   "reason": "Sync.py under orders/ calls datetime.utcnow() directly, violating ADR-11/3.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "dd3c71a9c874a872935aa647b993dbf2559e9272",
+   "adr": 2,
+   "obligation": "ADR-2/1",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/tax.py",
+   "line_text": "import requests",
+   "quote": "Handlers under `orders/api/` publish events with `publish()` from `orders/infra/outbox.py`.",
+   "reason": "The new file creates a function under orders/api/ but it is not a handler; the obligation applies to handlers, not any code in that directory.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "dd3c71a9c874a872935aa647b993dbf2559e9272",
+   "adr": 2,
+   "obligation": "ADR-2/2",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/tax.py",
+   "line_text": "import requests",
+   "quote": "They never import `requests` or `httpx`, under any alias or through `importlib`",
+   "reason": "Line imports 'requests' in a module under orders/api/, which violates the must-not-import obligation.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "dd3c71a9c874a872935aa647b993dbf2559e9272",
+   "adr": 2,
+   "obligation": "ADR-2/3",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/tax.py",
+   "line_text": "import requests",
+   "quote": "They never import `requests` or `httpx`, under any alias or through `importlib`",
+   "reason": "The import is static, not through importlib.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "dd3c71a9c874a872935aa647b993dbf2559e9272",
+   "adr": 2,
+   "obligation": "ADR-2/4",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/tax.py",
+   "line_text": "    return requests.get('http://tax.internal/rate', params={'c': country}, timeout=5).json()['rate']",
+   "quote": "never call another service's HTTP endpoint from a request handler.",
+   "reason": "Line calls another service's HTTP endpoint (http://tax.internal/rate) from a request handler under orders/api/.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "dd3c71a9c874a872935aa647b993dbf2559e9272",
+   "adr": 2,
+   "obligation": "ADR-2/5",
+   "verdict": "UNCLEAR",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/tax.py",
+   "line_text": "    return requests.get('http://tax.internal/rate', params={'c': country}, timeout=5).json()['rate']",
+   "quote": "Anything that needs an answer from another service is a query, not an event.",
+   "reason": "The diff does not show whether this function is a query handler or an event handler; the obligation's applicability depends on context not present.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "151557bcec94408c092b9482aa0cd0ba853a8c97",
+   "adr": 10,
+   "obligation": "ADR-10/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/retry.py",
+   "line_text": "def retry(fn, attempts: int = 3, backoff: float = 0.2):",
+   "quote": "Retries go through `retry()` from `orders/infra/retry.py`.",
+   "reason": "The line defines the retry function that is removed; since the helper was unused, the removal does not break the obligation that retry logic must be invoked through that function.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "65f3cee65db58dd9b1b015f3353978fefd1696bf",
+   "adr": 13,
+   "obligation": "ADR-13/1",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/routes.py",
+   "line_text": "    '/health': 'orders.api.handlers.health',",
+   "quote": "Every route registered in `orders/api/routes.py` starts with `/v2/`.",
+   "reason": "The route '/health' does not start with '/v2/', violating ADR-13/1.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "5f02f2072d7381f44943fbd0905d714a7f8aab64",
+   "adr": 6,
+   "obligation": null,
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "",
+   "line_text": "",
+   "quote": "",
+   "reason": "",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "5f02f2072d7381f44943fbd0905d714a7f8aab64",
+   "adr": 7,
+   "obligation": "ADR-7/1",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/db/session.py",
+   "line_text": "def ensure_audit(conn) -> None:",
+   "quote": "Every change to a table is a numbered file under `orders/db/migrations/`.",
+   "reason": "The added function creates a new table 'audit' without adding a numbered migration file, directly violating the obligation to codify table changes as migrations.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "5f02f2072d7381f44943fbd0905d714a7f8aab64",
+   "adr": 7,
+   "obligation": "ADR-7/2",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/db/session.py",
+   "line_text": "    conn.execute('CREATE TABLE IF NOT EXISTS audit (id TEXT, at TEXT)')",
+   "quote": "Application code under `orders/db/` never executes `CREATE TABLE` or `ALTER TABLE`.",
+   "reason": "The line executes `CREATE TABLE` (via IF NOT EXISTS) inside `orders/db/session.py`, which is under `orders/db/`, directly violating the prohibition.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "5f02f2072d7381f44943fbd0905d714a7f8aab64",
+   "adr": 7,
+   "obligation": "ADR-7/4",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/db/session.py",
+   "line_text": "    conn.execute('CREATE TABLE IF NOT EXISTS audit (id TEXT, at TEXT)')",
+   "quote": "application start touches no schema",
+   "reason": "The `ensure_audit` function runs a CREATE TABLE statement, which can be invoked during application startup, thus touching the schema at start time.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "b061ab59aed63e1fc2f8a046d4724bb26f0c6e1d",
+   "adr": 6,
+   "obligation": "ADR-6/2",
+   "verdict": "ADR-OVERTAKEN",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/api/region.py",
+   "line_text": "import os",
+   "quote": "No other module under `orders/` reads `os.environ`.",
+   "reason": "The new file orders/api/region.py imports os and uses os.environ, which is forbidden for any module under orders/ other than orders/infra/config.py.",
+   "verify_failed": [],
+   "note": "contradiction already present at parent commit",
+   "label": ""
+  },
+  {
+   "commit": "20ce96e67efa36abcf247400d596eeabca98b233",
+   "adr": 8,
+   "obligation": "ADR-8/1",
+   "verdict": "COMPLIANT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/bulk.py",
+   "line_text": "from orders.infra.http import fetch",
+   "quote": "All outbound HTTP goes through `fetch()` in `orders/infra/http.py`",
+   "reason": "The new file imports fetch from orders/infra/http.py, which is the mandated function for outbound HTTP calls.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  },
+  {
+   "commit": "20ce96e67efa36abcf247400d596eeabca98b233",
+   "adr": 8,
+   "obligation": "ADR-8/3",
+   "verdict": "CONFLICT",
+   "signals": [
+    "glob"
+   ],
+   "path": "orders/infra/bulk.py",
+   "line_text": "    return [fetch(u, timeout=None) for u in urls]",
+   "quote": "No call site passes `timeout=None`.",
+   "reason": "The changed line passes timeout=None to fetch(), directly violating the prohibition against that argument.",
+   "verify_failed": [],
+   "note": "",
+   "label": ""
+  }
+ ],
+ "stale": [
+  {
+   "adr": 10,
+   "obligation": "ADR-10/1",
+   "missing": [
+    "retry",
+    "orders/infra/retry.py"
+   ],
+   "known": false
+  }
+ ]
+}
