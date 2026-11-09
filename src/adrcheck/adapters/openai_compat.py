@@ -1,7 +1,7 @@
 """Chat runner over the OpenAI-compatible `chat/completions` shape, which OpenAI, Ollama, vLLM, LM Studio and
 OpenRouter all serve. No SDK: one JSON POST over urllib. The runner reads no environment; the composition root
 hands it the base URL and the key. Cost is always 0: there is no price table a runner could trust for every
-endpoint that speaks this protocol, and a wrong number is worse than a missing one (ADR-9, bead oao)."""
+endpoint that speaks this protocol, and a wrong number is worse than a missing one (ADR-14, bead oao)."""
 
 from __future__ import annotations
 
