@@ -10,13 +10,13 @@ from adrcheck.domain.baseline import EMPTY, Baseline
 from adrcheck.domain.change import Change
 from adrcheck.domain.decision_signals import DecisionSignal, decision_signals
 from adrcheck.domain.exception import parse_exceptions
-from adrcheck.domain.mechanical import MechanicalJudge
 from adrcheck.domain.obligation import Checkability, Obligation
 from adrcheck.domain.overtaken import classify
 from adrcheck.domain.select import Selection, select
 from adrcheck.domain.verdict import Verdict
 from adrcheck.domain.verify import Claim, verify
 from adrcheck.ports import ChangeJudge, Context, JudgeCase, NotCompiled, ObligationCompiler, RepoReader
+from adrcheck.usecases.mechanical import MechanicalJudge
 
 POST_IMAGE_BUDGET_CHARS = 60_000
 

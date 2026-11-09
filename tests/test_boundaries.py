@@ -4,7 +4,17 @@ import ast
 from pathlib import Path
 
 DOMAIN = Path(__file__).resolve().parents[1] / "src" / "adrcheck" / "domain"
-FORBIDDEN = ("adrcheck.adapters", "adrcheck.usecases", "adrcheck.cli", "subprocess", "requests", "httpx")
+# ADR-1: the domain imports only the standard library and other domain modules. `adrcheck.ports` is on the
+# list since PR #2, when adrcheck's own self-check caught a domain module importing it and this test had not.
+FORBIDDEN = (
+    "adrcheck.adapters",
+    "adrcheck.usecases",
+    "adrcheck.cli",
+    "adrcheck.ports",
+    "subprocess",
+    "requests",
+    "httpx",
+)
 
 
 def imports_of(path: Path):

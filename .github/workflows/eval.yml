@@ -1,0 +1,85 @@
+# The eval corpora as a CI gate: build the planted repository, run both frozen case files with the judge the
+# repository recommends, fail on any miss, and put the scores in the job summary. This is adrcheck shown
+# working, on every change to the rules or the prompts, for about a cent a run (two corpora, eight judge
+# calls, Haiku 5.5 via OpenRouter). The same secret and variable the self-check uses.
+#
+# Runs on pull requests that touch the judgement, the prompts, the ADRs or the corpora, and on demand.
+name: eval
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "evals/**"
+      - "docs/adr/**"
+      - ".adrcheck/**"
+      - ".github/workflows/eval.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  corpora:
+    name: frozen corpora with the recommended judge
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      MODEL: openai:anthropic/claude-haiku-5.5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.13"
+      - name: Install
+        run: uv sync --frozen
+      - name: Build the planted repository
+        run: |
+          uv run python evals/planted/build.py "${RUNNER_TEMP}/planted"
+          echo "ADRCHECK_EVAL_PLANTED_REPO=${RUNNER_TEMP}/planted" >> "${GITHUB_ENV}"
+      - name: Planted corpus (three CONFLICTs, one ADR-OVERTAKEN, a waiver)
+        id: planted
+        run: |
+          set +e
+          uv run adrcheck eval --cases evals/cases/planted.json --run --report planted.json --model "${MODEL}" \
+            > planted.log 2>&1
+          code=$?
+          set -e
+          cat planted.log
+          {
+            echo "## planted"; echo; echo '```'
+            grep -v "report written" planted.log
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit "${code}"
+      - name: adrcheck corpus (eleven compliant rows, the false-alarm side)
+        id: adrcheck
+        if: always()
+        run: |
+          set +e
+          uv run adrcheck eval --cases evals/cases/adrcheck.json --run --report adrcheck.json --model "${MODEL}" \
+            > adrcheck.log 2>&1
+          code=$?
+          set -e
+          cat adrcheck.log
+          {
+            echo "## adrcheck"; echo; echo '```'
+            grep -v "report written" adrcheck.log
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit "${code}"
+      - name: Keep the reports
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: eval-reports
+          path: |
+            planted.json
+            adrcheck.json
+            planted.log
+            adrcheck.log
+          retention-days: 30

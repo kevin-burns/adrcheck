@@ -3,10 +3,10 @@ claim with the obligation's own quote, which then goes through the same verify()
 
 from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.change import Change, FileChange, Line
-from adrcheck.domain.mechanical import MechanicalJudge
 from adrcheck.domain.obligation import Checkability, Obligation
 from adrcheck.domain.verdict import Verdict
 from adrcheck.ports import Context, JudgeCase
+from adrcheck.usecases.mechanical import MechanicalJudge
 
 ADR = Adr(title="Billing through the API", status=Status.ACCEPTED, source="0001.md", number=1, sections={})
 FORBIDS = Obligation(

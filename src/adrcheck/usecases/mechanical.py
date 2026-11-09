@@ -1,8 +1,11 @@
-"""The free tier's judge: deterministic, no model, no key (bead 2wa). An obligation's forbidden patterns found
-on an added line are a CONFLICT claim carrying the obligation's own quote. The claim then goes through the
-same verify() and parent probes as a model's, so a mechanical CONFLICT is held to the same evidence rule.
-Mandates cannot be judged this way: an absence is not visible in a diff. Those ADRs are reported as not
-judged, never as compliant."""
+"""The free tier's judge: deterministic, no model, no key (bead 2wa).
+
+A use case, not domain: it implements the ChangeJudge port and builds the port's own types, and ADR-1 keeps
+the domain free of ports; adrcheck's own self-check flagged the first draft of this file for living under
+domain/ (PR #2). An obligation's forbidden patterns found on an added line are a CONFLICT claim carrying the
+obligation's own quote. The claim then goes through the same verify() and parent probes as a model's, so a
+mechanical CONFLICT is held to the same evidence rule. Mandates cannot be judged this way: an absence is not
+visible in a diff. Those ADRs are reported as not judged, never as compliant."""
 
 from __future__ import annotations
 
