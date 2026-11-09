@@ -136,10 +136,23 @@ ADR revision it was labelled against; the repository itself is never bundled.
 - Michael Nygard, "Documenting Architecture Decisions" (2011), the ADR format.
 - Neal Ford, Rebecca Parsons and Patrick Kua, *Building Evolutionary Architectures*
   (O'Reilly, 2017), architectural fitness functions.
-- David Boyne's EventCatalog ADR compliance workflow (blog post "Turn your ADRs into automated
-  checks", 2026-11-05) demonstrated checking pull requests against ADRs and verifying the quote
-  and the changed line. adrcheck is built from that idea, not from its source, which is under the
-  Business Source License.
+- The trigger was a LinkedIn discussion started by David Boyne on 2026-11-05 about checking code
+  against the ADRs kept in EventCatalog ([the post](https://lnkd.in/p/eH_ZRsYz); written up on the
+  EventCatalog blog as "Turn your ADRs into automated checks"). The comment thread named the two hard problems
+  adrcheck is built around: decisions about intent cannot be read off a diff, and an ADR the code has
+  quietly overtaken produces the false alarms. EventCatalog's checks serve catalogues of domains,
+  services and messages; adrcheck serves any repository that keeps markdown ADRs, with no catalogue.
+  Shared idea, different space. The verify step, cited line in the diff and quote in the ADR, is the
+  same discipline. Nothing was taken from the EventCatalog source, which is under the Business Source
+  License.
+- Archgate (archgate.dev, Apache-2.0): ADRs with companion `.rules.ts` files that a CLI, a GitHub
+  Action, a pre-commit hook and editor plugins enforce, plus published governance studies. Rules
+  there are code the team writes; adrcheck compiles the obligations out of the prose instead, and
+  judges with a model whose claims are verified. Read for ideas on 2026-11-09, no code copied.
+- adr-kit (rvdbreemen/adr-kit, MIT): an MCP server and hooks for Claude Code, Codex and Copilot that
+  hand the coding agent the governing decision before it edits, check commits against declarative
+  rules, and watch for stale decisions. The before-the-edit surface adrcheck has not built yet. Read
+  for ideas on 2026-11-09, no code copied.
 - ruflo-adr (ruvnet/ruflo, MIT): ADR id references in code as a scoping signal, and the ADR
   graph hygiene checks.
 - zircote/adr (MIT): front-matter-first selection with stated exclusions, and the
