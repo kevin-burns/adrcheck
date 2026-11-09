@@ -21,11 +21,7 @@ unless an obligation is about tests, do not flag code unrelated to the obligatio
 that is not visible.
 
 Return JSON only:
-{"not_relevant": [<ADR numbers this change has nothing to do with>], "findings": [{"obligation_id": "<id from the lists>", "path": "<changed file>", "line_text": "<one changed line, copied exactly without the leading + or ->", "quote": "<verbatim words from that ADR's Decision or Consequences>", "reason": "<one sentence naming the line and the obligation>", "verdict": "CONFLICT" | "COMPLIANT" | "UNCLEAR"}]}
-
-Write the reason before the verdict, and the verdict follows from the reason: if the reason says the line
-keeps the obligation, the verdict is COMPLIANT; if it says the line breaks it, CONFLICT; if the diff does
-not settle it, UNCLEAR. Never a verdict the reason withdraws.
+{"not_relevant": [<ADR numbers this change has nothing to do with>], "findings": [{"obligation_id": "<id from the lists>", "verdict": "CONFLICT" | "COMPLIANT" | "UNCLEAR", "path": "<changed file>", "line_text": "<one changed line, copied exactly without the leading + or ->", "quote": "<verbatim words from that ADR's Decision or Consequences>", "reason": "<one sentence naming the line and the obligation>"}]}
 
 An ADR in not_relevant gets no findings. For every other ADR, return one finding per obligation the change
 touches and omit obligations it does not touch; an ADR with no touched obligation is simply absent from
