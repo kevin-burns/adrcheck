@@ -24,6 +24,9 @@ permissions:
 jobs:
   corpora:
     name: frozen corpora with the recommended judge
+    # Dependabot's pull requests run with Dependabot secrets, not the repository's, so the judge has no key
+    # there and every run would be exit 3; the corpora are not what a dependency bump changes.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     env:
       OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}

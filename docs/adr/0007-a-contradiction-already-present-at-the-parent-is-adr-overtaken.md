@@ -17,8 +17,10 @@ the ADR's author, not the commit's.
 when the contradiction can be shown at the parent commit: a named anchor the ADR mandates was
 already absent, the cited line already existed elsewhere in the code at the parent, or the cited
 line removes a named anchor that nothing but its own definition referenced at the parent. The
-`RepoReader.contains()` and `RepoReader.occurrences()` probes answer those questions against the
-parent ref. The third probe also settles a judge's UNCLEAR about a removed line: a judge that sees
+`RepoReader.contains()`, `RepoReader.has_line()` and `RepoReader.occurrences()` probes answer those
+questions against the parent ref: `contains()` for an anchor, `has_line()` for the cited line as a whole
+line, because a substring hit inside a longer line or a string literal is not the same line, and
+`occurrences()` for the callers. The third probe also settles a judge's UNCLEAR about a removed line: a judge that sees
 only the diff cannot know whether a deleted name had callers, and the count can. A COMPLIANT verdict
 is never changed by any probe. ADR-OVERTAKEN never fails the build.
 
