@@ -40,7 +40,7 @@ never be dead. It now counts file contents only.
 |---|---|---|---|---|
 | anthropic/claude-haiku-5.5 | 23/25 | 51,649 / 22,391 | 1 min 48 s | UNCLEAR on a compliant domain refund; moved body read as a second entry point |
 | anthropic/claude-sonnet-5.5 | 23/25 | 51,649 / 7,961 | 58 s | UNCLEAR on the domain-sibling trap; moved body read as a second entry point |
-| deepseek/deepseek-v4-flash | 19/25 | 35,602 / 37,902 | 5 min 17 s | missed the `importlib` import and the missing idempotency key; false alarm on the domain sibling; called a dead-code deletion COMPLIANT; cited `import os` for the `os.environ` breach, which the precedent probe then found on the base |
+| deepseek/deepseek-v4-flash | 19/25 | 35,602 / 37,902 | 5 min 17 s | missed the `importlib` import and the missing idempotency key; two false CONFLICTs, the domain sibling and the moved body; called a dead-code deletion COMPLIANT; cited `import os` for the `os.environ` breach, which the precedent probe then found on the base |
 
 Run files beside this page: `.planted-large.haiku-run1.run.json` (before the rule fixes),
 `.planted-large.haiku.run.json`, `.planted-large.sonnet.run.json`, `.planted-large.flash.run.json`. The
@@ -49,8 +49,8 @@ small corpora were rerun with Haiku after the rule fixes and stayed at 9/9 and 1
 ## What it says
 
 - The small corpora could not separate these judges; this one does. Haiku and Sonnet agree on 23 and
-  differ only in which honest UNCLEAR they give. Flash misses two planted breaches outright and raises one
-  false alarm.
+  differ only in which honest UNCLEAR they give. Flash misses two planted breaches outright and raises two
+  false CONFLICTs.
 - Every planted breach that depends on reading an import, an argument, a route string or a raise was caught
   by Haiku and Sonnet. The two misses that remain for them are a refactor read too literally and an
   abstention; neither is a false CONFLICT.
