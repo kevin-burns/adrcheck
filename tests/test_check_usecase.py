@@ -576,3 +576,56 @@ def test_a_judge_call_budget_leaves_later_changes_unjudged_and_says_so():
     assert third.problems == ("judge call budget of 2 reached; 1 ADR not judged for this change",)
     [f] = third.findings
     assert f.verdict is Verdict.UNCLEAR and f.note == "not judged: call budget of 2 reached"
+
+
+def test_the_free_tier_judges_mechanically_and_names_what_it_did_not_judge():
+    """2wa: a pre-commit hook must be fast and need no key. The forbidden pattern on the added line is a CONFLICT
+    through the same verify() path; an ADR with no mechanical hit is excluded with a reason, never a COMPLIANT
+    nobody earned."""
+    other = Adr(
+        title="Other",
+        status=Status.ACCEPTED,
+        source="0003.md",
+        number=3,
+        applies_to=("enrich/**",),
+        sections={"decision": "Nothing mechanical here."},
+    )
+    quiet = Obligation(
+        "ADR-3/1", 3, "MUST", "t", "Nothing mechanical here.", Checkability.INTENT, mandates=("row_key",)
+    )
+    repo = FakeRepo({("c0", "row_key"): True, ("c0", 'key = row["url"]'): False})
+    [report] = check(
+        changes=[change()],
+        adrs=[ADR, other],
+        compiler=FakeCompiler({2: (OBLIGATION,), 3: (quiet,)}),
+        judge=FakeJudge(JudgeResponse(findings=())),
+        repo=repo,
+        tier="free",
+    )
+    assert report.judge_calls == 0 and report.cost_usd == 0.0
+    [f] = report.findings
+    assert (f.adr_number, f.verdict, f.line_text) == (2, Verdict.CONFLICT, '    key = row["url"]')
+    assert any(
+        e.adr_number == 3 and e.reason.startswith("free tier: no mechanical rule fired") for e in report.excluded
+    )
+
+
+def test_the_free_tier_never_compiles_and_says_which_adrs_are_not_compiled():
+    from adrcheck.ports import NotCompiled
+
+    class ColdCompiler:
+        def compile(self, adr):
+            raise NotCompiled(adr)
+
+    repo = FakeRepo({})
+    [report] = check(
+        changes=[change()],
+        adrs=[ADR],
+        compiler=ColdCompiler(),
+        judge=FakeJudge(JudgeResponse()),
+        repo=repo,
+        tier="free",
+    )
+    assert report.findings == () and report.judge_calls == 0
+    assert report.problems == ("ADR-2 not compiled; run adrcheck compile",)
+    assert any(e.adr_number == 2 and e.reason == "not compiled" for e in report.excluded)

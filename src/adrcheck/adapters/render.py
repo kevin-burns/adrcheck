@@ -131,6 +131,10 @@ def to_markdown(reports: list[ChangeReport]) -> str:
             out.append("- compliant, nothing to cite: " + ", ".join(f"ADR-{n}" for n in bare))
         if dismissed:
             out.append("- judged, not relevant: " + ", ".join(f"ADR-{n}" for n in dismissed))
+        if unjudged := [e.adr_number for e in r.excluded if e.reason.startswith("free tier:")]:
+            out.append("- not judged, free tier: " + ", ".join(f"ADR-{n}" for n in unjudged))
+        if cold := [e.adr_number for e in r.excluded if e.reason == "not compiled"]:
+            out.append("- not compiled, run adrcheck compile: " + ", ".join(f"ADR-{n}" for n in cold))
         if proposed := [e.adr_number for e in r.excluded if "touches its paths" in e.reason]:
             out.append("- proposed, not enforced, touches its paths: " + ", ".join(f"ADR-{n}" for n in proposed))
         if r.uncovered:

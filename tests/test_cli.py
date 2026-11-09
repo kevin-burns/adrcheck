@@ -52,6 +52,7 @@ class FakeJudge:
                 "keyed by row_key and nothing else",
                 Checkability.STRUCTURAL,
                 mandates=("row_key",),
+                forbids=('row["url"]',),
             ),
         )
 
@@ -182,7 +183,18 @@ def test_check_staged_judges_the_index_against_the_adrs(tmp_path: Path, capsys):
     (repo / "src" / "a.py").write_text('key = row["url"]\nmore = 2\n')
     subprocess.run(["git", "-C", str(repo), "add", "src/a.py"], check=True)
     code = main(
-        ["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--staged", "--format", "json"],
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--staged",
+            "--tier",
+            "judge",
+            "--format",
+            "json",
+        ],
         judge=FakeJudge(),
     )
     out = json.loads(capsys.readouterr().out)
@@ -341,3 +353,41 @@ def test_explain_prints_one_adr_with_where_each_anchor_lives(tmp_path: Path, cap
     assert "ADR-1" in out and "ADR-1/1" in out
     assert "row_key" in out and "missing" in out
     assert "stale" in out.lower()
+
+
+def test_check_staged_defaults_to_the_free_tier_which_needs_no_model_and_no_compile(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    (repo / "src" / "a.py").write_text('key = row["url"]\nmore = row["url"]\n')
+    subprocess.run(["git", "-C", str(repo), "add", "src/a.py"], check=True)
+    # cold cache, no judge object, no key: must pass and say what it skipped
+    code = main(["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--staged", "--format", "json"])
+    out = json.loads(capsys.readouterr().out)
+    assert code == 0 and out["changes"][0]["judge_calls"] == 0
+    assert out["changes"][0]["problems"] == ["ADR-1 not compiled; run adrcheck compile"]
+    # once compiled, the forbidden pattern on the added line is a mechanical CONFLICT, still with no judge.
+    # HEAD must still hold row_key: at the fixture's HEAD the anchor is already gone, and the same claim would
+    # rightly settle as ADR-OVERTAKEN through the parent probes a mechanical claim goes through like any other.
+    assert main(["compile", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr")], judge=FakeJudge()) == 0
+    (repo / "src" / "a.py").write_text("key = row_key(row)\n")
+    git(repo, "commit", "-q", "-am", "restore row_key")
+    (repo / "src" / "a.py").write_text('key = row_key(row)\nmore = row["url"]\n')
+    subprocess.run(["git", "-C", str(repo), "add", "src/a.py"], check=True)
+    capsys.readouterr()
+    code = main(
+        [
+            "check",
+            "--repo",
+            str(repo),
+            "--adr-dir",
+            str(repo / "docs/adr"),
+            "--staged",
+            "--format",
+            "json",
+            "--fail-on",
+            "conflict",
+        ]
+    )
+    out = json.loads(capsys.readouterr().out)
+    assert code == 2 and out["changes"][0]["judge_calls"] == 0
+    assert [f["verdict"] for f in out["findings"]] == ["CONFLICT"]
+    assert out["findings"][0]["line_text"] == 'more = row["url"]'

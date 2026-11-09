@@ -70,6 +70,8 @@ whether a deleted name had callers and the count can. A COMPLIANT verdict is nev
 | Line | Meaning |
 |---|---|
 | `compliant, nothing to cite: ADR-2, ADR-5` | the judge passed these ADRs without naming a line; folded into one line because six bare COMPLIANTs say nothing a reader needs six lines for |
+| `not judged, free tier: ADR-2, ADR-5` | the free tier (`--tier free`, the default with `--staged`) found no forbidden pattern for these ADRs and ran no model; nothing is claimed either way |
+| `not compiled, run adrcheck compile: ADR-3` | the free tier never compiles; this ADR has no cached obligations yet, so it was skipped with a problem line |
 | `judged, not relevant: ADR-2, ADR-5` | these ADRs were shown to the judge because the change touched their paths or mentioned their number, and the judge set them aside |
 | `proposed, not enforced, touches its paths: ADR-12` | a Proposed ADR governs a path this change touched; nothing is enforced until it is Accepted, but you should know |
 | `uncovered files: 4` | changed files that none of the judged ADRs' `Applies to` globs matched; a large number on a large change means your globs are narrower than your code |

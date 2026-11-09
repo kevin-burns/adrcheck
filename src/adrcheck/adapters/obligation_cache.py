@@ -9,7 +9,7 @@ from pathlib import Path
 
 from adrcheck.domain.adr import Adr
 from adrcheck.domain.obligation import Checkability, Obligation
-from adrcheck.ports import ObligationCompiler
+from adrcheck.ports import NotCompiled, ObligationCompiler
 
 
 class CachedCompiler:
@@ -29,6 +29,18 @@ class CachedCompiler:
         for p in gone:
             p.unlink()
         return gone
+
+    def cached_only(self) -> ObligationCompiler:
+        """A view that reads the cache and never calls the model: the free tier's compiler."""
+        outer = self
+
+        class CachedOnly:
+            def compile(self, adr: Adr) -> tuple[Obligation, ...]:
+                if not outer._key(adr).exists():
+                    raise NotCompiled(adr)
+                return outer.compile(adr)
+
+        return CachedOnly()
 
     def compile(self, adr: Adr) -> tuple[Obligation, ...]:
         path = self._key(adr)
