@@ -137,8 +137,9 @@ times the API route's for the same prompts, so compare token counts within one r
 
 ## Keeping the bill bounded
 
-- One judge call per commit in the range. A pull request with forty commits is forty calls. `--max-calls N`
-  (Action input `max-calls`) judges the first N and reports the rest as not judged, with a problem line per
+- One judge call per commit in the range, or one call for the whole range with `--as-one`, which the Action
+  uses: a pull request is judged as the change it merges, so forty commits are one call. For per-commit
+  sweeps, `--max-calls N` judges the first N and reports the rest as not judged, with a problem line per
   skipped commit, so a capped run is visibly partial rather than quietly green.
 - A commit that touches nothing an ADR governs costs no call at all. Tight `Applies to` globs or a
   `.adrcheck/map.toml` are the cheapest cost control there is.

@@ -106,6 +106,7 @@ file is `.adrcheck/baseline.json` and you edit it like source.
 | Code | Meaning |
 |---|---|
 | `missing-status` | no recognisable Status; the ADR cannot be enforced or excluded |
+| `missing-number` | no number in the title or the filename; nothing can supersede, depend on or waive the record |
 | `no-binding-section` | an Accepted ADR with no Decision or Consequences section; nothing binds |
 | `duplicate-number` | two files share a number |
 | `dangling-supersede-ref` | `Supersedes: ADR-9`, and there is no ADR-9 |

@@ -95,3 +95,12 @@ def test_a_relative_link_that_does_not_resolve_is_reported_only_when_lint_is_giv
         (i.kind, i.adr_number, i.detail) for i in lint([one], link_exists=lambda source, target: target == "0002.md")
     )
     assert found == [("broken-local-link", 1, "link ../design.md does not resolve from 0001.md")]
+
+
+def test_a_record_with_no_number_is_reported_because_nothing_can_refer_to_it():
+    nameless = Adr(
+        title="Use Nothing", status=Status.ACCEPTED, source="no-number.md", number=None, sections={"decision": "d"}
+    )
+    assert issues(nameless) == [
+        ("missing-number", None, "no number in the title or the filename; nothing can supersede, depend on or waive it")
+    ]

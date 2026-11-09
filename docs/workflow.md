@@ -80,7 +80,7 @@ Three places a decision can be enforced, and they are the same check with a diff
 | Where | Range | Who pays | When to use |
 |---|---|---|---|
 | developer's machine | `--staged`, the index | nothing: the free tier runs no model | before commit; forbidden patterns from the cached compile and the stale sweep, no key. `--tier judge` adds the model on the developer's own provider |
-| pull request | `origin/<base>..HEAD` | the repository's CI key | the default; one comment per PR, updated on every push |
+| pull request | `origin/<base>..HEAD --as-one`, the net diff | the repository's CI key | the default; the PR is judged as what it merges, one call, one comment updated on every push |
 | a sweep over history | `--range v1.0..v2.0` | whoever runs it | adopting on a repository with history; finding when a decision was left behind |
 
 The two hooks, for a repository that uses pre-commit or prek:

@@ -13,7 +13,11 @@ from pathlib import PurePath
 
 from adrcheck.domain.adr import Adr, Status
 
-_TITLE = re.compile(r"^#\s+(?:(?:ADR[- ]?)?(\d+)[.:]?\s+)?(.+?)\s*$", re.IGNORECASE)
+# "# 1. Title", "# ADR-001: Title", "# ADR 001 Title", "# [ADR-001] Title", "# 001 - Title" all give number and title
+_TITLE = re.compile(r"^#\s+(?:\[?(?:ADR[- _]?)?0*(\d+)\]?[.:]?\s*(?:[-:]\s+)?)?(.+?)\s*$", re.IGNORECASE)
+# a filename's number: "0001-x.md", "ADR-001-x.md", "adr_001_x.md", "001.md"; a date prefix is not a number
+_FILE_NUMBER = re.compile(r"^(?:adr[-_ ]?)?0*(\d{1,6})(?!\d)", re.IGNORECASE)
+_FILE_DATE = re.compile(r"^(?:\d{8}|\d{4}-\d{2}-\d{2})(?!\d)")
 _HEADER_LINE = re.compile(r"^([A-Za-z][A-Za-z ]*):\s*(.*)$")
 _HEADING = re.compile(r"^##\s+(.+?)\s*$")
 _SUBHEADING = re.compile(r"^###\s+(.+?)\s*$")  # opens a section only when its name is a known role (MADR nests)
@@ -112,6 +116,14 @@ def _front_matter(text: str) -> tuple[dict[str, str], str]:
     return fields, text[m.end() :]
 
 
+def filename_number(name: str) -> int | None:
+    """The ADR number a filename carries, or None. A leading date (20220819-, 2026-01-10-) is not a number."""
+    if _FILE_DATE.match(name):
+        return None
+    m = _FILE_NUMBER.match(name)
+    return int(m.group(1)) if m else None
+
+
 def _role(label: str) -> str | None:
     return ROLES.get(label.strip().lower())
 
@@ -189,8 +201,8 @@ def parse_adr(text: str, source: str) -> Adr:
         if m.group("problem"):
             sections["context"] = f"{sections.get('context', '')}; facing {m.group('problem').strip()}".strip("; ")
 
-    if number is None and (m := re.match(r"(\d+)", PurePath(source).name)):
-        number = int(m.group(1))
+    if number is None:
+        number = filename_number(PurePath(source).name)
     status_text = headers.get("status") or sections.get("status", "")
     applies = headers.get("applies to", "")
     applies_to = tuple(p.strip() for p in applies.split(",") if p.strip())

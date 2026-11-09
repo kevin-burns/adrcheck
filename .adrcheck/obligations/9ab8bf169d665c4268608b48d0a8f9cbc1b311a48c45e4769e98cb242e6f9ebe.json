@@ -1,0 +1,104 @@
+[
+ {
+  "id": "ADR-13/1",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "GitChanges.combined() must turn a range into a single Change whose parent is the merge base of the range.",
+  "quote": "the parent is the merge base",
+  "checkability": "structural",
+  "mandates": [
+   "combined",
+   "GitChanges"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/2",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "The combined Change's files must be the net diff from merge base to head, so a line added in one commit and removed in a later one is not part of the change.",
+  "quote": "the files are the net diff from merge base to head",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/3",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "The combined Change's message must be every commit message in the range joined, so an Adr-Exception trailer on any commit waives for the whole change.",
+  "quote": "the message is every commit message in the range joined, so an `Adr-Exception` trailer on any commit waives for the whole change",
+  "checkability": "structural",
+  "mandates": [
+   "Adr-Exception"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/4",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "The `check` command in src/adrcheck/cli.py must accept an `--as-one` option that, with `--range A..B`, uses GitChanges.combined() and makes a single judge call.",
+  "quote": "`check --range A..B --as-one` in `src/adrcheck/cli.py` uses it and makes one judge call",
+  "checkability": "structural",
+  "mandates": [
+   "--as-one",
+   "src/adrcheck/cli.py",
+   "combined"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/5",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "action.yml must always pass `--as-one` so a pull request is judged as the change it merges.",
+  "quote": "`action.yml` passes `--as-one` always: a pull request is judged as what it merges.",
+  "checkability": "mechanical",
+  "mandates": [
+   "action.yml",
+   "--as-one"
+  ],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/6",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "The CLI without `--as-one` must keep judging commit by commit as the default.",
+  "quote": "Commit-by-commit judging stays the default for the CLI without `--as-one`",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/7",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "The pull request comment must name the pull request's head commit and the first commit's subject.",
+  "quote": "The comment names the pull request's head commit and the first commit's subject.",
+  "checkability": "intent",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/8",
+  "adr_number": 13,
+  "kind": "MUST",
+  "text": "The parent probes in combined mode must run against the merge base, so 'already present at the parent' means present on the base branch.",
+  "quote": "The parent probes run against the merge base, so \"already present at the parent\" means present on the base branch, which is the right question for a merge.",
+  "checkability": "structural",
+  "mandates": [],
+  "forbids": []
+ },
+ {
+  "id": "ADR-13/9",
+  "adr_number": 13,
+  "kind": "MUST_NOT",
+  "text": "The action must not judge a pull request commit by commit, i.e. action.yml must not omit `--as-one`.",
+  "quote": "`action.yml` passes `--as-one` always",
+  "checkability": "mechanical",
+  "mandates": [],
+  "forbids": []
+ }
+]

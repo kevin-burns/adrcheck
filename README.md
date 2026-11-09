@@ -39,8 +39,11 @@ adrcheck compile --adr-dir docs/adr
 # one decision: its obligations, where each anchor lives in the code, which are stale; no judge
 adrcheck explain --adr-dir docs/adr --adr 7
 
-# judge the commits on a branch; exit 2 on a verified CONFLICT, 3 when nothing could be evaluated
-adrcheck check --adr-dir docs/adr --range origin/main..HEAD --format md --fail-on conflict
+# judge a branch as the one change it merges; exit 2 on a verified CONFLICT, 3 when nothing could be evaluated
+adrcheck check --adr-dir docs/adr --range origin/main..HEAD --as-one --format md --fail-on conflict
+
+# or commit by commit, for a sweep over history
+adrcheck check --adr-dir docs/adr --range v1.0..v2.0 --format md
 ```
 
 The model is chosen with `--model provider:model`. `anthropic:claude-sonnet-5-5` uses the Anthropic
