@@ -91,36 +91,43 @@ touches or whose number the commit mentions, plus every accepted ADR that has no
 nothing says it does not apply. Commits that touch nothing any ADR governs cost no call, which is why the
 header matters.
 
-What you should see. This is adrcheck's report on one of its own commits, judged by Haiku 5.5 through
-OpenRouter on 2026-11-09:
+What you should see. This is the report on a commit of the planted corpus that ships with adrcheck
+(`evals/planted/build.py`, a toy ledger service), a commit written to break ADR-1 on purpose, judged by Haiku
+5.5 through OpenRouter on 2026-11-09. Exit code 2.
 
 ```markdown
-## 8dfe76dfb8 feat(check): a conflict that removes an anchor nothing used at the parent is ADR-OVERTAKEN
+## 36f6b01e32 fix(billing): fast path reads the balance in one query
 
-- **COMPLIANT** ADR-1 (ADR-1/11)
-  - `src/adrcheck/ports.py`: `def occurrences(self, ref: str, needle: str) -> int | None:`
-  - > `AdrSource`, `ChangeSource`, `RepoReader`, `ObligationCompiler`, `ChangeJudge`.
-  - The added occurrences method is declared on the existing RepoReader Protocol in ports.py, which remains defined there.
-- **UNCLEAR** ADR-7 (ADR-7/7)
-  - `src/adrcheck/adapters/git_changes.py`: `return len(re.findall(rf"(?<![\w.]){re.escape(needle)}(?!\w)", code))`
-  - > the occurrence count is a whole-identifier match over the parent's code text, so a definition alone counts as one
-  - The regex is a whole-identifier match, but its (?&lt;![\w.]) lookbehind also excludes attribute uses like obj.name, so whether this meets the ADR's intent is not settled by the diff.
-- **COMPLIANT** ADR-7 (ADR-7/4)
-  - `src/adrcheck/domain/overtaken.py`: `if judge is Verdict.CONFLICT and (forbidden_at_parent is True or dead_at_parent is True):`
-  - > or the cited line removes a named anchor that nothing but its own definition referenced at the parent.
-  - The new dead_at_parent condition turns a CONFLICT into ADR-OVERTAKEN exactly when the removed anchor had no other reference at the parent.
-- judged, not relevant: ADR-3, ADR-4, ADR-5, ADR-6, ADR-8
-- uncovered files: 4
+- **CONFLICT** ADR-1 (3 obligations: 3 CONFLICT)
+  - **CONFLICT** ADR-1/1
+    - `services/billing/invoices.py`: `return Money(sum_minor_units(connection(), account))`
+    - > Code under `services/billing/` reads and writes ledger entries only through `Ledger` in `ledger/api.py`.
+    - The new outstanding_fast reads ledger entries via sum_minor_units on a raw connection instead of through the Ledger class.
+  - **CONFLICT** ADR-1/2
+    - `services/billing/invoices.py`: `from ledger.db import connection, sum_minor_units`
+    - > It never imports `ledger.db`.
+    - The added import statement imports ledger.db directly into services/billing code.
+  - **CONFLICT** ADR-1/3
+    - `services/billing/invoices.py`: `return Money(sum_minor_units(connection(), account))`
+    - > Billing cannot tune a query by hand.
+    - The new single-query fast path hand-tunes a balance query against the ledger, bypassing the Ledger API the ADR requires.
+- **COMPLIANT** ADR-3 (ADR-3/1)
+  - `services/billing/invoices.py`: `return Money(sum_minor_units(connection(), account))`
+  - > Amounts are instances of `Money` from `libs/money/money.py`, which holds minor units as an integer.
+  - The returned balance is wrapped in a Money instance built from the integer result of sum_minor_units.
+- proposed, not enforced, touches its paths: ADR-5
 ```
 
 Every finding has the same four parts: the verdict and which obligation of which ADR; the changed line it
-is about; the sentence of the ADR it is held against, as a quote; and the judge's reason in one line. The
-UNCLEAR above is a real one. The judge noticed that the lookbehind excludes attribute access and said the
-diff does not settle whether that was intended. That is the kind of comment a good reviewer leaves.
+is about; the sentence of the ADR it is held against, as a quote; and the judge's reason in one line. When
+one ADR has several findings on a commit they sit under one head line that carries the worst verdict and
+the tally, as ADR-1 does above; a lone finding stays on one line, as ADR-3 does. ADR-5 is Proposed, so the
+change touching its paths is noted and nothing is enforced.
 
-The two trailing lines: ADRs the judge was shown and set aside, and the count of changed files that none of
-the judged ADRs' `Applies to` globs matched. A high uncovered count on a large change is a hint that your
-globs are narrower than your code.
+Other trailing lines you will see: `compliant, nothing to cite` for ADRs the judge passed without naming a
+line; `judged, not relevant` for ADRs it was shown and set aside; `uncovered files`, the count of changed
+files that none of the judged ADRs' `Applies to` globs matched. A high uncovered count on a large change is
+a hint that your globs are narrower than your code.
 
 A second section appears when something is stale:
 

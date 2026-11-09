@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from adrcheck.domain.adr import Adr, Status
@@ -30,7 +31,13 @@ def _cycle_from(start: int, succ: dict[int, tuple[int, ...]]) -> tuple[int, ...]
         node = nxt
 
 
-def lint(adrs: list[Adr]) -> tuple[HygieneIssue, ...]:
+LinkExists = Callable[[str, str], bool]  # (adr source, relative target) -> does it resolve
+
+INACTIVE = (Status.DEPRECATED, Status.SUPERSEDED, Status.REJECTED)
+
+
+def lint(adrs: list[Adr], link_exists: LinkExists | None = None) -> tuple[HygieneIssue, ...]:
+    """`link_exists` is the caller's filesystem, handed in so this stays pure; without it links are not checked."""
     by_number = {a.number: a for a in adrs if a.number is not None}
     issues: list[HygieneIssue] = []
     supersedes = {a.number: a.supersedes for a in adrs if a.number is not None and a.supersedes}
@@ -74,6 +81,19 @@ def lint(adrs: list[Adr]) -> tuple[HygieneIssue, ...]:
                         f"superseded by ADR-{adr.number} but status is {by_number[old].status.value}",
                     )
                 )
+        for dep in adr.depends_on:
+            if dep not in by_number:
+                issues.append(
+                    HygieneIssue("dangling-depends-ref", adr.number, f"depends on ADR-{dep}, which does not exist")
+                )
+            elif by_number[dep].status in INACTIVE:
+                detail = f"depends on ADR-{dep}, whose status is {by_number[dep].status.value}"
+                issues.append(HygieneIssue("depends-on-inactive", adr.number, detail))
+        if link_exists is not None:
+            for target in adr.links:
+                if not link_exists(adr.source, target):
+                    detail = f"link {target} does not resolve from {adr.source}"
+                    issues.append(HygieneIssue("broken-local-link", adr.number, detail))
         if adr.number is not None and (cycle := _cycle_from(adr.number, supersedes)):
             key = frozenset(cycle)
             if key not in reported_cycles:

@@ -21,6 +21,7 @@ _BOLD_LABEL = re.compile(r"^\*\*([A-Za-z][A-Za-z /&-]*?):?\*\*:?\s*(.*)$")
 _TABLE_ROW = re.compile(r"^\|\s*([^|]+?)\s*\|\s*(.*?)\s*\|\s*$")
 _ADR_REF = re.compile(r"ADR[- ]?0*(\d+)", re.IGNORECASE)
 _FRONT_MATTER = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
+_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")  # [text](target), not images
 _Y_STATEMENT = re.compile(
     r"in the context of\s+(?P<context>.+?),\s*facing\s+(?P<problem>.+?),\s*"
     r"we decided (?:for|on)\s+(?P<decision>.+?)"
@@ -194,6 +195,10 @@ def parse_adr(text: str, source: str) -> Adr:
     applies = headers.get("applies to", "")
     applies_to = tuple(p.strip() for p in applies.split(",") if p.strip())
     supersedes = tuple(int(n) for n in _ADR_REF.findall(headers.get("supersedes", "")))
+    depends_on = tuple(int(n) for n in _ADR_REF.findall(headers.get("depends on", "")))
+    links = tuple(
+        dict.fromkeys(t for t in _LINK.findall(text) if not t.startswith(("#", "http://", "https://", "mailto:", "/")))
+    )
     superseded_by = (
         tuple(int(n) for n in _ADR_REF.findall(status_text)) if Status.parse(status_text) is Status.SUPERSEDED else ()
     )
@@ -207,4 +212,6 @@ def parse_adr(text: str, source: str) -> Adr:
         date=headers.get("date") or None,
         applies_to=applies_to,
         sections=sections,
+        depends_on=depends_on,
+        links=links,
     )

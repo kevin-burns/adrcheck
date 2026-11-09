@@ -209,7 +209,11 @@ def main(argv: list[str] | None = None, judge=None) -> int:
 
     adrs, scope_issues = scope(MarkdownAdrSource(adr_dir).adrs(), load_scope_map(Path(args.repo) / args.map))
     if args.command == "lint":
-        issues = lint(adrs) + scope_issues
+
+        def link_exists(source: str, target: str) -> bool:
+            return (Path(source).parent / target.split("#", 1)[0]).exists()
+
+        issues = lint(adrs, link_exists) + scope_issues
         for i in issues:
             print(f"{i.kind}\tADR-{i.adr_number}\t{i.detail}")
         if not issues:

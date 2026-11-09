@@ -133,10 +133,53 @@ def test_findings_are_ordered_by_adr_then_by_how_bad_the_verdict_is():
             _finding(adr_number=2, obligation_id="ADR-2/2", verdict=Verdict.UNCLEAR),
         ),
     )
-    heads = [ln for ln in to_markdown([report]).splitlines() if ln.startswith("- **")]
-    assert [h.split()[1:3] for h in heads] == [
-        ["**CONFLICT**", "ADR-2"],
-        ["**UNCLEAR**", "ADR-2"],
-        ["**COMPLIANT**", "ADR-2"],
-        ["**COMPLIANT**", "ADR-7"],
-    ]
+    lines = to_markdown([report]).splitlines()
+    heads = [ln for ln in lines if ln.startswith("- **")]
+    # one head per ADR, worst verdict first, ordered by ADR number; the obligations sit under the ADR
+    assert [h.split()[1:3] for h in heads] == [["**CONFLICT**", "ADR-2"], ["**COMPLIANT**", "ADR-7"]]
+    under = [ln.split()[1:3] for ln in lines if ln.startswith("  - **")]
+    assert under == [["**CONFLICT**", "ADR-2/1"], ["**UNCLEAR**", "ADR-2/2"], ["**COMPLIANT**", "ADR-2/3"]]
+
+
+def test_several_findings_for_one_adr_collapse_under_one_head_line_that_counts_them():
+    """rnr: the removal of one importer produced four CONFLICT rows for one ADR at one commit. One head per
+    (commit, ADR) with the worst verdict and the tally; each obligation beneath it with its line, quote and
+    reason. A lone finding for an ADR stays a single line, as before."""
+    report = ChangeReport(
+        ref="abc1234",
+        message="m",
+        findings=(
+            _finding(
+                adr_number=4,
+                obligation_id="ADR-4/1",
+                verdict=Verdict.CONFLICT,
+                path="enrich/store.py",
+                line_text='key = row["url"]',
+            ),
+            _finding(adr_number=4, obligation_id="ADR-4/2", verdict=Verdict.CONFLICT),
+            _finding(adr_number=4, obligation_id="ADR-4/3", verdict=Verdict.COMPLIANT),
+            _finding(adr_number=9, obligation_id="ADR-9/1", verdict=Verdict.COMPLIANT),
+        ),
+    )
+    md = to_markdown([report])
+    assert "- **CONFLICT** ADR-4 (3 obligations: 2 CONFLICT, 1 COMPLIANT)" in md
+    assert "  - **CONFLICT** ADR-4/1" in md and "  - **COMPLIANT** ADR-4/3" in md
+    assert '    - `enrich/store.py`: `key = row["url"]`' in md  # the obligation's evidence is nested one level deeper
+    assert "- **COMPLIANT** ADR-9 (ADR-9/1)" in md  # a lone finding keeps the flat shape
+
+
+def test_compliant_verdicts_with_nothing_to_cite_share_one_line_instead_of_one_bare_line_each():
+    """A judge that returns no finding for a selected ADR leaves a COMPLIANT with no obligation, line or quote.
+    Six of those in a row say nothing a reader needs six lines for."""
+    report = ChangeReport(
+        ref="abc1234",
+        message="m",
+        findings=(
+            _finding(adr_number=2, obligation_id=None, verdict=Verdict.COMPLIANT, path=""),
+            _finding(adr_number=3, obligation_id=None, verdict=Verdict.COMPLIANT, path=""),
+            _finding(adr_number=5, obligation_id="ADR-5/1", verdict=Verdict.COMPLIANT, path="a.py", reason="ok"),
+        ),
+    )
+    md = to_markdown([report])
+    assert "- compliant, nothing to cite: ADR-2, ADR-3" in md
+    assert "- **COMPLIANT** ADR-2" not in md and "- **COMPLIANT** ADR-5 (ADR-5/1)" in md

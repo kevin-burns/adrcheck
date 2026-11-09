@@ -5,7 +5,9 @@ stale list. This page defines each, then the hygiene codes `lint` prints, then t
 
 ## The four verdicts
 
-Each finding is one obligation of one ADR held against one changed line.
+Each finding is one obligation of one ADR held against one changed line. In the markdown report, several
+findings for one ADR on one commit sit under a head line with the worst verdict and a tally, for example
+`**CONFLICT** ADR-1 (3 obligations: 2 CONFLICT, 1 COMPLIANT)`; a lone finding is one line.
 
 ### CONFLICT
 
@@ -67,6 +69,7 @@ whether a deleted name had callers and the count can. A COMPLIANT verdict is nev
 
 | Line | Meaning |
 |---|---|
+| `compliant, nothing to cite: ADR-2, ADR-5` | the judge passed these ADRs without naming a line; folded into one line because six bare COMPLIANTs say nothing a reader needs six lines for |
 | `judged, not relevant: ADR-2, ADR-5` | these ADRs were shown to the judge because the change touched their paths or mentioned their number, and the judge set them aside |
 | `proposed, not enforced, touches its paths: ADR-12` | a Proposed ADR governs a path this change touched; nothing is enforced until it is Accepted, but you should know |
 | `uncovered files: 4` | changed files that none of the judged ADRs' `Applies to` globs matched; a large number on a large change means your globs are narrower than your code |
@@ -108,6 +111,9 @@ file is `.adrcheck/baseline.json` and you edit it like source.
 | `self-supersede` | an ADR names itself in Supersedes or Superseded by |
 | `multiple-supersede-targets` | one ADR superseded by two; one decision has one successor |
 | `supersede-cycle` | ADR-3 supersedes ADR-5 supersedes ADR-3 |
+| `depends-on-inactive` | `Depends on: ADR-2`, and ADR-2 is Deprecated, Superseded or Rejected |
+| `dangling-depends-ref` | `Depends on: ADR-9`, and there is no ADR-9 |
+| `broken-local-link` | a relative markdown link in the record does not resolve from the record's own directory; URLs and same-page anchors are not checked |
 | `scope-disagreement` | the ADR's `Applies to` header and the repo-side map disagree; the header wins |
 | `map-unknown-adr` | `.adrcheck/map.toml` names an ADR that does not exist |
 

@@ -85,3 +85,31 @@ def test_supersedes_line_records_the_predecessor():
     text = "# 5. New\n\nStatus: accepted\nSupersedes: ADR-0003\n\n## Decision\n\ny\n"
     adr = parse_adr(text, source="0005-new.md")
     assert adr.supersedes == (3,)
+
+
+LINKED = """# 4. Exports go through the importer
+
+Status: Accepted
+Depends on: ADR-2, ADR-3
+Applies to: ingest/**
+
+## Context
+
+See the [design note](../design.md) and [ADR-2](0002-keys.md); the spec is at https://example.invalid/spec
+and the section below is [local](#consequences).
+
+## Decision
+
+Every CSV read goes through `import_rows()`.
+
+## Consequences
+
+One place to add validation.
+"""
+
+
+def test_a_depends_on_header_records_the_dependencies_and_relative_links_are_kept_for_lint():
+    adr = parse_adr(LINKED, source="docs/adr/0004-exports.md")
+    assert adr.depends_on == (2, 3)
+    # relative file links only: an absolute URL and a same-page anchor are not local files to resolve
+    assert adr.links == ("../design.md", "0002-keys.md")

@@ -55,6 +55,8 @@ Applies to: services/billing/**, libs/ledger/**
   the record binds nothing.
 - **Supersedes.** When you supersede, change the old record's status in the same commit. Lint reports a
   successor whose predecessor still says Accepted, once the successor itself is Accepted.
+- **Depends on.** Optional, `Depends on: ADR-2, ADR-3`. Lint reports a dependency on a record that is
+  Deprecated, Superseded or Rejected, and one on a record that does not exist.
 - **Applies to.** Globs, comma separated, gitignore style; `dir/**` also matches files directly under
   `dir`. This is the cheapest cost control there is. A commit that touches no governed path makes no model
   call. A record without this header is shown to the judge on every commit and dismissed on most of them.

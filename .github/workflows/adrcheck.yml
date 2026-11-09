@@ -1,7 +1,9 @@
 # adrcheck checks adrcheck: every pull request is judged against the ADRs under docs/adr using the action in
 # this very repository. The first consumer of the Action is the repository that ships it (bead adrcheck-dzz).
 # Needs the repository secret ANTHROPIC_API_KEY; without it the step reports "could not evaluate" (exit 3)
-# as a warning and does not fail, so a fork's pull request still runs the rest of CI.
+# as a warning and does not fail, so a fork's pull request still runs the rest of CI. The cheaper measured
+# judge is Haiku 5.5 via OpenRouter (docs/providers.md): OPENAI_BASE_URL and OPENAI_API_KEY in env, and
+# model: openai:anthropic/claude-haiku-5.5. max-calls bounds a long pull request to ten judge calls.
 name: adrcheck
 
 on:
@@ -27,3 +29,4 @@ jobs:
         with:
           adr-dir: docs/adr
           model: anthropic:claude-sonnet-5-5
+          max-calls: "10"

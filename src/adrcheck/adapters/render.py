@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
+from itertools import groupby
 
 from adrcheck.domain.verdict import Verdict
 from adrcheck.usecases.check import ChangeReport
@@ -77,6 +79,20 @@ def to_json(reports: list[ChangeReport]) -> str:
     )
 
 
+def _finding_lines(f, *, indent: str, label: str, with_id: bool) -> list[str]:
+    head = f"{indent}- **{f.verdict.value}** {label}" + (f" ({f.obligation_id})" if with_id and f.obligation_id else "")
+    if f.note:
+        head += f" — {_prose(f.note)}"
+    lines = [head]
+    if f.line_text:
+        lines.append(f"{indent}  - `{_code(f.path)}`: `{_code(f.line_text)}`")
+    if f.quote:
+        lines.append(f"{indent}  - > {_prose(f.quote)}")
+    if f.reason:
+        lines.append(f"{indent}  - {_prose(f.reason)}")
+    return lines
+
+
 def to_markdown(reports: list[ChangeReport]) -> str:
     """Lint-clean markdown: a blank line after every heading and around every list, so it pastes into a PR."""
     out: list[str] = []
@@ -88,17 +104,31 @@ def to_markdown(reports: list[ChangeReport]) -> str:
         if not r.findings and not dismissed:
             out.append("_No ADR applied to this change._")
             out.append("")
-        for f in sorted(r.findings, key=lambda f: (f.adr_number, _SEVERITY.get(f.verdict, 9), f.obligation_id or "")):
-            head = f"- **{f.verdict.value}** ADR-{f.adr_number}" + (f" ({f.obligation_id})" if f.obligation_id else "")
-            if f.note:
-                head += f" — {_prose(f.note)}"
-            out.append(head)
-            if f.line_text:
-                out.append(f"  - `{_code(f.path)}`: `{_code(f.line_text)}`")
-            if f.quote:
-                out.append(f"  - > {_prose(f.quote)}")
-            if f.reason:
-                out.append(f"  - {_prose(f.reason)}")
+        bare = sorted(
+            {
+                f.adr_number
+                for f in r.findings
+                if f.verdict is Verdict.COMPLIANT
+                and not (f.obligation_id or f.line_text or f.quote or f.reason or f.note)
+            }
+        )
+        cited = [f for f in r.findings if f.adr_number not in bare]
+        ordered = sorted(cited, key=lambda f: (f.adr_number, _SEVERITY.get(f.verdict, 9), f.obligation_id or ""))
+        for adr_number, group_iter in groupby(ordered, key=lambda f: f.adr_number):
+            group = list(group_iter)
+            if len(group) == 1:
+                out.extend(_finding_lines(group[0], indent="", label=f"ADR-{adr_number}", with_id=True))
+                continue
+            # rnr: one head per (commit, ADR) with the worst verdict and the tally; the obligations sit beneath it
+            tally = Counter(f.verdict.value for f in group)
+            counts = ", ".join(
+                f"{n} {v}" for v, n in sorted(tally.items(), key=lambda kv: _SEVERITY.get(Verdict(kv[0]), 9))
+            )
+            out.append(f"- **{group[0].verdict.value}** ADR-{adr_number} ({len(group)} obligations: {counts})")
+            for f in group:
+                out.extend(_finding_lines(f, indent="  ", label=f.obligation_id or f"ADR-{adr_number}", with_id=False))
+        if bare:
+            out.append("- compliant, nothing to cite: " + ", ".join(f"ADR-{n}" for n in bare))
         if dismissed:
             out.append("- judged, not relevant: " + ", ".join(f"ADR-{n}" for n in dismissed))
         if proposed := [e.adr_number for e in r.excluded if "touches its paths" in e.reason]:

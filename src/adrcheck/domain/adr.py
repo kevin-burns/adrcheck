@@ -59,6 +59,8 @@ class Adr:
     sections: Mapping[str, str] = field(default_factory=dict)
     supersedes: tuple[int, ...] = ()
     superseded_by: tuple[int, ...] = ()
+    depends_on: tuple[int, ...] = ()  # `Depends on: ADR-2, ADR-3`; lint checks the targets are still in force
+    links: tuple[str, ...] = ()  # relative markdown link targets, for lint to resolve; URLs and anchors excluded
 
     def section(self, name: str) -> str:
         return self.sections.get(name, "")

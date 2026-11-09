@@ -2,7 +2,7 @@ from adrcheck.domain.adr import Adr, Status
 from adrcheck.domain.lint import lint
 
 
-def adr(number, status=Status.ACCEPTED, supersedes=(), superseded_by=(), sections=None):
+def adr(number, status=Status.ACCEPTED, supersedes=(), superseded_by=(), sections=None, depends_on=(), links=()):
     return Adr(
         title=f"ADR {number}",
         status=status,
@@ -11,6 +11,8 @@ def adr(number, status=Status.ACCEPTED, supersedes=(), superseded_by=(), section
         supersedes=supersedes,
         superseded_by=superseded_by,
         sections={"decision": "d"} if sections is None else sections,
+        depends_on=depends_on,
+        links=links,
     )
 
 
@@ -76,3 +78,20 @@ def test_a_proposed_successor_may_declare_supersedes_while_the_predecessor_stays
     assert issues(adr(1), adr(2, supersedes=(1,))) == [
         ("status-mismatch", 1, "superseded by ADR-2 but status is accepted")
     ]
+
+
+def test_a_dependency_on_a_deprecated_or_superseded_adr_is_reported_and_on_an_accepted_one_is_not():
+    assert issues(adr(4, depends_on=(2,)), adr(2, Status.DEPRECATED)) == [
+        ("depends-on-inactive", 4, "depends on ADR-2, whose status is deprecated")
+    ]
+    assert issues(adr(4, depends_on=(2,)), adr(2)) == []
+    assert issues(adr(4, depends_on=(9,))) == [("dangling-depends-ref", 4, "depends on ADR-9, which does not exist")]
+
+
+def test_a_relative_link_that_does_not_resolve_is_reported_only_when_lint_is_given_a_way_to_check():
+    one = adr(1, links=("../design.md", "0002.md"))
+    assert issues(one) == []  # no resolver: links are not checked
+    found = sorted(
+        (i.kind, i.adr_number, i.detail) for i in lint([one], link_exists=lambda source, target: target == "0002.md")
+    )
+    assert found == [("broken-local-link", 1, "link ../design.md does not resolve from 0001.md")]
