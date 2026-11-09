@@ -33,6 +33,7 @@ class Finding:
     reason: str = ""
     verify_failed: tuple[str, ...] = ()
     note: str = ""
+    line_number: int | None = None
 
 
 @dataclass(frozen=True)
@@ -394,4 +395,21 @@ def _settle(
         reason=raw.reason,
         verify_failed=failed,
         note=note,
+        line_number=_line_number(change, raw.path, raw.line_text),
     )
+
+
+def _line_number(change: Change, path: str, line_text: str) -> int | None:
+    """Where the cited line landed in the file after the change: the first added line in that file whose text
+    matches, indentation ignored as in Change.touched(); a removed line, or a line the diff does not hold, has
+    no number."""
+    if not path or not line_text:
+        return None
+    wanted = line_text.strip()
+    for f in change.files:
+        if f.path != path:
+            continue
+        for line in f.added:
+            if line.text.strip() == wanted:
+                return line.number
+    return None

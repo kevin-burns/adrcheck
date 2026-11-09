@@ -109,7 +109,7 @@ def to_codequality(reports: list[ChangeReport]) -> str:
             quote = f" Decision: {f.quote}" if f.quote else ""
             reason = f" {f.reason}" if f.reason else ""
             note = f" ({f.note})" if f.note else ""
-            key = "|".join([r.ref, str(f.adr_number), f.obligation_id or "", f.path or "", f.line_text or ""])
+            key = "|".join([str(f.adr_number), f.obligation_id or "", f.path or "", f.line_text or ""])
             issues.append(
                 {
                     "type": "issue",
@@ -118,7 +118,7 @@ def to_codequality(reports: list[ChangeReport]) -> str:
                     "categories": ["Style"],
                     "severity": _CQ_SEVERITY[f.verdict],
                     "fingerprint": hashlib.sha256(key.encode("utf-8")).hexdigest(),
-                    "location": {"path": f.path or "", "lines": {"begin": 1}},
+                    "location": {"path": f.path or "", "lines": {"begin": f.line_number or 1}},
                 }
             )
     return json.dumps(issues, indent=1)

@@ -67,7 +67,9 @@ whether a deleted name had callers and the count can. A COMPLIANT verdict is nev
 
 In the GitLab Code Quality output (`--format codequality` or `--codequality PATH`) the same verdicts become
 severities: CONFLICT `major`, UNCLEAR `minor`, ADR-OVERTAKEN `info`; COMPLIANT is not an issue and is not
-listed.
+listed. Each issue points at the cited line's number in the changed file when the diff holds that line, else
+at line 1. Its fingerprint hashes the ADR, the obligation, the path and the line text, not the commit, so
+GitLab shows one issue across pushes and can tell a merge request's new findings from the target branch's.
 
 ## Lines that are not verdicts
 
