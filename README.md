@@ -12,7 +12,9 @@ and publishes its own false-alarm rate.
   and the stale list at the end of every run names the records whose anchors are gone.
 - Anything the evidence does not settle is UNCLEAR. Abstaining is a verdict, not a miss.
 
-Advisory by default. Structured JSON out, so a caller can gate if it wants to.
+Advisory by default. Structured JSON out, so a caller can gate if it wants to. Each finding names the
+exact ADR text it was judged against, by git blob id, so a report still reproduces after the ADR is
+edited: `check --adrs-at REF` reruns it against the records as they stood ([cli.md](docs/cli.md)).
 
 ## In one minute
 
