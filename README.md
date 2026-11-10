@@ -108,12 +108,16 @@ The header wins where both exist, and `adrcheck lint` reports the disagreement.
 ```yaml
 # .pre-commit-config.yaml
 - repo: https://github.com/kevin-burns/adrcheck
-  rev: main
+  rev: v0.1.0
   hooks:
     - id: adrcheck-lint          # ADR hygiene when an ADR file changes; no model
     - id: adrcheck-staged        # free tier: forbidden patterns from the cached compile, stale sweep; no key
     - id: adrcheck-staged-judge  # opt-in: the model judges the index on the developer's own provider
 ```
+
+`rev` is a tag on purpose: pre-commit never moves a branch after the first install, and `pre-commit autoupdate`
+moves a tag to the newest release. The Action snippets below follow `main`; `kevin-burns/adrcheck@v0.1.0` pins
+one, as does `@v0.1.0` on the install URL. A release is tagged when a flag, a verdict or a hook changes.
 
 The free tier is the default for `--staged`. Run `adrcheck compile` once and commit `.adrcheck/obligations/`
 first, or the hook reports every ADR as not compiled and passes. It never compiles and never calls a model: an

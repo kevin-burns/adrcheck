@@ -1,6 +1,6 @@
 # Hooks other repositories can use:
 #   - repo: https://github.com/kevin-burns/adrcheck
-#     rev: main
+#     rev: v0.1.0
 #     hooks:
 #       - id: adrcheck-lint          # free: hygiene of the ADR set, no model
 #       - id: adrcheck-staged        # free tier: cached forbids on added lines, stale sweep; no model, no key

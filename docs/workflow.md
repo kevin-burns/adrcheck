@@ -88,7 +88,7 @@ The two hooks, for a repository that uses pre-commit or prek:
 
 ```yaml
 - repo: https://github.com/kevin-burns/adrcheck
-  rev: main
+  rev: v0.1.0
   hooks:
     - id: adrcheck-lint          # no model; runs when a file under the ADR directory changes
     - id: adrcheck-staged        # free tier: no model, no key; forbidden patterns and the stale sweep
