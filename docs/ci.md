@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
-      - uses: kevin-burns/adrcheck@main
+      - uses: kevin-burns/adrcheck@main      # or @v0.1.0 to pin a release
         env:
           OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}   # https://openrouter.ai/api/v1
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

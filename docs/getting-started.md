@@ -24,7 +24,8 @@ uv tool install git+https://github.com/kevin-burns/adrcheck
 adrcheck lint
 ```
 
-Or run it once without installing: `uvx --from git+https://github.com/kevin-burns/adrcheck adrcheck lint`.
+Or run it once without installing: `uvx --from git+https://github.com/kevin-burns/adrcheck adrcheck lint`. Both follow
+`main`; append `@v0.1.0` to the URL to pin a release.
 
 adrcheck looks for ADRs in the first of `docs/adr`, `docs/decisions`, `docs/architecture/decisions`, `doc/adr`, `doc/architecture/decisions`, `adr`, `adrs`, `decisions` that exists. Pass `--adr-dir` if yours live elsewhere.
 
