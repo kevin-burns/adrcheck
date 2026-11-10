@@ -17,6 +17,7 @@ REPORT = ChangeReport(
             line_text='key = row["url"]',
             quote="keyed by store.row_key",
             reason="keys by url",
+            adr_blob="2b1f0a9c",
         ),
     ),
     excluded=(Excluded(7, "globs did not match any changed path"),),
@@ -31,6 +32,7 @@ def test_json_has_one_record_per_finding_with_the_spike_fields():
     [row] = rows["findings"]
     assert row["commit"] == "abc1234" and row["adr"] == 2 and row["verdict"] == "CONFLICT"
     assert row["signals"] == ["glob"] and row["label"] == "" and row["note"] == ""
+    assert row["adr_blob"] == "2b1f0a9c"
     assert rows["changes"][0]["uncovered"] == 1
 
 

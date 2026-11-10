@@ -4,6 +4,7 @@ and lint reports it."""
 
 from __future__ import annotations
 
+import hashlib
 import re
 from pathlib import Path
 
@@ -12,6 +13,12 @@ from adrcheck.adapters.markdown_adr import parse_adr
 from adrcheck.domain.adr import Adr
 
 _NOT_A_RECORD = re.compile(r"^(readme|index|template)(\..*)?\.md$", re.IGNORECASE)
+
+
+def git_blob_id(data: bytes) -> str:
+    """What `git hash-object` prints for these bytes: sha1 over `blob <size>\\0` and the content. The same id as the
+    committed file carries, so `git log --find-object <id>` names the commits that hold exactly this text."""
+    return hashlib.sha1(b"blob %d\0%s" % (len(data), data), usedforsecurity=False).hexdigest()
 
 
 def is_record(name: str) -> bool:
@@ -47,10 +54,10 @@ class MarkdownAdrSource:
 
     def adrs(self) -> list[Adr]:
         files = sorted(p for p in self.directory.iterdir() if p.is_file() and is_record(p.name))
-        return [parse_adr(p.read_text(), source=str(p)) for p in files]
+        return [parse_adr(p.read_text(), source=str(p), blob=git_blob_id(p.read_bytes())) for p in files]
 
 
 def adrs_at(repo: GitRepo, ref: str, adr_dir: str) -> list[Adr]:
     """The ADR directory as it stood at `ref`: what an eval corpus frozen at that revision was labelled against."""
     paths = sorted(p for p in repo.ls(ref, adr_dir) if is_record(Path(p).name))
-    return [parse_adr(repo.read(ref, p), source=f"{ref}:{p}") for p in paths]
+    return [parse_adr(repo.read(ref, p), source=f"{ref}:{p}", blob=repo.blob(ref, p)) for p in paths]

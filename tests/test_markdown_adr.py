@@ -135,3 +135,12 @@ def test_a_date_prefixed_filename_is_not_a_number_but_an_adr_prefixed_one_is():
     assert parse_adr(body, source="docs/adr/adr_12_use_postgres.md").number == 12
     assert parse_adr(body, source="docs/adr/0012-use-postgres.md").number == 12
     assert parse_adr(body, source="docs/adr/12.md").number == 12
+
+
+def test_a_record_carries_the_git_blob_id_of_the_text_it_was_parsed_from():
+    from adrcheck.adapters.markdown_adr_source import git_blob_id
+
+    # `printf 'hello\n' | git hash-object --stdin`
+    assert git_blob_id(b"hello\n") == "ce013625030ba8dba906f756967f9e9ca394464a"
+    assert parse_adr(NYGARD, source="x.md", blob="ce01").blob == "ce01"
+    assert parse_adr(NYGARD, source="x.md").blob == ""

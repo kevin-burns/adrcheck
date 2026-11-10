@@ -52,6 +52,7 @@ How to judge:
 | `--as-one` | off | judge `--range` as the one change it merges: net diff, every commit message, one judge call (ADR-13). The Action and the GitLab job always use it |
 | `--max-calls N` | no cap | judge at most N commits this run; later commits are reported as not judged, never silently green |
 | `--baseline PATH` | `.adrcheck/baseline.json` | reviewed stale rows; rows named here are counted, not listed |
+| `--adrs-at REF` | the working tree | read the ADR directory as it stood at REF, to reproduce an old report after the ADRs changed |
 | `--write-baseline` | off | record this run's stale list to `--baseline`; review the diff like source |
 
 What to print:
@@ -64,6 +65,10 @@ What to print:
 
 The verdicts and every report line are defined in [verdicts.md](verdicts.md); the Action and the GitLab
 job in [ci.md](ci.md).
+
+Every finding in the JSON report carries `adr_blob`, the git blob id of the ADR file the verdict was judged
+against. An ADR edited after the fact cannot orphan the report: `git log --all --find-object <adr_blob>` names
+the commits that hold that exact text, and `--adrs-at` on one of them reproduces the run.
 
 ## lint
 

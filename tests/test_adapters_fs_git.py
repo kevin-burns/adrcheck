@@ -178,6 +178,7 @@ def test_adrs_at_reads_the_adr_directory_as_it_stood_at_a_ref(tmp_path: Path):
     git(repo, "commit", "-q", "-am", "adr v2")
     [adr] = adrs_at(GitRepo(repo), frozen, "docs/adr")
     assert adr.number == 1 and adr.status.value == "accepted" and adr.section("decision") == "Old text."
+    assert adr.blob == git(repo, "rev-parse", f"{frozen}:docs/adr/0001-key.md").strip()
     assert adrs_at(GitRepo(repo), frozen, "no/such/dir") == []
 
 
@@ -302,3 +303,13 @@ def test_has_line_matches_a_whole_line_so_an_alias_import_or_a_string_mention_is
     assert r.has_line("HEAD", "import requests as http") is True
     assert r.has_line("HEAD", "  import requests as http  ") is True  # surrounding whitespace does not matter
     assert r.has_line("no-such-ref", "x") is None
+
+
+def test_the_working_tree_source_records_the_blob_id_git_would_give_the_file(tmp_path: Path):
+    from adrcheck.adapters.markdown_adr_source import MarkdownAdrSource
+
+    repo = make_repo(tmp_path)
+    (repo / "docs" / "adr").mkdir(parents=True)
+    (repo / "docs" / "adr" / "0001-key.md").write_text("# 1. Key\n\nStatus: accepted\n\n## Decision\n\nText.\n")
+    [adr] = MarkdownAdrSource(repo / "docs" / "adr").adrs()
+    assert adr.blob == git(repo, "hash-object", "docs/adr/0001-key.md").strip()

@@ -92,6 +92,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     c.add_argument("--fail-on", choices=("conflict",), help="exit 2 when any CONFLICT is reported")
     c.add_argument(
+        "--adrs-at",
+        metavar="REF",
+        help="read the ADR directory as it stood at this commit instead of the working tree, to reproduce a report",
+    )
+    c.add_argument(
         "--codequality",
         default=None,
         metavar="PATH",
@@ -246,7 +251,12 @@ def main(argv: list[str] | None = None, judge=None) -> int:
         print("no ADR directory found; pass --adr-dir", file=sys.stderr)
         return EXIT_ISSUES
 
-    adrs, scope_issues = scope(MarkdownAdrSource(adr_dir).adrs(), load_scope_map(Path(args.repo) / args.map))
+    if getattr(args, "adrs_at", None):
+        rel = Path(os.path.relpath(adr_dir, args.repo)).as_posix()
+        read_adrs = adrs_at(GitChanges(Path(args.repo)), args.adrs_at, rel)
+    else:
+        read_adrs = MarkdownAdrSource(adr_dir).adrs()
+    adrs, scope_issues = scope(read_adrs, load_scope_map(Path(args.repo) / args.map))
     if args.command == "lint":
 
         def link_exists(source: str, target: str) -> bool:
