@@ -61,6 +61,7 @@ class Adr:
     superseded_by: tuple[int, ...] = ()
     depends_on: tuple[int, ...] = ()  # `Depends on: ADR-2, ADR-3`; lint checks the targets are still in force
     links: tuple[str, ...] = ()  # relative markdown link targets, for lint to resolve; URLs and anchors excluded
+    blob: str = ""  # git blob id of the source text, so a report can name the revision it judged against
 
     def section(self, name: str) -> str:
         return self.sections.get(name, "")

@@ -128,7 +128,7 @@ def _role(label: str) -> str | None:
     return ROLES.get(label.strip().lower())
 
 
-def parse_adr(text: str, source: str) -> Adr:
+def parse_adr(text: str, source: str, blob: str = "") -> Adr:
     headers, text = _front_matter(text)
     lines = text.splitlines()
     title, number = "", None
@@ -218,6 +218,7 @@ def parse_adr(text: str, source: str) -> Adr:
         title=title,
         supersedes=supersedes,
         superseded_by=superseded_by,
+        blob=blob,
         status=Status.parse(status_text),
         source=source,
         number=number,

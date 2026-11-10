@@ -14,6 +14,7 @@ ADR = Adr(
     status=Status.ACCEPTED,
     source="docs/adr/0002-one-key.md",
     number=2,
+    blob="2b1f0a9c",
     applies_to=("enrich/**",),
     sections={
         "context": "Rows used to be keyed by URL, which changed between sweeps.",
@@ -118,6 +119,7 @@ def test_a_verified_conflict_the_commit_introduced_is_reported_as_conflict():
         frozenset({"glob"}),
     )
     assert f.verify_failed == ()
+    assert f.adr_blob == "2b1f0a9c"  # the ADR text this verdict was judged against, for later reproduction
 
 
 def test_a_claim_that_fails_verification_becomes_unclear_and_says_why():

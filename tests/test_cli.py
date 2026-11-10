@@ -494,3 +494,18 @@ def test_lint_help_explains_its_flags(capsys):
     out = capsys.readouterr().out
     assert "directory of ADR markdown files" in out
     assert "scope map" in out
+
+
+def test_check_adrs_at_judges_against_the_adrs_as_they_stood_at_that_commit(tmp_path: Path, capsys):
+    repo = make_repo(tmp_path)
+    frozen = git(repo, "rev-parse", "HEAD").strip()
+    then = git(repo, "rev-parse", "HEAD:docs/adr/0001-row-key.md").strip()
+    (repo / "docs" / "adr" / "0001-row-key.md").write_text(ADR.replace("accepted", "deprecated"))
+    git(repo, "commit", "-q", "-am", "retire the record")
+    base = ["check", "--repo", str(repo), "--adr-dir", str(repo / "docs/adr"), "--commit", frozen, "--format", "json"]
+    main(base, judge=FakeJudge())
+    assert json.loads(capsys.readouterr().out)["findings"] == []  # the working tree says deprecated: not judged
+    code = main([*base, "--adrs-at", frozen], judge=FakeJudge())
+    out = json.loads(capsys.readouterr().out)
+    assert code == 0 and out["findings"][0]["verdict"] == "CONFLICT"
+    assert out["findings"][0]["adr_blob"] == then

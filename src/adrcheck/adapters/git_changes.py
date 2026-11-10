@@ -73,6 +73,10 @@ class GitRepo:
         out = self._git("ls-tree", "-r", "--name-only", ref, "--", directory.rstrip("/") + "/", check=False)
         return [p for p in out.stdout.split("\n") if p] if out.returncode == 0 else []
 
+    def blob(self, ref: str, path: str) -> str:
+        """The blob id of `path` at `ref`, as `git rev-parse ref:path` prints it."""
+        return self._git("rev-parse", f"{ref}:{path}").stdout.strip()
+
     def read(self, ref: str, path: str) -> str:
         # STAGED is the index: `git show :path`. Everything else is a commit-ish.
         return self._git("show", f"{'' if ref == STAGED else ref}:{path}").stdout

@@ -43,6 +43,7 @@ def _finding_rows(reports: list[ChangeReport]) -> list[dict]:
                     "reason": f.reason,
                     "verify_failed": list(f.verify_failed),
                     "note": f.note,
+                    "adr_blob": f.adr_blob,
                     "label": "",
                 }
             )

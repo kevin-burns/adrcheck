@@ -34,6 +34,7 @@ class Finding:
     verify_failed: tuple[str, ...] = ()
     note: str = ""
     line_number: int | None = None
+    adr_blob: str = ""  # the ADR text this verdict was judged against; a later edit cannot orphan the report
 
 
 @dataclass(frozen=True)
@@ -223,7 +224,12 @@ def check(
             if adr.number in waived_by_number:
                 findings.append(
                     Finding(
-                        adr.number, None, Verdict.COMPLIANT, sel.signals, note=f"waived: {waived_by_number[adr.number]}"
+                        adr.number,
+                        None,
+                        Verdict.COMPLIANT,
+                        sel.signals,
+                        note=f"waived: {waived_by_number[adr.number]}",
+                        adr_blob=adr.blob,
                     )
                 )
                 judged.append(sel)
@@ -251,6 +257,7 @@ def check(
                         Verdict.UNCLEAR,
                         sel.signals,
                         note=f"not judged: call budget of {max_calls} reached",
+                        adr_blob=case.adr.blob,
                     )
                 )
             cases = []
@@ -287,7 +294,14 @@ def check(
                 if response.error:
                     judged.append(sel)
                     findings.append(
-                        Finding(adr.number, None, Verdict.UNCLEAR, sel.signals, note=f"judge error: {response.error}")
+                        Finding(
+                            adr.number,
+                            None,
+                            Verdict.UNCLEAR,
+                            sel.signals,
+                            note=f"judge error: {response.error}",
+                            adr_blob=adr.blob,
+                        )
                     )
                 elif adr.number in response.not_relevant:
                     excluded.append(Excluded(adr.number, "model: not relevant to this change"))
@@ -295,7 +309,7 @@ def check(
                     excluded.append(Excluded(adr.number, "free tier: no mechanical rule fired; judge not run"))
                 else:
                     judged.append(sel)
-                    compliant = Finding(adr.number, None, Verdict.COMPLIANT, sel.signals)
+                    compliant = Finding(adr.number, None, Verdict.COMPLIANT, sel.signals, adr_blob=adr.blob)
                     findings.extend(findings_of[i] or [compliant])
 
         reports.append(
@@ -396,6 +410,7 @@ def _settle(
         verify_failed=failed,
         note=note,
         line_number=_line_number(change, raw.path, raw.line_text),
+        adr_blob=adr.blob,
     )
 
 
