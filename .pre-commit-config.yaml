@@ -39,7 +39,7 @@ repos:
   # Lint and format from [tool.ruff] in pyproject.toml, so the hook and a bare
   # `ruff check` cannot disagree.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.4
+    rev: v0.17.5
     hooks:
       - id: ruff-check
         args: [--fix]
