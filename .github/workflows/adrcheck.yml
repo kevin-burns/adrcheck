@@ -24,6 +24,10 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - name: Check this pull request against docs/adr
+        # Dependabot's pull requests run with Dependabot secrets, not the repository's, so the judge has no key
+        # there and the comment would only say "could not evaluate" (PR #25). The job still runs and passes,
+        # because it is a required check; only the judge step is skipped.
+        if: github.actor != 'dependabot[bot]'
         uses: ./
         env:
           OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
